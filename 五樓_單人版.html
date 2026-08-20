@@ -378,7 +378,45 @@ const DOCS=[
   {f:'71F',u:'kt0904',   c:'欸 不然我們把那時候的東西找出來看看好了',t:'今天 11:03',today:1},
   {f:'72F',u:'haoge',    c:'不要。',t:'今天 11:03',today:1},
   {f:'73F',u:'kt0904',   c:'為什麼',t:'今天 11:04',today:1},
-  {silence:'—— haoge 已離線 ——'}
+  {silence:'—— haoge 已離線 ——'},
+
+  /* 破 g_mail 後（prog>=1）：三人（不含 haoge）開始一起翻當年的東西 */
+  {f:'74F',u:'kt0904',   c:'欸我剛剛把舊硬碟接起來翻了一下',t:'今天 13:14',today:1,at:1},
+  {f:'75F',u:'kt0904',   c:'我根本沒刪過 全部都在',t:'今天 13:15',today:1,at:1},
+  {f:'76F',u:'yalin_w',  c:'我那份名單也還在 存在隨身碟裡',t:'今天 13:19',today:1,at:1},
+  {f:'77F',u:'tsonghan', c:'你們兩個要真的想查，就不要只挖自己那份。比對一下。',t:'今天 13:21',today:1,at:1},
+  {f:'78F',u:'siyu_1120',c:'…好啦 我也在翻',t:'今天 13:24',today:1,at:1},
+  {f:'79F',u:'kt0904',   c:'話說 那個兩年前突然刪掉的樓',t:'今天 13:27',today:1,at:1},
+  {f:'80F',u:'kt0904',   c:'是我打的 打到一半刪了',t:'今天 13:27',today:1,at:1},
+  {f:'81F',u:'tsonghan', c:'刪了就不用再講。',t:'今天 13:29',today:1,at:1},
+  {f:'82F',u:'kt0904',   c:'我只是說 我那時候真的差點打完',t:'今天 13:30',today:1,at:1},
+  {f:'83F',u:'yalin_w',  c:'誰都差點過吧',t:'今天 13:34',today:1,at:1},
+
+  /* 破 g_admin 後（prog>=3）：得知那天幫思妤扛下來的人是林昱庭 */
+  {f:'84F',u:'siyu_1120',c:'……是昱庭。是他幫我頂的。',t:'今天 15:48',today:1,at:3},
+  {f:'85F',u:'kt0904',   c:'蛤 真的假的',t:'今天 15:49',today:1,at:3},
+  {f:'86F',u:'yalin_w',  c:'我一直以為是宗翰',t:'今天 15:52',today:1,at:3},
+  {f:'87F',u:'tsonghan', c:'我沒有。我那天根本不在線上。',t:'今天 15:53',today:1,at:3},
+  {f:'88F',u:'kt0904',   c:'我記得他那天有講什麼 但想不起來完整的',t:'今天 15:55',today:1,at:3},
+  {f:'89F',u:'yalin_w',  c:'我記得他說「不要再做了」',t:'今天 15:57',today:1,at:3},
+  {f:'90F',u:'kt0904',   c:'我記得的是「對不起」',t:'今天 15:58',today:1,at:3},
+  {f:'91F',u:'tsonghan', c:'我記得的是「我一直在看」。那句最詭異。',t:'今天 16:01',today:1,at:3},
+  {f:'92F',u:'siyu_1120',c:'你們記的都不一樣……',t:'今天 16:03',today:1,at:3},
+  {f:'93F',u:'tsonghan', c:'十一年了，誰記得住整段。',t:'今天 16:05',today:1,at:3},
+  {f:'94F',u:'kt0904',   c:'要不要查一下他現在在哪',t:'今天 16:08',today:1,at:3},
+  {f:'95F',u:'yalin_w',  c:'嗯',t:'今天 16:09',today:1,at:3},
+
+  /* 破 g_search 後（prog>=5）：找到部落格，氣氛收下來 */
+  {f:'96F',u:'kt0904',   c:'找到了？',t:'今天 18:22',today:1,at:5},
+  {f:'97F',u:'siyu_1120',c:'嗯 部落格',t:'今天 18:23',today:1,at:5},
+  {f:'98F',u:'kt0904',   c:'寫了什麼',t:'今天 18:24',today:1,at:5},
+  {f:'99F',u:'siyu_1120',c:'我還沒看完',t:'今天 18:26',today:1,at:5},
+  {f:'100F',u:'tsonghan',c:'不用都貼出來。',t:'今天 18:31',today:1,at:5},
+  {f:'101F',u:'yalin_w', c:'嗯',t:'今天 18:33',today:1,at:5},
+  {f:'102F',u:'tsonghan',c:'我那時候如果先開口的人是我，應該也會是同一個提案。',t:'今天 18:40',today:1,at:5},
+  {f:'103F',u:'kt0904',  c:'啊？',t:'今天 18:41',today:1,at:5},
+  {f:'104F',u:'tsonghan',c:'沒事。',t:'今天 18:43',today:1,at:5},
+  {silence:'—— 之後沒有人再回覆 ——',at:5}
  ]},
 
 
@@ -791,10 +829,16 @@ function renderPage(){
 /* ---------- 板首頁 ---------- */
 function renderBoardIndex(vp){
   const rows=BOARD_INDEX.map(x=>{
+    let meta=x.meta;
+    if(x.doc==='t_today'){
+      const posts=DOCS.find(d=>d.id==='t_today').posts.filter(p=>!p.silence&&prog>=(p.at||0));
+      const last=posts[posts.length-1];
+      if(last) meta=`${last.f}　│　最後回覆 ${last.u}　│　${last.t||'今天'}`;
+    }
     if(x.deco) return `<div class="idx-row deco"><div class="t">${esc(x.label)}</div>
-      <div class="m">${esc(x.meta)}</div></div>`;
+      <div class="m">${esc(meta)}</div></div>`;
     return `<button class="idx-row${seen.has(x.doc)?'':' new'}" data-idx="${x.doc}">
-      <div class="t">${esc(x.label)}</div><div class="m">${esc(x.meta)}</div></button>`;
+      <div class="t">${esc(x.label)}</div><div class="m">${esc(meta)}</div></button>`;
   }).join('');
 
   vp.innerHTML=`<div class="cols"><div class="main">
@@ -814,7 +858,8 @@ function renderBoardIndex(vp){
 /* ---------- 板 ---------- */
 function renderThread(vp,d){
   const isMain=d.id==='t_today';
-  const body=d.posts.map(p=>{
+  const posts=d.posts.filter(p=>prog>=(p.at||0));
+  const body=posts.map(p=>{
     if(p.silence) return `<div class="silence">${esc(p.silence)}</div>`;
     return `<div class="rp${p.del?' del':''}${p.u===ME.uid?' mine':''}${p.today?' today':''}">
       <div class="f">${esc(p.f)}</div><div class="u">${esc(p.u)}${p.u===ME.uid?'<span class="me">（你）</span>':''}</div>
