@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>五樓</title>
+<style>
+:root{
+  --board:#4A6D8C; --board-dark:#3A566E;
+  --page:#E4E8EC; --panel:#FFFFFF;
+  --line:#C0C9D2; --line-soft:#DDE3E9;
+  --ink:#22282E; --ink-soft:#5C6873;
+  --link:#16387C; --warm:#8C6A3A;
+  --chrome:#D6D9DD;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%}
+body{background:#9BA3AB;color:var(--ink);
+  font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",sans-serif;
+  font-size:13px;line-height:1.75}
+button{font-family:inherit;cursor:pointer}
+
+/* ===== 登入 ===== */
+#login{max-width:330px;margin:14vh auto 0;padding:0 16px}
+.brand{font-family:"MingLiU","SimSun","Songti TC",serif;font-size:50px;letter-spacing:.22em;
+  color:#2C3E50;text-align:center;margin:0 0 2px;text-indent:.22em}
+.brand-sub{text-align:center;color:#5C6873;font-size:11px;letter-spacing:.3em;
+  text-indent:.3em;margin-bottom:24px}
+.loginbox{background:var(--panel);border:1px solid var(--line);padding:20px 18px 18px}
+.loginbox label{display:block;font-size:12px;color:var(--ink-soft);margin-bottom:4px}
+.loginbox input{width:100%;padding:7px 8px;margin-bottom:13px;border:1px solid var(--line);
+  background:#FCFDFD;font-family:"Courier New",monospace;font-size:14px;color:var(--ink)}
+.loginbox input:focus{outline:2px solid var(--board);outline-offset:-1px}
+.btn{padding:8px 18px;background:var(--board);color:#fff;border:1px solid var(--board-dark);
+  font-size:13px;letter-spacing:.08em}
+.btn:hover{background:var(--board-dark)}
+.btn.wide{width:100%}
+.btn:disabled{background:#A8B2BB;border-color:#98A3AD;cursor:default}
+.loginerr{color:#8C3A3A;font-size:12px;min-height:20px;margin-top:9px;text-align:center}
+.footnote{text-align:center;color:#4A5560;font-size:11px;margin-top:20px;line-height:2}
+
+/* ===== 瀏覽器外殼 ===== */
+#browser{display:none;max-width:980px;margin:0 auto;min-height:100vh;
+  background:var(--chrome);box-shadow:0 0 0 1px #8A9299}
+.tabstrip{display:flex;align-items:flex-end;gap:1px;padding:6px 8px 0;
+  background:#B9BEC4;overflow-x:auto}
+.tab{display:flex;align-items:center;gap:6px;padding:6px 10px 7px;min-width:104px;max-width:220px;
+  background:#C6CBD0;border:1px solid #A6ADB4;border-bottom:0;border-radius:5px 5px 0 0;
+  font-size:12px;color:#3A424A;white-space:nowrap;flex:none}
+.tab:hover{background:#CFD4D9}
+.tab.on{background:var(--chrome);border-color:#8A9299;padding-bottom:8px;margin-bottom:-1px;z-index:2}
+.tab .fav{width:11px;height:11px;flex:none;border-radius:2px}
+.tab .tt{overflow:hidden;text-overflow:ellipsis}
+.tab .cl{margin-left:auto;background:none;border:0;color:#6E7A85;font-size:12px;padding:0 2px;line-height:1}
+.omni{display:flex;align-items:center;gap:8px;padding:7px 10px;
+  background:var(--chrome);border-bottom:1px solid #A6ADB4}
+.omni .navb button{background:none;border:0;color:#6E7A85;font-size:14px;padding:1px 5px}
+.omni .navb button:disabled{color:#B0B7BE;cursor:default}
+.omni .url{flex:1;min-width:0;background:#fff;border:1px solid #A6ADB4;border-radius:2px;
+  padding:4px 9px;font-family:"Courier New",monospace;font-size:12px;color:#3A424A;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.omni .url .sec{color:#8A9299}
+.viewport{min-height:78vh;padding:14px 12px 40px}
+
+/* ===== 五樓 ===== */
+.vp-wulou{background:var(--page);
+  background-image:repeating-linear-gradient(180deg,rgba(0,0,0,.012) 0 1px,transparent 1px 4px)}
+.pg{max-width:800px;margin:0 auto}
+.wl-hd{background:var(--board);color:#fff;padding:8px 12px;display:flex;
+  align-items:baseline;gap:12px;flex-wrap:wrap}
+.wl-hd .lg{font-family:"MingLiU","SimSun",serif;font-size:18px;letter-spacing:.18em}
+.wl-hd .nv{font-size:11px;opacity:.72;letter-spacing:.08em}
+.wl-hd .me{margin-left:auto;font-size:11px;opacity:.9}
+.wl-sub{background:#D5DCE3;border:1px solid var(--line);border-top:0;padding:4px 12px;
+  font-size:11px;color:var(--ink-soft)}
+.wl-body{background:#fff;border:1px solid var(--line);border-top:0;padding:12px 14px}
+.wl-title{font-size:15px;font-weight:600;margin-bottom:2px}
+.wl-meta{font-size:11px;color:var(--ink-soft);margin-bottom:12px;
+  border-bottom:1px solid var(--line-soft);padding-bottom:8px}
+.rp{display:flex;gap:10px;padding:7px 0;border-bottom:1px dotted #E3E8EC}
+.rp:last-child{border-bottom:0}
+.rp .f{width:52px;flex:none;font-family:"Courier New",monospace;font-size:11px;color:#98A3AD}
+.rp .u{width:82px;flex:none;font-size:11px;color:var(--board-dark)}
+.rp .c{flex:1;font-family:"MingLiU","SimSun",serif;font-size:14px;white-space:pre-wrap;line-height:1.9}
+.rp.del .c{font-style:italic;color:#A2A9AF;font-family:inherit;font-size:12px}
+.rp.mine{background:#EEF3F8;box-shadow:inset 3px 0 0 var(--board)}
+.rp.mine .u{font-weight:700;color:var(--board-dark)}
+.rp.mine .u .me{font-weight:400;font-size:9px;color:var(--board-dark);margin-left:2px}
+.rp.today{background:#FBFCFD}
+.rp.today.mine{background:#E5EDF5}
+.rp .t{font-size:10px;color:#B0B7BE;font-family:"Courier New",monospace;margin-left:6px}
+.silence{text-align:center;font-size:11px;color:#A2A9AF;padding:10px 0;letter-spacing:.12em;
+  font-family:"Courier New",monospace}
+
+/* 板首頁 */
+.idx-list{padding:2px 0}
+.idx-row{display:block;width:100%;text-align:left;background:none;border:0;
+  border-bottom:1px solid var(--line-soft);padding:9px 4px;font-size:13px}
+.idx-row:last-child{border-bottom:0}
+.idx-row .t{color:var(--link);text-decoration:underline}
+.idx-row .m{font-size:11px;color:#98A3AD;font-family:"Courier New",monospace;margin-top:2px}
+.idx-row:hover{background:#F4F8FB}
+.idx-row.new .t::after{content:'　new';color:#8C3A3A;font-size:9px;text-decoration:none}
+.idx-row.deco{cursor:default;opacity:.6}
+.idx-row.deco:hover{background:none}
+.idx-row.deco .t{color:var(--ink);text-decoration:none}
+
+/* 板上的回覆框 */
+.replybox{background:#F7F9FA;border:1px solid var(--line);border-top:0;padding:12px 14px}
+.replybox .lbl{font-size:12px;color:var(--ink);margin-bottom:5px}
+.replybox textarea{width:100%;min-height:64px;padding:8px 9px;border:1px solid var(--line);
+  background:#fff;font-family:"MingLiU","SimSun",serif;font-size:15px;color:var(--ink);resize:vertical}
+.replybox textarea:focus{outline:2px solid var(--board);outline-offset:-1px}
+.replybox .acts{margin-top:10px;display:flex;align-items:center;gap:12px}
+.replybox .hint{font-size:11px;color:var(--ink-soft)}
+
+/* ===== Yahoo 信箱 ===== */
+.vp-yahoo{background:#fff;padding:0}
+.yh-top{background:#7B0099;color:#fff;padding:9px 14px;display:flex;align-items:center;gap:12px}
+.yh-top .lg{font-size:19px;font-weight:700}
+.yh-top .lg em{font-style:normal;color:#FFD9FF}
+.yh-top .acct{margin-left:auto;font-size:11px;opacity:.85}
+.yh-bar{background:#F1E4F7;border-bottom:1px solid #D9BEE6;padding:5px 14px;
+  font-size:11px;color:#5C3A6B}
+.yh-wrap{display:flex;min-height:60vh}
+.yh-side{width:150px;flex:none;background:#FAF4FC;border-right:1px solid #E4D2EC;padding:10px 0}
+.yh-side .f{padding:5px 14px;font-size:12px;color:#4A2B57}
+.yh-side .f.on{background:#E9D4F2;font-weight:600}
+.yh-main{flex:1;min-width:0;padding:14px 18px}
+@media(max-width:700px){.yh-wrap{display:block}.yh-side{width:auto;display:flex;flex-wrap:wrap;
+  border-right:0;border-bottom:1px solid #E4D2EC}}
+.yh-subj{font-size:17px;color:#2B1533;margin-bottom:10px}
+.mhead{font-size:12px;line-height:1.95;border-top:1px solid #E4D2EC;border-bottom:1px solid #E4D2EC;
+  padding:9px 0;margin-bottom:14px;color:#4A3A52}
+.mhead b{color:#7B0099;display:inline-block;width:52px}
+.mbody{font-family:"MingLiU","SimSun",serif;font-size:14.5px;line-height:2.05;white-space:pre-wrap}
+.yh-side .f{cursor:pointer;display:flex;align-items:center}
+.yh-side .f .n{margin-left:auto;color:#8A6B99;font-size:11px}
+.yh-side .f:hover{background:#F3E8F8}
+.yh-listhd{font-size:13px;color:#5C3A6B;border-bottom:1px solid #E4D2EC;
+  padding-bottom:7px;margin-bottom:4px;letter-spacing:.06em}
+.yh-list{width:100%;border-collapse:collapse;font-size:13px}
+.yh-list tr{cursor:pointer;border-bottom:1px solid #F0E6F5}
+.yh-list tr:hover{background:#FAF4FC}
+.yh-list tr.ur .sb{font-weight:700;color:#2B1533}
+.yh-list td{padding:8px 6px;vertical-align:top}
+.yh-list .fr{width:88px;color:#5C3A6B;font-family:"Courier New",monospace;font-size:12px}
+.yh-list .sb{color:#22282E}
+.yh-list .clip{font-size:11px}
+.yh-list .dt{width:86px;text-align:right;color:#98A3AD;font-size:11px;
+  font-family:"Courier New",monospace}
+.yh-empty{padding:30px 0;text-align:center;color:#A2A9AF;font-size:12px}
+.yh-back{background:none;border:0;color:var(--link);font-size:12px;
+  text-decoration:underline;padding:0;margin-bottom:12px}
+.yh-att{margin-top:18px;padding-top:12px;border-top:1px solid #E4D2EC;
+  font-size:12px;color:#5C3A6B}
+.yh-att .a{color:var(--link);text-decoration:underline;font-family:"Courier New",monospace}
+
+/* ===== 即時通存檔（裸 HTML） ===== */
+.vp-archive{background:#fff;padding:0}
+.ar{max-width:700px;padding:18px 22px;
+  font-family:"Times New Roman","PMingLiU",serif;color:#000}
+.ar h1{font-size:19px;color:#000080;margin:0 0 2px}
+.ar .sub{font-size:12px;margin-bottom:10px}
+.ar hr{border:0;border-top:1px solid #808080;margin:10px 0}
+.ar .day{font-size:14px;font-weight:700;color:#000080;margin:16px 0 4px}
+.ar table{border-collapse:collapse;width:100%}
+.ar td{padding:1px 0;vertical-align:top;font-size:14px;line-height:1.7}
+.ar td.n{width:54px;color:#000080;white-space:nowrap;padding-right:8px}
+.ar td.n.her{color:#800040}
+.ar .foot{font-size:11px;color:#808080;margin-top:20px}
+
+/* ===== 板務後台 ===== */
+.vp-admin{background:#C8CCD0;
+  background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.14) 0 2px,transparent 2px 4px)}
+.ad{max-width:500px;margin:5vh auto 0;background:#D4D8DC;border:2px outset #EDEFF1;padding:2px}
+.ad .ttl{background:#4A5560;color:#fff;font-size:12px;padding:3px 8px;letter-spacing:.1em}
+.ad .in{padding:16px 18px}
+.ad h2{margin:0 0 3px;font-size:15px;color:#2C3E50}
+.ad .sub{font-size:11px;color:var(--ink-soft);letter-spacing:.1em;margin-bottom:14px}
+
+/* ===== 搜尋 ===== */
+.vp-search{background:#fff;padding:0}
+.se{max-width:520px;margin:12vh auto 0;padding:0 20px;text-align:center}
+.se .lg{font-size:30px;letter-spacing:.04em;color:#4A6D8C;margin-bottom:22px;
+  font-family:"MingLiU","SimSun",serif}
+.se input{width:100%;padding:9px 12px;border:1px solid #A6ADB4;border-radius:2px;
+  font-size:15px;color:var(--ink)}
+.se input:focus{outline:2px solid var(--board);outline-offset:-1px}
+.se .acts{margin-top:16px}
+.se .msg{font-size:12px;color:#8C3A3A;min-height:20px;margin-top:10px}
+.se .res{text-align:left;margin-top:26px;border-top:1px solid var(--line-soft);padding-top:16px}
+.se .res .r{margin-bottom:16px}
+.se .res .r .t{color:var(--link);font-size:15px;text-decoration:underline}
+.se .res .r .u{color:#3A7A3A;font-size:11px;font-family:"Courier New",monospace}
+.se .res .r .d{font-size:12px;color:var(--ink-soft);margin-top:2px}
+
+/* ===== 部落格 ===== */
+.vp-blog{background:#F3F1EC;padding:0}
+.bl{max-width:620px;margin:0 auto;padding:26px 22px 60px}
+.bl-hd{border-bottom:2px solid #C4BCA8;padding-bottom:14px;margin-bottom:26px}
+.bl-hd h1{margin:0;font-size:22px;color:#4A4236;font-family:"MingLiU","SimSun",serif;
+  letter-spacing:.05em;font-weight:400}
+.bl-hd .d{font-size:11px;color:#8A8272;margin-top:5px;letter-spacing:.08em}
+.bl-post{margin-bottom:34px;padding-bottom:24px;border-bottom:1px dotted #C4BCA8}
+.bl-post:last-child{border-bottom:0}
+.bl-post .dt{font-size:11px;color:#8A8272;font-family:"Courier New",monospace;
+  letter-spacing:.06em;margin-bottom:6px}
+.bl-post .ti{font-size:15px;color:#4A4236;margin-bottom:8px;font-weight:600}
+.bl-post .bd{font-family:"MingLiU","SimSun",serif;font-size:14.5px;line-height:2.1;
+  color:#3A342B;white-space:pre-wrap}
+.bl-gap{text-align:center;font-size:11px;color:#A89E88;padding:20px 0;
+  font-family:"Courier New",monospace;letter-spacing:.1em}
+.bl-foot{text-align:center;font-size:11px;color:#A89E88;margin-top:30px;line-height:2}
+
+/* ===== 表單（共用） ===== */
+.form .note{font-size:11px;color:var(--ink-soft);line-height:1.8;margin-bottom:14px;white-space:pre-wrap}
+.form label{display:block;font-size:12px;margin-bottom:3px}
+.form input{width:100%;padding:7px 9px;margin-bottom:12px;border:1px solid #8A949D;background:#fff;
+  font-family:"Courier New",monospace;font-size:15px;color:var(--ink)}
+.form input:focus{outline:2px solid #2F6FB0;outline-offset:-1px}
+.form input[readonly]{color:var(--ink-soft);background:#F1F3F5;cursor:default}
+.form .remember{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-soft);
+  margin:-6px 0 13px}
+.form .remember input{width:auto;margin:0;padding:0}
+.form .linklike{background:none;border:0;color:var(--link);font-size:12px;text-decoration:underline;
+  padding:0;margin:-4px 0 14px;display:inline-block;cursor:pointer}
+.form .hintq{background:#F7F9FA;border:1px solid var(--line);padding:10px 12px;margin:-4px 0 14px}
+.form .hintq-t{font-size:11px;color:var(--ink-soft);margin-bottom:4px}
+.form .hintq-q{font-size:13px;color:var(--ink);font-weight:600}
+.form .msg{font-size:12px;color:#8C3A3A;min-height:19px;margin-top:9px}
+.sysbox{max-width:390px;margin:6vh auto 0}
+.sysbox .brandline{font-size:23px;font-weight:700;margin-bottom:2px}
+.sysbox .subline{font-size:11px;letter-spacing:.08em;margin-bottom:18px;color:var(--ink-soft)}
+.sysbox .box{background:#fff;border:1px solid #A6ADB4;padding:20px}
+.vp-yahoo .sysbox .brandline{color:#7B0099}
+.vp-yahoo .sysbox .box{border-top:3px solid #7B0099}
+
+/* ===== 側欄 ===== */
+.cols{display:flex;gap:14px;align-items:flex-start;max-width:800px;margin:0 auto}
+.main{flex:1;min-width:0}
+.side{width:212px;flex:none}
+@media(max-width:820px){.cols{flex-direction:column}.side{width:100%;order:-1}}
+.card{background:var(--panel);border:1px solid var(--line);margin-bottom:12px}
+.card h2{margin:0;font-size:12px;font-weight:600;letter-spacing:.1em;background:#D5DCE3;
+  border-bottom:1px solid var(--line);padding:5px 10px}
+.doc{display:block;width:100%;text-align:left;background:none;border:0;
+  border-bottom:1px solid var(--line-soft);padding:8px 10px;font-size:12px;line-height:1.6}
+.doc:last-child{border-bottom:0}
+.doc:hover{background:#F4F8FB}
+.doc .t{color:var(--link);text-decoration:underline}
+.doc .m{font-size:10px;color:#98A3AD;font-family:"Courier New",monospace}
+.doc.new .t::after{content:'　new';color:#8C3A3A;font-size:9px;text-decoration:none}
+.doc.lock{cursor:default;opacity:.72}
+.doc.lock:hover{background:none}
+.doc.lock .t{color:#98A3AD;text-decoration:none}
+.doc.lock .t::before{content:'🔒 ';font-size:10px}
+.doc.lock .m{color:#B0B7BE}
+.step{padding:8px 10px;font-size:12px;border-bottom:1px solid var(--line-soft)}
+.step:last-child{border-bottom:0}
+.step.done{color:#9AA4AD}
+.step.now{background:#F4F8FB}
+.step .mk{font-family:"Courier New",monospace;color:#9AA4AD;margin-right:6px}
+.step.done .mk{color:var(--board)}
+.step.now .mk{color:#8C6A3A}
+.step .sub{font-size:11px;color:var(--ink-soft);margin:4px 0 0 20px;line-height:1.7}
+.gotab{display:block;width:100%;text-align:left;background:none;border:0;
+  border-top:1px solid var(--line-soft);padding:8px 10px;font-size:12px;color:var(--link);
+  text-decoration:underline}
+.gotab:hover{background:#F4F8FB}
+
+/* ===== 終幕 ===== */
+.vp-end{background:#1C1F23;padding:0}
+.end{max-width:520px;margin:0 auto;padding:16vh 24px 20vh;
+  font-family:"MingLiU","SimSun",serif;font-size:16px;line-height:2.4;color:#D6DBE0}
+.end p{margin:0 0 26px;opacity:0;animation:fin 1.4s ease forwards}
+.end p:nth-child(2){animation-delay:1.6s}
+.end p:nth-child(3){animation-delay:3.4s}
+.end p:nth-child(4){animation-delay:5.6s}
+.end .q{color:#fff;font-size:18px}
+.end .sig{font-size:11px;color:#6E7A85;font-family:"Courier New",monospace;
+  letter-spacing:.14em;margin-top:40px;animation-delay:7.4s}
+@keyframes fin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.end p{opacity:1;animation:none}}
+</style>
+</head>
+<body>
+
+<div id="login">
+  <div class="brand">五樓</div>
+  <div class="brand-sub">EST. 2015</div>
+  <div class="loginbox">
+    <label for="u">帳號</label><input id="u" autocomplete="off" spellcheck="false" value="siyu_1120">
+    <label for="p">密碼</label><input id="p" type="password" autocomplete="off" value="1120">
+    <button class="btn wide" id="go">登入</button>
+    <div class="loginerr" id="lerr"></div>
+  </div>
+  <div class="footnote">本板不開放註冊　│　目前 6 個帳號<br>上次登入：3 天前</div>
+</div>
+
+<div id="browser">
+  <div class="tabstrip" id="tabstrip"></div>
+  <div class="omni">
+    <span class="navb">
+      <button id="navBack">◀</button>
+      <button id="navFwd" disabled>▶</button>
+      <button id="navRel">⟳</button>
+    </span>
+    <span class="url" id="omniUrl"></span>
+  </div>
+  <div class="viewport" id="viewport"></div>
+</div>
+
+<script>
+"use strict";
+const TODAY=new Date();
+const fmt=d=>`${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
+const esc=s=>String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+const T=s=>String(s??'').replace(/__TODAY__/g,fmt(TODAY));
+function norm(s){return (s||'')
+  .replace(/[\uFF01-\uFF5E]/g,c=>String.fromCharCode(c.charCodeAt(0)-0xFEE0))
+  .replace(/[\s\u3000:：\-—–_.,、。／/()（）]/g,'').toLowerCase().trim();}
+const match=(v,l)=>{const n=norm(v);return n.length>0&&l.some(a=>norm(a)===n);};
+
+/* ================= 你 ================= */
+const ME={uid:'siyu_1120',name:'陳思妤',pw:'1120'};
+
+/* ================= 文件 ================= */
+const DOCS=[
+
+/* ---------- 序章 ---------- */
+{id:'t_today',at:0,skin:'wulou',site:'五樓',
+ title:'[閒聊] 又到了',
+ meta:'五樓 › 閒聊　│　2016/11/27 – __TODAY__　│　共 47 篇，顯示 20 篇',
+ posts:[
+  {f:'1F', u:'kt0904',   c:'2016　今年也沒事 大家平安啦XD'},
+  {f:'5F', u:'tsonghan', c:'2017　今年也是…沒什麼好說的。'},
+  {f:'6F', u:'yalin_w',  c:'2017　嗯'},
+  {f:'9F', u:'siyu_1120',c:'2019　大家還好嗎！！好久沒上來了XDD'},
+  {f:'14F',u:'yalin_w',  c:'2021　嗯'},
+  {f:'18F',u:'tsonghan', c:'2022　每年開這串到底有什麼意義…'},
+  {f:'24F',u:'haoge',    c:'2023　不要再開這串了。'},
+  {f:'31F',u:'kt0904',   c:'2024　欸 還有人在嗎 orz'},
+  {f:'38F',u:'siyu_1120',c:'2025　還是開了！！大家平安^^'},
+  {f:'39F',u:'yalin_w',  c:'2025　嗯'},
+  {f:'40F',u:'kt0904',   c:'幹 我剛剛整理櫃子翻到一個箱子',t:'今天 09:12',today:1},
+  {f:'41F',u:'kt0904',   c:'裡面有一疊印出來的東西 有夠厚\n是那時候的',t:'今天 09:14',today:1},
+  {f:'42F',u:'tsonghan', c:'什麼那時候的。',t:'今天 09:16',today:1},
+  {f:'43F',u:'kt0904',   c:'就那時候啊',t:'今天 09:17',today:1},
+  {f:'44F',u:'kt0904',   c:'我以為早就沒了 怎麼會還在我這',t:'今天 09:18',today:1},
+  {f:'',   u:'',         c:'此文已由作者刪除',del:1,today:1},
+  {f:'46F',u:'haoge',    c:'丟掉。',t:'今天 09:22',today:1},
+  {f:'47F',u:'siyu_1120',c:'欸 文豪好久沒上來了！！',t:'今天 09:24',today:1},
+  {f:'48F',u:'haoge',    c:'我說丟掉。不要拍照，不要貼上來。',t:'今天 09:25',today:1},
+  {f:'49F',u:'kt0904',   c:'我知道啦 我又不是白痴',t:'今天 09:26',today:1},
+  {f:'50F',u:'yalin_w',  c:'丟掉比較好',t:'今天 09:31',today:1},
+  {f:'51F',u:'kt0904',   c:'欸不是 我看了一下\n最後面那幾張不是我印的',t:'今天 09:38',today:1},
+  {f:'52F',u:'tsonghan', c:'那不然是誰印的。',t:'今天 09:40',today:1},
+  {f:'53F',u:'kt0904',   c:'不知道啊 所以我才問',t:'今天 09:41',today:1},
+  {f:'54F',u:'yalin_w',  c:'現在講這個要幹嘛',t:'今天 09:44',today:1},
+  {f:'55F',u:'tsonghan', c:'不用問了啦。那時候誰在亂搞，你們又不是不知道。',t:'今天 09:47',today:1},
+  {f:'56F',u:'kt0904',   c:'你是說昱庭喔',t:'今天 09:48',today:1},
+  {f:'57F',u:'tsonghan', c:'不然還有誰。他自己都承認了不是嗎。',t:'今天 09:49',today:1},
+  {f:'58F',u:'siyu_1120',c:'可是他也沒有那麼糟吧……',t:'今天 09:53',today:1},
+  {f:'59F',u:'tsonghan', c:'妳跟他很熟？',t:'今天 09:54',today:1},
+  {f:'60F',u:'tsonghan', c:'我們認識他幾個月而已。三月進來，十一月就走了。\n八個月妳能認識一個人多少。',t:'今天 09:55',today:1},
+  {f:'61F',u:'kt0904',   c:'欸 宗翰你講話幹嘛這麼衝',t:'今天 09:56',today:1},
+  {f:'62F',u:'tsonghan', c:'我只是在講事實。',t:'今天 09:57',today:1},
+  {f:'63F',u:'yalin_w',  c:'不要吵',t:'今天 09:58',today:1},
+  {f:'64F',u:'siyu_1120',c:'……也是啦',t:'今天 10:04',today:1},
+  {f:'65F',u:'haoge',    c:'這件事沒有什麼好討論的。都過去了。',t:'今天 10:09',today:1},
+  {f:'66F',u:'kt0904',   c:'不知道昱庭現在在幹嘛',t:'今天 10:11',today:1},
+  {silence:'—— 46 分鐘沒有人回覆 ——'},
+  {f:'67F',u:'siyu_1120',c:'他那時候也是　突然說不玩就不玩',t:'今天 10:57',today:1},
+  {f:'68F',u:'tsonghan', c:'對啊。就是那樣的人。',t:'今天 10:58',today:1},
+  {f:'69F',u:'yalin_w',  c:'嗯',t:'今天 10:59',today:1},
+  {f:'70F',u:'kt0904',   c:'…你們不覺得那年很怪嗎',t:'今天 11:02',today:1},
+  {f:'71F',u:'kt0904',   c:'欸 不然我們把那時候的東西找出來看看好了',t:'今天 11:03',today:1},
+  {f:'72F',u:'haoge',    c:'不要。',t:'今天 11:03',today:1},
+  {f:'73F',u:'kt0904',   c:'為什麼',t:'今天 11:04',today:1},
+  {silence:'—— haoge 已離線 ——'}
+ ]},
+
+
+
+{id:'t_new',at:0,skin:'wulou',site:'五樓',
+ title:'[閒聊] 新來的那個',
+ meta:'五樓 › 閒聊　│　2015/09/18 – 2015/11/20　│　共 52 篇，顯示 18 篇',
+ posts:[
+  {f:'1F', u:'tsonghan',  c:'今天來了一個新的。坐窗邊那個。'},
+  {f:'2F', u:'kt0904',    c:'看到了啦 感覺很難聊'},
+  {f:'3F', u:'yalin_w',   c:'她中午自己吃'},
+  {f:'4F', u:'siyu_1120', c:'我覺得還好耶～只是比較安靜而已啦'},
+  {f:'5F', u:'tsonghan',  c:'安靜？她今天開會講了十五分鐘…我有計時。'},
+  {f:'6F', u:'kt0904',    c:'哈哈哈哈幹 你有病喔XDDD'},
+  {f:'7F', u:'tsonghan',  c:'我只是在陳述事實。'},
+  {f:'8F', u:'kt0904',    c:'更好笑了'},
+  {f:'9F', u:'ytl_lin',   c:'欸 不要這樣啦'},
+  {f:'10F',u:'kt0904',    c:'昱庭你很正義欸 那你去跟她吃飯啦'},
+  {f:'11F',u:'yalin_w',   c:'喔'},
+  {f:'17F',u:'siyu_1120', c:'好啦！！我去跟她講講話 你們不要再說了XD'},
+  {f:'23F',u:'tsonghan',  c:'思妤真的很厲害…她今天跟妳說了什麼'},
+  {f:'24F',u:'siyu_1120', c:'蠻多的其實！她好像沒什麼朋友QQ'},
+  {f:'25F',u:'yalin_w',   c:'嗯嗯 那就好辦了'},
+  {f:'30F',u:'kt0904',    c:'欸 那個共用帳號密碼多少啦'},
+  {f:'31F',u:'haoge',     c:'在信箱裡。不要貼在板上。'},
+  {f:'32F',u:'kt0904',    c:'齁 好啦'},
+  {f:'33F',u:'siyu_1120', c:'我密碼都設一樣的啦！！好記XD'},
+  {f:'50F',u:'tsonghan',  c:'11/20 思妤生日…有人要一起吃飯嗎'},
+  {f:'51F',u:'siyu_1120', c:'好啊！！^^'},
+  {f:'52F',u:'ytl_lin',   c:'生日快樂'}
+ ]},
+
+{id:'t_prank',at:0,skin:'wulou',site:'五樓',
+ title:'[閒聊] 欣怡生日',
+ meta:'五樓 › 閒聊　│　2015/06/12 – 2015/06/20　│　共 24 篇，顯示 18 篇',
+ posts:[
+  {f:'1F', u:'kt0904',   c:'欸 下禮拜五欣怡生日欸（行政那個）'},
+  {f:'2F', u:'siyu_1120',c:'真的假的！！要幫她辦一下嗎'},
+  {f:'3F', u:'kt0904',   c:'辦啊 而且我想到一個超讚的點子'},
+  {f:'4F', u:'tsonghan', c:'什麼點子'},
+  {f:'5F', u:'yalin_w',  c:'說啊'},
+  {f:'6F', u:'siyu_1120',c:'我也很好奇XD'},
+  {f:'8F', u:'kt0904',   c:'她很怕鬼 我們可以在她抽屜放個東西嚇她 順便全程錄下來'},
+  {f:'9F', u:'ytl_lin',  c:'我可以幫忙拍'},
+  {f:'13F',u:'tsonghan', c:'道具我來弄 晚點拿給你們看'},
+  {f:'14F',u:'siyu_1120',c:'蛋糕我訂了！！草莓的 她說她最喜歡'},
+  {f:'17F',u:'ytl_lin',  c:'欸 那個東西會不會太嚇人 我剛剛想了一下'},
+  {f:'18F',u:'kt0904',   c:'蛤 哪會 就嚇一下而已 又不會怎樣'},
+  {f:'19F',u:'tsonghan', c:'而且都準備好了 現在講這個'},
+  {f:'20F',u:'ytl_lin',  c:'我覺得不太好 我可能沒辦法錄了'},
+  {f:'21F',u:'kt0904',   c:'所以勒 你不錄是要誰錄'},
+  {f:'22F',u:'ytl_lin',  c:'抱歉 我到時候還是會去 但那段我沒辦法'},
+  {f:'',   u:'',         c:'此文已由作者刪除',del:1},
+  {f:'23F',u:'tsonghan', c:'先答應又反悔 是怎樣'},
+  {f:'24F',u:'haoge',    c:'隨便他 東西還在 誰要錄自己錄'}
+ ]},
+
+/* ---------- 第一章 ---------- */
+{id:'t_sort',at:1,peek:'五樓　找不到這個頁面',skin:'wulou',site:'五樓',
+ title:'[整理] 她',
+ meta:'五樓 › 整理　│　發文者 haoge　│　2015/09/28 – 2015/10/26　│　板主已編輯',
+ posts:[
+  {f:'1F', u:'haoge',     c:'開一串。資料都貼這裡，不要私下傳。'},
+  {f:'2F', u:'haoge',     c:'帳號我開好了。tsche0710。\n密碼是她的員編。用完登出。'},
+  {f:'3F', u:'yalin_w',   c:'管理部　2015/08/17 到職　主管張副理　住三重'},
+  {f:'4F', u:'kt0904',    c:'檔案我存 每天存一份啦 交給我'},
+  {f:'5F', u:'tsonghan',  c:'我來整理…思妤妳照著講就好。'},
+  {f:'6F', u:'siyu_1120', c:'好啦！！我盡量XD'},
+  {f:'9F', u:'ytl_lin',   c:'欸 這樣真的好嗎'},
+  {f:'10F',u:'haoge',     c:'你不做可以說。'},
+  {f:'11F',u:'ytl_lin',   c:'…'},
+  {f:'12F',u:'kt0904',    c:'欸昱庭 沒事啦 又不會怎樣'},
+  {f:'14F',u:'siyu_1120', c:'她今天跟我說她主管很兇！！雅琳妳知道張副理嗎'},
+  {f:'15F',u:'yalin_w',   c:'知道 我查一下'},
+  {f:'16F',u:'siyu_1120', c:'謝啦～^^'},
+  {f:'19F',u:'siyu_1120', c:'我今天發燒 真的不行QQ\n幫我頂一下拜託！！！'},
+  {f:'',   u:'',          c:'此文已由板主刪除',del:1},
+  {f:'23F',u:'kt0904',    c:'昨天那份比較大 我有存'},
+  {f:'25F',u:'tsonghan',  c:'我看過了…那份先不要動。'},
+  {f:'31F',u:'haoge',     c:'不要再貼了。到此為止。'}
+ ]},
+
+{id:'a_im',at:1,peek:'本機檔案　路徑不存在',skin:'archive',site:'本機檔案',
+ title:'2015-10.htm',
+ meta:'Yahoo! Messenger Archive　tsche0710　2015/10',
+ days:[
+  {d:'2015/10/02',lines:[
+   ['阿哲','妳今天在公司還好嗎！'],
+   ['映柔','還好啦 就是有點累',1],
+   ['阿哲','我看妳打字就知道了XD 其實人累的時候會變慢'],
+   ['映柔','哈哈 你好會觀察',1],
+   ['阿哲','其實我一直都有在看妳說什麼啊！！'],
+   ['映柔','沒有人這樣跟我講過話',1],
+   ['阿哲','那以後我常常跟妳講^^']
+  ]},
+  {d:'2015/10/07',lines:[
+   ['映柔','你生日是什麼時候',1],
+   ['阿哲','0710！'],
+   ['映柔','巨蟹欸 難怪',1],
+   ['阿哲','難怪什麼啦XDD'],
+   ['映柔','很會照顧人啊',1],
+   ['阿哲','其實我只是比較雞婆而已啦！'],
+   ['映柔','我今天跟同事又講不上話',1],
+   ['映柔','算了 沒事',1],
+   ['阿哲','怎麼會沒事！！妳還有我啊^^']
+  ]},
+  {d:'2015/10/09',lines:[
+   ['阿哲','妳們那個張副理是不是很兇！'],
+   ['映柔','你怎麼知道他姓張',1],
+   ['阿哲','妳上次講過啊XD'],
+   ['映柔','有嗎',1],
+   ['阿哲','有啦！！其實妳講過很多次了'],
+   ['映柔','哈哈 那我真的很愛抱怨',1],
+   ['阿哲','妳多說一點沒關係！！我都聽'],
+   ['映柔','......你是唯一會聽的人',1],
+   ['阿哲','那就多說一點啊^^']
+  ]},
+  {d:'2015/10/14',lines:[
+   ['映柔','今天真的好累',1],
+   ['阿哲','怎麼了'],
+   ['映柔','我跟你說一件事 你不要跟別人講',1],
+   ['阿哲','好'],
+   ['映柔','我上禮拜去看醫生',1],
+   ['阿哲','什麼醫生'],
+   ['映柔','就 那種醫生',1],
+   ['映柔','我最近狀況不太好',1],
+   ['阿哲','我知道'],
+   ['阿哲','我是說 我知道那種感覺'],
+   ['映柔','你真的懂欸',1],
+   ['映柔','謝謝你 真的',1],
+   ['阿哲','對不起'],
+   ['映柔','？',1],
+   ['阿哲','打錯'],
+   ['阿哲','*妳早點休息']
+  ]},
+  {d:'2015/10/21',lines:[
+   ['阿哲','妳最近有沒有比較好！'],
+   ['映柔','有一點',1],
+   ['阿哲','那就好！！其實我一直很擔心妳'],
+   ['映柔','謝謝 你是唯一會問我的人',1],
+   ['阿哲','其實妳可以多跟我說一點啊XD'],
+   ['映柔','好',1],
+   ['阿哲','那我們見面聊！！公司樓下那間小七 我下班去找妳^^'],
+   ['映柔','好 那我等你',1],
+   ['映柔','阿哲',1],
+   ['映柔','你會來吧',1]
+  ]}
+ ]},
+
+/* ---------- 第二章 ---------- */
+{id:'m_box',at:1,peek:'Yahoo!奇摩　需要登入',skin:'inbox',site:'Yahoo!奇摩',
+ title:'Yahoo!奇摩電子信箱',
+ acct:'chen.siyu@yahoo.com.tw',
+ mails:[
+  {id:'haoge',box:'in',at:1,
+   from:'haoge',fromFull:'tai.wenhao@shengyue.com.tw',
+   date:'2015/09/28 19:44',subj:'帳號',
+   body:'密碼寫在這裡，不要貼在板上。\n\ntsche0710\n密碼：她的員編後四碼\n\n用完登出。\n每天的紀錄冠廷會存一份，連結在附件。\n\n不要私下傳。',
+   att:'2015-10.htm　（38 KB）'},
+  {id:'ytl',box:'trash',at:3,
+   from:'ytl_lin',fromFull:'ytl@shengyue.com.tw',
+   date:'2015/11/20 22:47',subj:'（無主旨）',
+   unread:1,
+   body:'思妤\n\n10/14 那天是我。\n\n她跟我講了一件事，我聽完之後在座位上坐了很久。\n我本來以為我們只是在鬧她。\n\n那個帳號我沒有真的停用。我跟大家說停了，其實我只是改了密碼。\n我不知道要怎麼解釋，我只是覺得不能就這樣放著不管。\n\n她最近傳了一些照片給阿哲。\n我去找過她了。\n\n有些事我明天會跟大家講。\n如果他們不肯聽，我就自己去講。\n\n妳幫我一次好嗎'}
+ ]},
+
+{id:'t_stop',at:3,peek:'五樓　權限不足',skin:'wulou',site:'五樓',
+ title:'[閒聊] 收手',
+ meta:'五樓 › 閒聊　│　2015/11/16 – 2015/11/21　│　共 28 篇，顯示 22 篇　│　板主已編輯',
+ posts:[
+  {f:'1F', u:'ytl_lin',   c:'這件事要收了。不要再做了。'},
+  {f:'2F', u:'haoge',     c:'為什麼'},
+  {f:'3F', u:'ytl_lin',   c:'沒有為什麼。就是不要再做了。'},
+  {f:'4F', u:'tsonghan',  c:'我們搞了快兩個月 你現在說收就收？'},
+  {f:'5F', u:'kt0904',    c:'昱庭 是不是出了什麼事'},
+  {f:'6F', u:'ytl_lin',   c:'沒事。就這樣。'},
+  {f:'9F', u:'haoge',     c:'那她之前傳給阿哲的那些東西呢'},
+  {f:'10F',u:'ytl_lin',   c:'什麼東西'},
+  {f:'11F',u:'haoge',     c:'她傳的那些照片。你不是也看過。'},
+  {f:'12F',u:'ytl_lin',   c:'那個跟這個沒關係。'},
+  {f:'13F',u:'haoge',     c:'我倒覺得剛好有關係。'},
+  {f:'14F',u:'haoge',     c:'那些東西流出去，大家只會覺得她精神有問題，沒有人會信她說的話。'},
+  {f:'15F',u:'tsonghan',  c:'這樣說不定還比較快解決。'},
+  {f:'18F',u:'kt0904',    c:'這樣會不會有點……'},
+  {f:'19F',u:'siyu_1120', c:'這樣好像太過分了吧'},
+  {f:'20F',u:'haoge',     c:'過分？東西是她自己傳的，又不是我們造假。'},
+  {f:'21F',u:'yalin_w',   c:'喔'},
+  {f:'24F',u:'ytl_lin',   c:'不行。'},
+  {f:'25F',u:'ytl_lin',   c:'我說不行就是不行。這件事到此為止，誰都不准動。'},
+  {f:'26F',u:'haoge',     c:'你今天是怎樣'},
+  {f:'27F',u:'ytl_lin',   c:'我沒事。這件事結束了。'},
+  {f:'',   u:'',          c:'此文已由板主刪除',del:1},
+  {f:'28F',u:'haoge',     c:'隨便你。'}
+ ]},
+
+{id:'t_after',at:3,peek:'五樓　板主已鎖定',skin:'wulou',site:'五樓',
+ title:'[閒聊] 那天之後',
+ meta:'五樓 › 閒聊　│　2015/11/28 – 2015/12/03　│　共 12 篇，顯示 9 篇　│　板主已編輯',
+ posts:[
+  {f:'1F', u:'kt0904',    c:'昨天他講的那些 我沒有全部聽懂'},
+  {f:'2F', u:'tsonghan',  c:'我也是。他講得太快了…而且一直在發抖。'},
+  {f:'3F', u:'yalin_w',   c:'他一直在說對不起'},
+  {f:'4F', u:'tsonghan',  c:'我只記得他一直說「不要再做了」。'},
+  {f:'5F', u:'kt0904',    c:'他好像有說什麼一直在看 我沒聽清楚'},
+  {f:'6F', u:'siyu_1120', c:'他說他一直在看'},
+  {f:'7F', u:'kt0904',    c:'看什麼啦'},
+  {f:'8F', u:'siyu_1120', c:'我不知道'},
+  {f:'',   u:'',          c:'此文已由板主刪除',del:1},
+  {f:'11F',u:'haoge',     c:'這串刪掉。以後不要再提這件事。'},
+  {f:'12F',u:'haoge',     c:'我說真的。刪掉。'}
+ ]},
+
+/* ---------- 部落格 ---------- */
+{id:'blog',at:5,skin:'blog',site:'部落格',
+ title:'一個人的公休日',
+ subtitle:'最後更新：2026/06/11　│　累計人次 1,204',
+ entries:[
+  {d:'2016/01/09',t:'重新開始',
+   b:'離職一個多月了。\n\n履歷上那段空白不知道要怎麼寫。面試的時候人家問我為什麼離開上一份工作，我說個人因素，對方就沒有再問了。這樣也好。\n\n今天天氣很冷。'},
+  {d:'2016/03/22',t:'（無標題）',
+   b:'還是沒有找到。\n\n不知道還能不能找到下一份工作。'},
+  {gap:'—— 這中間沒有任何文章 ——'},
+  {d:'2016/11/30',t:'（無標題）',
+   b:'那陣子不太好，後來住院了一陣子，現在回家了。\n\n沒事了。'},
+  {d:'2017/05/14',t:'巷口',
+   b:'巷口那隻貓今天讓我摸了。以前都跑掉。\n\n牠好像是母的。'},
+  {d:'2019/08/03',t:'公休日',
+   b:'現在在一間小店幫忙，禮拜二公休。\n\n公休日通常什麼都不做。早上去菜市場，中午煮個麵，下午睡覺。這樣一天就過去了，很快。\n\n很快其實是好事。'},
+  {d:'2021/02/17',t:'（無標題）',
+   b:'超商換了新的店員，很年輕，動作還不太熟。\n\n我排在後面等，想說不要催他。'},
+  {d:'2023/12/25',t:'冬至那天煮的',
+   b:'湯圓煮太多了，吃了兩天。\n\n以前公司有個同事很愛吃甜的，一定要加很多糖。突然想到這個。'},
+  {d:'2026/06/11',t:'（無標題）',
+   b:'最近常常想起以前的事。\n\n不知道大家後來過得好不好'}
+ ]}
+];
+
+/* ================= 板首頁 ================= */
+const BOARD_INDEX=[
+ {doc:'t_today', label:'[閒聊] 又到了',        meta:'73F　│　最後回覆 kt0904　│　今天 11:04'},
+ {deco:1,         label:'[閒聊] 有人要一起吃飯嗎',meta:'5F　│　最後回覆 siyu_1120　│　2023/08/02'},
+ {doc:'t_prank',  label:'[閒聊] 欣怡生日',      meta:'24F　│　最後回覆 haoge　　│　2015/06/20'},
+ {deco:1,         label:'[心得] 那間拉麵有夠雷', meta:'9F　│　最後回覆 kt0904　　│　2021/11/09'},
+ {doc:'t_new',    label:'[閒聊] 新來的那個',    meta:'52F　│　最後回覆 ytl_lin　│　2015/11/20'},
+ {deco:1,         label:'[閒聊] 附近停車怎麼那麼難停', meta:'4F　│　最後回覆 yalin_w　│　2019/05/17'},
+ {deco:1,         label:'[公告] 這個月開會改到禮拜三', meta:'2F　│　最後回覆 haoge　　│　2017/03/02'}
+];
+
+/* ================= 閘 ================= */
+const GATES=[
+ {id:'g_mail',ch:'序章',label:'登入自己的舊信箱',
+  site:'Yahoo!奇摩',skin:'yahoo',url:'https://login.yahoo.com.tw/config/login',
+  brand:['Yahoo! 奇摩','電子信箱'],
+  note:'本帳號已超過 3650 天未登入。',
+  need:'你當年設密碼的習慣',
+  fields:[
+   {label:'帳號',prefill:'chen.siyu',locked:true,remember:true},
+   {label:'密碼',type:'password',answer:['1120sy','1120siyu']}
+  ],
+  forgot:{hint:'生日加上名字縮寫'},
+  err:'密碼不正確，請再試一次。'},
+
+ {id:'g_admin',ch:'第一章',label:'還原 19F 底下被刪的那樓',
+  site:'五樓',skin:'admin',url:'http://wulou.5gbfree.com/admin.php?act=restore',
+  brand:['五樓　板務後台','RESTORE'],
+  note:'欲還原已刪除之文章，請輸入該文之發文者 ID。系統將與備份比對。',
+  need:'那天幫你頂的人是誰',
+  fields:[{label:'發文者 ID',answer:['ytl_lin','林昱庭','昱庭','ytl']}],
+  err:'與備份不符。無法還原。'},
+
+ {id:'g_search',ch:'第二章',label:'查他現在在哪裡',
+  site:'搜尋',skin:'search',url:'https://www.google.com.tw/search',
+  need:'他的名字',
+  fields:[{label:'',answer:['林昱庭','ytl_lin','昱庭']}],
+  err:'找不到符合的結果。'}
+];
+
+/* 過閘之後多出來的東西 */
+const AFTER={
+ g_mail:{unlockAt:1, said:'你把帳號打進去的時候才發現，這個信箱你十一年沒開過。'},
+ g_admin:{unlockAt:3, said:'那樓還原出來了。發文者是 ytl_lin。\n那天幫你頂的人，是他。'},
+ g_search:{unlockAt:5, said:''}
+};
+
+/* ================= 站台 ================= */
+const SITE={
+ board_index:{tab:'五樓',             url:'http://wulou.5gbfree.com/board.php', fav:'#4A6D8C'},
+ t_today :{tab:'五樓 － 又到了',      url:'http://wulou.5gbfree.com/board.php?t=1127', fav:'#4A6D8C'},
+ t_new   :{tab:'五樓 － 新來的那個',  url:'http://wulou.5gbfree.com/board.php?t=0918', fav:'#4A6D8C'},
+ t_prank :{tab:'五樓 － 欣怡生日',    url:'http://wulou.5gbfree.com/board.php?t=0612', fav:'#4A6D8C'},
+ t_sort  :{tab:'五樓 － 整理',        url:'http://wulou.5gbfree.com/board.php?t=0928', fav:'#4A6D8C'},
+ t_stop  :{tab:'五樓 － 收手',        url:'http://wulou.5gbfree.com/board.php?t=1116', fav:'#4A6D8C'},
+ t_after :{tab:'五樓 － 那天之後',    url:'http://wulou.5gbfree.com/board.php?t=1128', fav:'#4A6D8C'},
+ a_im    :{tab:'2015-10.htm',         url:'file:///C:/Program Files/Yahoo!/Messenger/Profiles/tsche0710/Archive/2015-10.htm', fav:'#9A9A9A'},
+ m_box   :{tab:'Yahoo!奇摩電子信箱',  url:'https://tw.mail.yahoo.com/mail/', fav:'#7B0099'},
+ blog    :{tab:'一個人的公休日',      url:'http://ytl-holiday.blogspot.com/', fav:'#8A8272'},
+ g_mail  :{tab:'Yahoo!奇摩 － 登入',  url:'https://login.yahoo.com.tw/config/login', fav:'#7B0099'},
+ g_admin :{tab:'五樓 － 板務後台',    url:'http://wulou.5gbfree.com/admin.php?act=restore', fav:'#6E7A85'},
+ g_search:{tab:'搜尋',                url:'https://www.google.com.tw/', fav:'#4A6D8C'},
+ board   :{tab:'五樓 － 又到了',      url:'http://wulou.5gbfree.com/board.php?t=1127', fav:'#4A6D8C'},
+ end     :{tab:'',                    url:'', fav:'#1C1F23'}
+};
+
+/* ================= 狀態 ================= */
+let prog=0;              // 0..6
+let tabs=[], active='board_index', hist=[];
+let boardTab='board_index';              // 五樓這個站台目前顯示的頁面（首頁或某一串）
+const seen=new Set();
+let gateDone={};
+let mailFolder='in', mailOpen=null;      // 信箱內部狀態
+const MAX_DOC_TABS=3;                    // 文件分頁上限，超過自動關掉最舊的
+
+function curGate(){
+  if(prog===0) return GATES[0];
+  if(prog===1||prog===2) return GATES[1];
+  if(prog===3||prog===4) return GATES[2];
+  return null;
+}
+function availDocs(){ return DOCS.filter(d=>prog>=d.at); }
+function isBoardDoc(id){ if(id==='board_index') return true;
+  const d=DOCS.find(x=>x.id===id); return !!d&&d.skin==='wulou'; }
+
+/* ================= 分頁 ================= */
+function syncTabs(){
+  const keep=tabs.filter(t=>t.kind==='doc'&&!isBoardDoc(t.id)
+    &&prog>=(DOCS.find(d=>d.id===t.id)||{at:99}).at);
+  tabs=[{id:boardTab,kind:'board'}].concat(keep);
+  const g=curGate();
+  if(g&&!gateDone[g.id]) tabs.splice(1,0,{id:g.id,kind:'gate'});
+  if(prog>=6) tabs=[{id:'end',kind:'end'}];
+  if(!tabs.some(t=>t.id===active)) active=tabs[0].id;
+}
+function openTab(id){
+  if(!tabs.some(t=>t.id===id)){
+    const docs=tabs.filter(t=>t.kind==='doc');
+    if(docs.length>=MAX_DOC_TABS){
+      const oldest=docs[0].id;
+      tabs=tabs.filter(t=>t.id!==oldest);
+      hist=hist.filter(h=>h!==oldest);
+    }
+    tabs.push({id,kind:'doc'});
+  }
+  go(id);
+}
+/* 開啟一份文件：五樓站內的串（含首頁）留在同一個分頁切換，其他站台才開新分頁 */
+function openDoc(id){
+  seen.add(id);
+  if(isBoardDoc(id)){ boardTab=id; go(id); }
+  else openTab(id);
+}
+function goHome(){ boardTab='board_index'; go('board_index'); }
+function closeTab(id){ tabs=tabs.filter(t=>t.id!==id); if(active===id) goHome(); else render(); }
+function go(id){ if(active!==id) hist.push(active); active=id; render(); window.scrollTo(0,0); }
+function back(){ if(!hist.length)return; const p=hist.pop();
+  if(isBoardDoc(p)) boardTab=p;
+  active=tabs.some(t=>t.id===p)||isBoardDoc(p)?p:tabs[0].id; render(); window.scrollTo(0,0); }
+
+/* ================= 登入 ================= */
+document.getElementById('go').onclick=()=>{
+  const u=document.getElementById('u').value.trim().toLowerCase();
+  const p=document.getElementById('p').value.trim();
+  const e=document.getElementById('lerr');
+  if(u!==ME.uid||p!==ME.pw){ e.textContent='帳號或密碼錯誤。'; return; }
+  document.getElementById('login').style.display='none';
+  document.getElementById('browser').style.display='block';
+  syncTabs(); render(); window.scrollTo(0,0);
+};
+document.getElementById('p').addEventListener('keydown',e=>{
+  if(e.key==='Enter')document.getElementById('go').click();});
+
+/* ================= 繪製 ================= */
+function render(){ syncTabs(); renderChrome(); renderPage(); }
+
+function renderChrome(){
+  const strip=document.getElementById('tabstrip');
+  if(prog>=6){ strip.innerHTML=''; document.getElementById('omniUrl').innerHTML=''; return; }
+  strip.innerHTML='';
+  tabs.forEach(t=>{
+    const s=SITE[t.id]||{};
+    const el=document.createElement('div');
+    el.className='tab'+(active===t.id?' on':'');
+    el.innerHTML=`<span class="fav" style="background:${s.fav||'#8A9299'}"></span>`
+      +`<span class="tt">${esc(s.tab||t.id)}</span>`
+      +(t.kind==='doc'?'<button class="cl">✕</button>':'');
+    el.onclick=e=>{ if(e.target.classList.contains('cl')){closeTab(t.id);return;} go(t.id); };
+    strip.appendChild(el);
+  });
+  const u=(SITE[active]||{}).url||'';
+  const sec=u.indexOf('https')===0?'https://':u.indexOf('file')===0?'file:///':'http://';
+  document.getElementById('omniUrl').innerHTML=
+    `<span class="sec">${esc(sec)}</span>${esc(u.replace(/^(https?:\/\/|file:\/\/\/)/,''))}`;
+  document.getElementById('navBack').disabled=!hist.length;
+}
+
+function renderPage(){
+  const vp=document.getElementById('viewport');
+  if(prog>=6) return renderEnd(vp);
+  const g=curGate();
+  if(g&&active===g.id){ vp.className='viewport vp-'+g.skin; return renderGate(vp,g); }
+  if(active==='board_index'){ vp.className='viewport vp-wulou'; return renderBoardIndex(vp); }
+  const d=DOCS.find(x=>x.id===active);
+  if(!d){ vp.className='viewport vp-wulou'; vp.innerHTML='<div class="pg">找不到網頁</div>'; return; }
+  vp.className='viewport vp-'+d.skin;
+  if(d.skin==='wulou')   return renderThread(vp,d);
+  if(d.skin==='archive') return renderArchive(vp,d);
+  if(d.skin==='inbox')   return renderInbox(vp,d);
+  if(d.skin==='blog')    return renderBlog(vp,d);
+}
+
+/* ---------- 板首頁 ---------- */
+function renderBoardIndex(vp){
+  const rows=BOARD_INDEX.map(x=>{
+    if(x.deco) return `<div class="idx-row deco"><div class="t">${esc(x.label)}</div>
+      <div class="m">${esc(x.meta)}</div></div>`;
+    return `<button class="idx-row${seen.has(x.doc)?'':' new'}" data-idx="${x.doc}">
+      <div class="t">${esc(x.label)}</div><div class="m">${esc(x.meta)}</div></button>`;
+  }).join('');
+
+  vp.innerHTML=`<div class="cols"><div class="main">
+    <div class="wl-hd"><span class="lg">五樓</span>
+      <span class="nv">主板　│　精華區　│　板規</span>
+      <span class="me">${esc(ME.name)}（${esc(ME.uid)}）</span></div>
+    <div class="wl-sub">主板　│　依最後回覆排序</div>
+    <div class="wl-body idx-list">${rows}</div>
+  </div>${sidebar()}</div>`;
+
+  bindSide();
+  document.querySelectorAll('[data-idx]').forEach(b=>{
+    b.onclick=()=>{ openDoc(b.dataset.idx); };
+  });
+}
+
+/* ---------- 板 ---------- */
+function renderThread(vp,d){
+  const isMain=d.id==='t_today';
+  const body=d.posts.map(p=>{
+    if(p.silence) return `<div class="silence">${esc(p.silence)}</div>`;
+    return `<div class="rp${p.del?' del':''}${p.u===ME.uid?' mine':''}${p.today?' today':''}">
+      <div class="f">${esc(p.f)}</div><div class="u">${esc(p.u)}${p.u===ME.uid?'<span class="me">（你）</span>':''}</div>
+      <div class="c">${esc(p.c)}${p.t?`<span class="t">${esc(p.t)}</span>`:''}</div></div>`;
+  }).join('');
+
+  vp.innerHTML=`<div class="cols"><div class="main">
+    <div class="wl-hd"><span class="lg">五樓</span>
+      <span class="nv">主板　│　精華區　│　板規</span>
+      <span class="me">${esc(ME.name)}（${esc(ME.uid)}）</span></div>
+    <div class="wl-sub">${esc(T(d.meta))}</div>
+    <div class="wl-body">
+      <div class="wl-title">${esc(d.title)}</div>
+      <div class="wl-meta">現在時間 ${fmt(TODAY)}</div>
+      ${body}
+    </div>
+    ${isMain&&prog>=5?`<div class="replybox">
+      <div class="lbl">回覆本串</div>
+      <textarea id="rep" placeholder=""></textarea>
+      <div class="acts"><button class="btn" id="repGo">送出</button>
+        <span class="hint">回覆後不可編輯或刪除。</span></div>
+    </div>`:''}
+  </div>${sidebar()}</div>`;
+
+  bindSide();
+  const rg=document.getElementById('repGo');
+  if(rg) rg.onclick=()=>{ prog=6; render(); };
+}
+
+/* ---------- 即時通 ---------- */
+function renderArchive(vp,d){
+  vp.innerHTML=`<div class="cols"><div class="main"><div class="ar">
+    <h1>Yahoo! Messenger 對話紀錄</h1>
+    <div class="sub">${esc(d.meta)}</div><hr>
+    ${d.days.map(day=>`<div class="day">${esc(day.d)}</div>
+      <table>${day.lines.map(l=>`<tr><td class="n${l[2]?' her':''}">${esc(l[0])}</td>
+        <td>${esc(l[1])}</td></tr>`).join('')}</table>`).join('<hr>')}
+    <hr><div class="foot">C:\\Program Files\\Yahoo!\\Messenger\\Profiles\\tsche0710\\Archive\\2015-10.htm</div>
+  </div></div>${sidebar()}</div>`;
+  bindSide();
+}
+
+/* ---------- 信箱 ---------- */
+function renderInbox(vp,d){
+  const list=d.mails.filter(m=>m.box===mailFolder&&prog>=m.at);
+  const trashN=d.mails.filter(m=>m.box==='trash'&&prog>=m.at).length;
+  const inN=d.mails.filter(m=>m.box==='in'&&prog>=m.at).length;
+  const m=mailOpen?d.mails.find(x=>x.id===mailOpen):null;
+
+  const side=`<div class="yh-side">
+    <div class="f${mailFolder==='in'?' on':''}" data-fd="in">收件匣${inN?`<span class="n">${inN}</span>`:''}</div>
+    <div class="f" data-fd="draft">草稿匣</div>
+    <div class="f" data-fd="sent">寄件備份</div>
+    <div class="f${mailFolder==='trash'?' on':''}" data-fd="trash">垃圾桶${trashN?`<span class="n">${trashN}</span>`:''}</div>
+  </div>`;
+
+  let main;
+  if(m){
+    main=`<div class="yh-main">
+      <button class="yh-back" id="mBack">← 回信箱</button>
+      <div class="yh-subj">${esc(m.subj)}</div>
+      <div class="mhead">
+        <div><b>寄件人</b>${esc(m.fromFull)}</div>
+        <div><b>收件人</b>${esc(d.acct)}</div>
+        <div><b>日期</b>${esc(m.date)}</div></div>
+      <div class="mbody">${esc(m.body)}</div>
+      ${m.att?`<div class="yh-att">附件：<span class="a">${esc(m.att)}</span></div>`:''}
+    </div>`;
+  } else {
+    main=`<div class="yh-main">
+      <div class="yh-listhd">${mailFolder==='in'?'收件匣':mailFolder==='trash'?'垃圾桶':'（空的）'}</div>
+      ${list.length?`<table class="yh-list">
+        ${list.map(x=>`<tr data-mail="${x.id}" class="${x.unread?'ur':''}">
+          <td class="fr">${esc(x.from)}</td>
+          <td class="sb">${esc(x.subj)}${x.att?' <span class="clip">📎</span>':''}</td>
+          <td class="dt">${esc(x.date.slice(0,10))}</td></tr>`).join('')}
+      </table>`:'<div class="yh-empty">這個資料夾是空的。</div>'}
+    </div>`;
+  }
+
+  vp.innerHTML=`<div class="yh-top"><span class="lg">YAHOO!<em>奇摩</em></span>
+      <span style="font-size:12px">電子信箱</span>
+      <span class="acct">${esc(d.acct)}</span></div>
+    <div class="yh-bar">信件　│　通訊錄　│　行事曆　│　登出</div>
+    <div class="yh-wrap">${side}${main}</div>`;
+
+  setTimeout(()=>{
+    document.querySelectorAll('[data-fd]').forEach(b=>{
+      b.onclick=()=>{ const f=b.dataset.fd;
+        if(f==='draft'||f==='sent'){ mailFolder=f; } else { mailFolder=f; }
+        mailOpen=null; render(); };});
+    document.querySelectorAll('[data-mail]').forEach(r=>{
+      r.onclick=()=>{ mailOpen=r.dataset.mail; render(); };});
+    const b=document.getElementById('mBack');
+    if(b) b.onclick=()=>{ mailOpen=null; render(); };
+  },0);
+}
+
+/* ---------- 部落格 ---------- */
+function renderBlog(vp,d){
+  vp.innerHTML=`<div class="bl">
+    <div class="bl-hd"><h1>${esc(d.title)}</h1>
+      <div class="d">${esc(d.subtitle)}</div></div>
+    ${d.entries.map(e=>e.gap
+      ? `<div class="bl-gap">${esc(e.gap)}</div>`
+      : `<div class="bl-post"><div class="dt">${esc(e.d)}</div>
+         <div class="ti">${esc(e.t)}</div>
+         <div class="bd">${esc(e.b)}</div></div>`).join('')}
+    <div class="bl-foot">沒有留言。<br>發表留言</div>
+  </div>`;
+}
+
+/* ---------- 閘 ---------- */
+function renderGate(vp,g){
+  const f=g.fields.map((x,i)=>
+    `<label for="f${i}">${esc(x.label)}</label>
+     <input id="f${i}" type="${x.type==='password'?'password':'text'}"
+      autocomplete="off" spellcheck="false"
+      ${x.prefill?`value="${esc(x.prefill)}"`:''}${x.locked?' readonly':''}>`
+    +(x.remember?`<label class="remember"><input type="checkbox" checked disabled>記住我的帳號</label>`:''))
+   .join('');
+  const forgotHtml=g.forgot?`<button type="button" class="linklike" id="forgotBtn">忘記密碼？</button>
+    <div class="hintq" id="hintBox" hidden><div class="hintq-t">密碼提示問題</div>
+      <div class="hintq-q">${esc(g.forgot.hint)}</div></div>`:'';
+  const form=`<div class="form">${g.note?`<div class="note">${esc(g.note)}</div>`:''}${f}${forgotHtml}
+    <button class="btn wide" id="gsub">送出</button><div class="msg" id="gmsg"></div></div>`;
+
+  if(g.skin==='admin'){
+    vp.innerHTML=`<div class="ad"><div class="ttl">${esc(g.brand[0])}</div>
+      <div class="in"><h2>還原已刪除文章</h2><div class="sub">${esc(g.brand[1])}</div>
+      ${form}</div></div>`;
+  } else if(g.skin==='search'){
+    vp.innerHTML=`<div class="se">
+      <div class="lg">搜尋</div>
+      <input id="f0" autocomplete="off" spellcheck="false" placeholder="">
+      <div class="acts"><button class="btn" id="gsub">搜尋</button></div>
+      <div class="msg" id="gmsg"></div>
+      <div id="sres"></div></div>`;
+  } else {
+    vp.innerHTML=`<div class="yh-top"><span class="lg">YAHOO!<em>奇摩</em></span>
+        <span style="font-size:12px">登入</span></div>
+      <div class="sysbox"><div class="brandline">${esc(g.brand[0])}</div>
+      <div class="subline">${esc(g.brand[1])}</div><div class="box">${form}</div></div>`;
+  }
+
+  setTimeout(()=>{
+    const msg=document.getElementById('gmsg');
+    const submit=()=>{
+      const vals=g.fields.map((x,i)=>(document.getElementById('f'+i)||{}).value||'');
+      const ok=g.fields.every((x,i)=>x.locked||match(vals[i],x.answer));
+      if(!ok){ if(msg)msg.textContent=g.err; return; }
+
+      if(g.id==='g_search'){ showSearchResult(); return; }
+      gateDone[g.id]=true;
+      prog=AFTER[g.id].unlockAt;
+      if(g.id==='g_mail'){                 // 登入成功 → 留在信箱
+        mailFolder='in'; mailOpen=null;
+        openTab('m_box');
+      } else {
+        goHome();
+      }
+    };
+    const b=document.getElementById('gsub'); if(b)b.onclick=submit;
+    g.fields.forEach((x,i)=>{const el=document.getElementById('f'+i);
+      if(el)el.onkeydown=e=>{if(e.key==='Enter')submit();};});
+    const fb=document.getElementById('forgotBtn');
+    if(fb) fb.onclick=()=>{
+      const hb=document.getElementById('hintBox'); if(hb)hb.hidden=false;
+      fb.hidden=true;
+      const pwIdx=g.fields.findIndex(x=>x.type==='password');
+      const pw=document.getElementById('f'+(pwIdx<0?0:pwIdx)); if(pw)pw.focus();
+    };
+    const firstIdx=g.fields.findIndex(x=>!x.locked);
+    const first=document.getElementById('f'+(firstIdx<0?0:firstIdx)); if(first)first.focus();
+  },0);
+}
+
+function showSearchResult(){
+  const box=document.getElementById('sres');
+  if(!box) return;
+  box.innerHTML=`<div class="res">
+    <div class="r"><div class="t" id="hit">一個人的公休日</div>
+      <div class="u">ytl-holiday.blogspot.com</div>
+      <div class="d">最近常常想起以前的事。不知道大家後來過得好不好…</div></div>
+    <div class="r"><div class="t" style="color:#6E7A85;text-decoration:none">林昱庭 - 昇岳資訊</div>
+      <div class="u">shengyue.com.tw</div>
+      <div class="d">找不到這個頁面。</div></div>
+  </div>`;
+  const h=document.getElementById('hit');
+  if(h) h.onclick=()=>{ gateDone.g_search=true; prog=5; openTab('blog'); };
+}
+
+/* ---------- 側欄 ---------- */
+function sidebar(){
+  const g=curGate();
+  const docs=DOCS.map(d=>{
+    if(prog>=d.at) return `<button class="doc${seen.has(d.id)?'':' new'}" data-doc="${d.id}">
+      <div class="t">${esc(d.title)}</div><div class="m">${esc(d.site)}</div></button>`;
+    if(d.peek) return `<div class="doc lock">
+      <div class="t">${esc(d.title)}</div><div class="m">${esc(d.peek)}</div></div>`;
+    return '';
+  }).join('');
+  const steps=GATES.map(x=>{
+    const done=!!gateDone[x.id];
+    const now=g&&g.id===x.id;
+    return `<div class="step${done?' done':''}${now?' now':''}">
+      <span class="mk">${done?'■':'□'}</span>${esc(x.ch)}　${esc(x.label)}
+      ${now?`<div class="sub">${esc(x.need)}</div>`:''}</div>`;
+  }).join('');
+  return `<div class="side">
+    <div class="card"><h2>手邊的資料</h2>${docs}</div>
+    <div class="card"><h2>要做的事</h2>${steps}
+      ${g?`<button class="gotab" id="goGate">開啟　${esc(SITE[g.id].tab)}</button>`:''}</div>
+  </div>`;
+}
+function bindSide(){
+  document.querySelectorAll('[data-doc]').forEach(b=>{
+    b.onclick=()=>{ openDoc(b.dataset.doc); };});
+  const gg=document.getElementById('goGate');
+  if(gg){ const g=curGate(); if(g) gg.onclick=()=>go(g.id); }
+}
+
+/* ---------- 終幕 ---------- */
+function renderEnd(vp){
+  vp.className='viewport vp-end';
+  vp.innerHTML=`<div class="end">
+    <p>你送出了。</p>
+    <p>十一年來，這是第一次有人在這個板上，寫下跟他有關的第二句話。</p>
+    <p class="q">他那天最後說的那句，聲音很輕，快得像是說給自己聽的——<br><br>
+      「我也想過要這樣做。」</p>
+    <p>沒有人記得這句。因為沒有人在聽。</p>
+    <p class="sig">－ 五樓 －</p>
+  </div>`;
+}
+
+document.getElementById('navBack').onclick=back;
+document.getElementById('navRel').onclick=()=>render();
+</script>
+</body>
+</html>
