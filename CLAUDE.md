@@ -8,6 +8,7 @@ A single-player prototype of a browser-based horror narrative game called **五�
 
 - [五樓_單人版.html](五樓_單人版.html) — the whole game: markup, CSS, and vanilla JS in one file, no external resources.
 - [恐怖留言板遊戲_idea.md](恐怖留言板遊戲_idea.md) — the design document (Traditional Chinese). This is the source of narrative truth: character backstories, the intended emotional arc (contempt → doubt → grief → guilt), the four-way information-asymmetry puzzle design, and an open "待決定" (undecided) checklist of story/mechanic questions. Read this before making any narrative or pacing change — code changes should stay consistent with it, and if a design question it flags as undecided gets resolved in code, reflect that back into the doc.
+- [index.html](index.html) — a meta-refresh redirect shim to `五樓_單人版.html` (for hosts that serve `index.html` by default, e.g. GitHub Pages). Not game logic; update its URL-encoded href if the main file is ever renamed.
 
 ## Running it
 
