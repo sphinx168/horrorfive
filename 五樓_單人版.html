@@ -542,6 +542,24 @@ const DOCS=[
    date:'2015/09/28 19:44',subj:'帳號',
    body:'密碼寫在這裡，不要貼在板上。\n\ntsche0710\n密碼：她的員編後四碼\n\n用完登出。\n每天的紀錄冠廷會存一份，連結在附件。\n\n不要私下傳。',
    att:'2015-10.htm　（38 KB）'},
+  {id:'yalin_hr',box:'in',at:1,
+   from:'yalin_w',fromFull:'yalin.wang@shengyue.com.tw',
+   date:'2015/09/29 10:12',subj:'張副理',
+   body:'妳要的資料我查到了。\n\n張O瑋，副理，管理部\n2015/08/17 到職那批的直屬主管\n\n附件是名冊，不要外流喔哈哈。\n\n有需要再跟我說，我這邊調資料很快。',
+   att:'人事名冊_9月.xlsx　（12 KB）'},
+  {id:'siyu_draft1',box:'draft',at:1,
+   date:'2015/10/15 01:32',subj:'（無主旨）',
+   to:'周映柔',toFull:'yr.chou@shengyue.com.tw',
+   body:'映柔\n\n我知道妳現在應該不會想理我，但我想跟妳說一件事，跟阿哲沒關係，是我自己想講的。\n\n昨天妳說我是唯一會聽妳說話的人的時候，我在螢幕前面愣了滿久的。\n不是因為妳講得多重，是因為我發現我聽到那句話的時候，是真的開心。\n不是那種「任務完成」的開心，是真的、很單純地覺得——有人這麼需要我講的話。\n\n我後來想了很久，那種開心到底哪裡不對勁。\n我想通了，但想通之後更難受。\n\n我從國中就是那種在班上不太有人記得名字的人。\n出社會之後也是，開會沒人會第一個問我意見，聚餐我坐哪都可以。\n我沒有不快樂，我只是習慣了自己對誰都不是最重要的那個。\n\n然後妳出現了，妳把最累、最說不出口的事情都講給「阿哲」聽，\n妳說沒有人像他這樣聽妳說話——\n我知道那個人不是真的，可是打字的手是我的，聽的也是我。\n那三個月，我第一次覺得自己對某個人來說，是重要的。\n\n我一直在想要不要跟妳說，其實'},
+  {id:'siyu_sent1',box:'sent',at:3,
+   date:'2015/12/02 21:05',subj:'保重',
+   to:'林昱庭',toFull:'ytl@shengyue.com.tw',
+   body:'昱庭\n\n聽說你這禮拜辦離職了。\n\n之前的事謝謝你，不知道該怎麼講比較好，\n總之你保重，有機會再約吃飯。\n\n思妤'},
+  {id:'kt_backup1',box:'in',at:3,
+   from:'kt0904',fromFull:'kt.huang@shengyue.com.tw',
+   date:'2015/11/30 23:58',subj:'11月存檔',
+   body:'這個月的也存好了。\n\n昱庭那件事之後大家都沒再貼，不過紀錄我還是照存，習慣了。\n\n之後如果不用存了，跟我說一聲，不然我會一直做下去。',
+   att:'2015-11.htm　（6 KB）'},
   {id:'ytl',box:'trash',at:3,
    from:'ytl_lin',fromFull:'ytl@shengyue.com.tw',
    date:'2015/11/20 22:47',subj:'（無主旨）',
@@ -930,24 +948,25 @@ function renderInbox(vp,d){
     <div class="f${mailFolder==='trash'?' on':''}" data-fd="trash">垃圾桶${trashN?`<span class="n">${trashN}</span>`:''}</div>
   </div>`;
 
+  const isOut=f=>f==='sent'||f==='draft';   // 寄件備份／草稿匣：她自己是寄件人
   let main;
   if(m){
     main=`<div class="yh-main">
       <button class="yh-back" id="mBack">← 回信箱</button>
       <div class="yh-subj">${esc(m.subj)}</div>
       <div class="mhead">
-        <div><b>寄件人</b>${esc(m.fromFull)}</div>
-        <div><b>收件人</b>${esc(d.acct)}</div>
+        <div><b>寄件人</b>${esc(isOut(m.box)?d.acct:m.fromFull)}</div>
+        <div><b>收件人</b>${esc(isOut(m.box)?(m.toFull||m.to||''):d.acct)}</div>
         <div><b>日期</b>${esc(m.date)}</div></div>
       <div class="mbody">${esc(m.body)}</div>
       ${m.att?`<div class="yh-att">附件：<span class="a">${esc(m.att)}</span></div>`:''}
     </div>`;
   } else {
     main=`<div class="yh-main">
-      <div class="yh-listhd">${mailFolder==='in'?'收件匣':mailFolder==='trash'?'垃圾桶':'（空的）'}</div>
+      <div class="yh-listhd">${mailFolder==='in'?'收件匣':mailFolder==='trash'?'垃圾桶':mailFolder==='sent'?'寄件備份':'草稿匣'}</div>
       ${list.length?`<table class="yh-list">
         ${list.map(x=>`<tr data-mail="${x.id}" class="${x.unread?'ur':''}">
-          <td class="fr">${esc(x.from)}</td>
+          <td class="fr">${esc(isOut(x.box)?(x.to||''):x.from)}</td>
           <td class="sb">${esc(x.subj)}${x.att?' <span class="clip">📎</span>':''}</td>
           <td class="dt">${esc(x.date.slice(0,10))}</td></tr>`).join('')}
       </table>`:'<div class="yh-empty">這個資料夾是空的。</div>'}
@@ -962,9 +981,7 @@ function renderInbox(vp,d){
 
   setTimeout(()=>{
     document.querySelectorAll('[data-fd]').forEach(b=>{
-      b.onclick=()=>{ const f=b.dataset.fd;
-        if(f==='draft'||f==='sent'){ mailFolder=f; } else { mailFolder=f; }
-        mailOpen=null; render(); };});
+      b.onclick=()=>{ mailFolder=b.dataset.fd; mailOpen=null; render(); };});
     document.querySelectorAll('[data-mail]').forEach(r=>{
       r.onclick=()=>{ mailOpen=r.dataset.mail; render(); };});
     const b=document.getElementById('mBack');
