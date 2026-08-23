@@ -70,6 +70,9 @@ button{font-family:inherit;cursor:pointer}
   align-items:baseline;gap:12px;flex-wrap:wrap}
 .wl-hd .lg{font-family:"MingLiU","SimSun",serif;font-size:18px;letter-spacing:.18em}
 .wl-hd .nv{font-size:11px;opacity:.72;letter-spacing:.08em}
+.wl-hd .nv button{background:none;border:0;padding:0;color:inherit;font:inherit;
+  letter-spacing:inherit;cursor:pointer;opacity:1}
+.wl-hd .nv button:hover{text-decoration:underline}
 .wl-hd .me{margin-left:auto;font-size:11px;opacity:.9}
 .wl-sub{background:#D5DCE3;border:1px solid var(--line);border-top:0;padding:4px 12px;
   font-size:11px;color:var(--ink-soft)}
@@ -835,7 +838,8 @@ document.getElementById('p').addEventListener('keydown',e=>{
   if(e.key==='Enter')document.getElementById('go').click();});
 
 /* ================= 繪製 ================= */
-function render(){ syncTabs(); renderChrome(); renderPage(); }
+function render(){ syncTabs(); renderChrome(); renderPage();
+  document.querySelectorAll('[data-home]').forEach(b=>{ b.onclick=goHome; }); }
 
 function renderChrome(){
   const strip=document.getElementById('tabstrip');
@@ -885,7 +889,7 @@ function renderBoardIndex(vp){
 
   vp.innerHTML=`<div class="cols"><div class="main">
     <div class="wl-hd"><span class="lg">五樓</span>
-      <span class="nv">主板　│　精華區　│　板規</span>
+      <span class="nv"><button data-home>主板</button>　│　精華區　│　板規</span>
       <span class="me">${esc(ME.name)}（${esc(ME.uid)}）</span></div>
     <div class="wl-sub">主板　│　依最後回覆排序</div>
     <div class="wl-body idx-list">${rows}</div>
@@ -908,7 +912,7 @@ function renderThread(vp,d){
 
   vp.innerHTML=`<div class="cols"><div class="main">
     <div class="wl-hd"><span class="lg">五樓</span>
-      <span class="nv">主板　│　精華區　│　板規</span>
+      <span class="nv"><button data-home>主板</button>　│　精華區　│　板規</span>
       <span class="me">${esc(ME.name)}（${esc(ME.uid)}）</span></div>
     <div class="wl-sub">${esc(T(d.meta))}</div>
     <div class="wl-body">
