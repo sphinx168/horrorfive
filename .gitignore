@@ -1,0 +1,2 @@
+# Claude Code 的 worktree 就開在這底下，不要進版控
+.claude/worktrees/
