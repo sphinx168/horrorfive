@@ -777,6 +777,8 @@ const seen=new Set();
 let gateDone={};
 let mailFolder='in', mailOpen=null;      // 信箱內部狀態
 const MAX_DOC_TABS=3;                    // 文件分頁上限，超過自動關掉最舊的
+const NOTES_TAB_ENABLED=false;           // 「我的最愛」分頁先隱藏：跟留言板調性不搭、破壞沉浸感
+                                          // 程式碼保留，之後想要重新設計或恢復再打開這個開關即可
 
 function curGate(){
   if(prog===0) return GATES[0];
@@ -795,7 +797,7 @@ function syncTabs(){
   tabs=[{id:boardTab,kind:'board'}].concat(keep);
   const g=curGate();
   if(g&&!gateDone[g.id]) tabs.splice(1,0,{id:g.id,kind:'gate'});
-  tabs.splice(g&&!gateDone[g.id]?2:1,0,{id:'notes',kind:'notes'});
+  if(NOTES_TAB_ENABLED) tabs.splice(g&&!gateDone[g.id]?2:1,0,{id:'notes',kind:'notes'});
   if(prog>=6) tabs=[{id:'end',kind:'end'}];
   if(!tabs.some(t=>t.id===active)) active=tabs[0].id;
 }
