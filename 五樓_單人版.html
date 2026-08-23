@@ -84,17 +84,20 @@ button{font-family:inherit;cursor:pointer}
 .rp:last-child{border-bottom:0}
 .rp .f{width:52px;flex:none;padding-left:5px;font-family:"Courier New",monospace;
   font-size:11px;color:#98A3AD}
-.rp .u{width:82px;flex:none;font-size:11px;color:var(--board-dark)}
+.rp .u{width:100px;flex:none;font-size:11px;line-height:1.4;padding-top:1px}
+.rp .u .nm{display:block;font-size:12.5px;color:var(--ink)}
+.rp .u .uid{display:block;font-size:9.5px;color:#A2AAB2;font-family:"Courier New",monospace}
 .rp .c{flex:1;font-family:"MingLiU","SimSun",serif;font-size:14px;white-space:pre-wrap;line-height:1.9}
 .rp.del .c{font-style:italic;color:#A2A9AF;font-family:inherit;font-size:12px}
 .rp.mine{background:#EEF3F8;box-shadow:inset 3px 0 0 var(--board)}
-.rp.mine .u{font-weight:700;color:var(--board-dark)}
+.rp.mine .u .nm{font-weight:700;color:var(--board-dark)}
 .rp.mine .u .me{font-weight:400;font-size:9px;color:var(--board-dark);margin-left:2px}
 .rp.today{background:#FBFCFD}
 .rp.today.mine{background:#E5EDF5}
 .rp.restored{background:#FBF7EF;box-shadow:inset 3px 0 0 var(--warm)}
 .rp.restored .u::after{content:'　已還原';font-size:9px;color:var(--warm);font-weight:400}
-.rp .t{font-size:10px;color:#B0B7BE;font-family:"Courier New",monospace;margin-left:6px}
+.rp .t{width:78px;flex:none;text-align:right;font-size:10px;color:#98A3AD;
+  font-family:"Courier New",monospace;padding-top:3px;white-space:nowrap}
 .silence{text-align:center;font-size:11px;color:#A2A9AF;padding:10px 0;letter-spacing:.12em;
   font-family:"Courier New",monospace}
 
@@ -363,6 +366,10 @@ const TS_NOW=hhmm=>1e12+hhmm;
 
 /* ================= 你 ================= */
 const ME={uid:'siyu_1120',name:'陳思妤',pw:'1120'};
+/* 板上是用帳號發話的，但六個人彼此叫的是名字。兩個都顯示，玩家才不用自己記對照表 */
+const USERS={siyu_1120:'思妤',yalin_w:'雅琳',kt0904:'冠廷',
+             tsonghan:'宗翰',haoge:'文豪',ytl_lin:'昱庭'};
+const who=u=>USERS[u]||u||'';
 
 /* ================= 文件 ================= */
 const DOCS=[
@@ -373,16 +380,16 @@ const DOCS=[
  idx:{f:'73F',by:'kt0904',when:'今天 11:04',ts:TS_NOW(1104)},
  meta:'五樓 › 閒聊　│　2016/11/27 – __TODAY__　│　共 47 篇，顯示 20 篇',
  posts:[
-  {f:'1F', u:'kt0904',   c:'2016　今年也沒事 大家平安啦XD'},
-  {f:'5F', u:'tsonghan', c:'2017　今年也是…沒什麼好說的。'},
-  {f:'6F', u:'yalin_w',  c:'2017　嗯'},
-  {f:'9F', u:'siyu_1120',c:'2019　大家還好嗎！！好久沒上來了XDD'},
-  {f:'14F',u:'yalin_w',  c:'2021　嗯'},
-  {f:'18F',u:'tsonghan', c:'2022　每年開這串到底有什麼意義…'},
-  {f:'24F',u:'haoge',    c:'2023　不要再開這串了。'},
-  {f:'31F',u:'kt0904',   c:'2024　欸 還有人在嗎 orz'},
-  {f:'38F',u:'siyu_1120',c:'2025　還是開了！！大家平安^^'},
-  {f:'39F',u:'yalin_w',  c:'2025　嗯'},
+  {f:'1F', u:'kt0904',   c:'今年也沒事 大家平安啦XD',t:'2016/11/27'},
+  {f:'5F', u:'tsonghan', c:'今年也是…沒什麼好說的。',t:'2017/11/27'},
+  {f:'6F', u:'yalin_w',  c:'嗯',t:'2017/11/27'},
+  {f:'9F', u:'siyu_1120',c:'大家還好嗎！！好久沒上來了XDD',t:'2019/11/27'},
+  {f:'14F',u:'yalin_w',  c:'嗯',t:'2021/11/27'},
+  {f:'18F',u:'tsonghan', c:'每年開這串到底有什麼意義…',t:'2022/11/27'},
+  {f:'24F',u:'haoge',    c:'不要再開這串了。',t:'2023/11/27'},
+  {f:'31F',u:'kt0904',   c:'欸 還有人在嗎 orz',t:'2024/11/27'},
+  {f:'38F',u:'siyu_1120',c:'還是開了！！大家平安^^',t:'2025/11/27'},
+  {f:'39F',u:'yalin_w',  c:'嗯',t:'2025/11/27'},
   {f:'40F',u:'kt0904',   c:'幹 我剛剛整理櫃子翻到一個箱子',t:'今天 09:12',today:1},
   {f:'41F',u:'kt0904',   c:'裡面有一疊印出來的東西 有夠厚\n是那時候的',t:'今天 09:14',today:1},
   {f:'42F',u:'tsonghan', c:'什麼那時候的。',t:'今天 09:16',today:1},
@@ -428,28 +435,28 @@ const DOCS=[
  idx:{f:'52F',by:'ytl_lin',when:'2015/11/20',ts:TS(2015,11,20)},
  meta:'五樓 › 閒聊　│　2015/09/18 – 2015/11/20　│　共 52 篇，顯示 18 篇',
  posts:[
-  {f:'1F', u:'tsonghan',  c:'今天來了一個新的。坐窗邊那個。'},
-  {f:'2F', u:'kt0904',    c:'看到了啦 感覺很難聊'},
-  {f:'3F', u:'yalin_w',   c:'她中午自己吃'},
-  {f:'4F', u:'siyu_1120', c:'我覺得還好耶～只是比較安靜而已啦'},
-  {f:'5F', u:'tsonghan',  c:'安靜？她今天開會講了十五分鐘…我有計時。'},
-  {f:'6F', u:'kt0904',    c:'哈哈哈哈幹 你有病喔XDDD'},
-  {f:'7F', u:'tsonghan',  c:'我只是在陳述事實。'},
-  {f:'8F', u:'kt0904',    c:'更好笑了'},
-  {f:'9F', u:'ytl_lin',   c:'欸 不要這樣啦'},
-  {f:'10F',u:'kt0904',    c:'昱庭你很正義欸 那你去跟她吃飯啦'},
-  {f:'11F',u:'yalin_w',   c:'喔'},
-  {f:'17F',u:'siyu_1120', c:'好啦！！我去跟她講講話 你們不要再說了XD'},
-  {f:'23F',u:'tsonghan',  c:'思妤真的很厲害…她今天跟妳說了什麼'},
-  {f:'24F',u:'siyu_1120', c:'蠻多的其實！她好像沒什麼朋友QQ'},
-  {f:'25F',u:'yalin_w',   c:'嗯嗯 那就好辦了'},
-  {f:'30F',u:'kt0904',    c:'欸 那個共用帳號密碼多少啦'},
-  {f:'31F',u:'haoge',     c:'在信箱裡。不要貼在板上。'},
-  {f:'32F',u:'kt0904',    c:'齁 好啦'},
-  {f:'33F',u:'siyu_1120', c:'我密碼都設一樣的啦！！好記XD'},
-  {f:'50F',u:'tsonghan',  c:'11/20 思妤生日…有人要一起吃飯嗎'},
-  {f:'51F',u:'siyu_1120', c:'好啊！！^^'},
-  {f:'52F',u:'ytl_lin',   c:'生日快樂'}
+  {f:'1F', u:'tsonghan',  c:'今天來了一個新的。坐窗邊那個。',t:'09/18 09:41'},
+  {f:'2F', u:'kt0904',    c:'看到了啦 感覺很難聊',t:'09/18 09:48'},
+  {f:'3F', u:'yalin_w',   c:'她中午自己吃',t:'09/18 12:33'},
+  {f:'4F', u:'siyu_1120', c:'我覺得還好耶～只是比較安靜而已啦',t:'09/18 12:40'},
+  {f:'5F', u:'tsonghan',  c:'安靜？她今天開會講了十五分鐘…我有計時。',t:'09/18 18:02'},
+  {f:'6F', u:'kt0904',    c:'哈哈哈哈幹 你有病喔XDDD',t:'09/18 18:05'},
+  {f:'7F', u:'tsonghan',  c:'我只是在陳述事實。',t:'09/18 18:09'},
+  {f:'8F', u:'kt0904',    c:'更好笑了',t:'09/18 18:11'},
+  {f:'9F', u:'ytl_lin',   c:'欸 不要這樣啦',t:'09/18 18:26'},
+  {f:'10F',u:'kt0904',    c:'昱庭你很正義欸 那你去跟她吃飯啦',t:'09/18 18:31'},
+  {f:'11F',u:'yalin_w',   c:'喔',t:'09/18 18:44'},
+  {f:'17F',u:'siyu_1120', c:'好啦！！我去跟她講講話 你們不要再說了XD',t:'09/21 13:07'},
+  {f:'23F',u:'tsonghan',  c:'思妤真的很厲害…她今天跟妳說了什麼',t:'09/24 17:52'},
+  {f:'24F',u:'siyu_1120', c:'蠻多的其實！她好像沒什麼朋友QQ',t:'09/24 18:10'},
+  {f:'25F',u:'yalin_w',   c:'嗯嗯 那就好辦了',t:'09/24 18:14'},
+  {f:'30F',u:'kt0904',    c:'欸 那個共用帳號密碼多少啦',t:'09/28 20:15'},
+  {f:'31F',u:'haoge',     c:'在信箱裡。不要貼在板上。',t:'09/28 20:22'},
+  {f:'32F',u:'kt0904',    c:'齁 好啦',t:'09/28 20:25'},
+  {f:'33F',u:'siyu_1120', c:'我密碼都設一樣的啦！！好記XD',t:'09/28 20:31'},
+  {f:'50F',u:'tsonghan',  c:'11/20 思妤生日…有人要一起吃飯嗎',t:'11/20 12:18'},
+  {f:'51F',u:'siyu_1120', c:'好啊！！^^',t:'11/20 12:25'},
+  {f:'52F',u:'ytl_lin',   c:'生日快樂',t:'11/20 22:39'}
  ]},
 
 {id:'t_prank',at:0,skin:'wulou',site:'五樓',
@@ -457,28 +464,28 @@ const DOCS=[
  idx:{f:'24F',by:'haoge',when:'2015/06/20',ts:TS(2015,6,20)},
  meta:'五樓 › 閒聊　│　2015/06/12 – 2015/06/20　│　共 24 篇，顯示 18 篇',
  posts:[
-  {f:'1F', u:'kt0904',   c:'欸 下禮拜五欣怡生日欸（行政那個）'},
-  {f:'2F', u:'siyu_1120',c:'真的假的！！要幫她辦一下嗎'},
-  {f:'3F', u:'kt0904',   c:'辦啊 而且我想到一個超讚的點子'},
-  {f:'4F', u:'tsonghan', c:'什麼點子'},
-  {f:'5F', u:'yalin_w',  c:'說啊'},
-  {f:'6F', u:'siyu_1120',c:'我也很好奇XD'},
-  {f:'8F', u:'kt0904',   c:'她很怕鬼 我們可以在她抽屜放個東西嚇她 順便全程錄下來'},
-  {f:'9F', u:'ytl_lin',  c:'我可以幫忙拍'},
-  {f:'13F',u:'tsonghan', c:'道具我來弄 晚點拿給你們看'},
-  {f:'14F',u:'siyu_1120',c:'蛋糕我訂了！！草莓的 她說她最喜歡'},
-  {f:'17F',u:'ytl_lin',  c:'欸 那個東西會不會太嚇人 我剛剛想了一下'},
-  {f:'18F',u:'kt0904',   c:'蛤 哪會 就嚇一下而已 又不會怎樣'},
-  {f:'19F',u:'tsonghan', c:'而且都準備好了 現在講這個'},
-  {f:'20F',u:'ytl_lin',  c:'我覺得不太好 我可能沒辦法錄了'},
-  {f:'21F',u:'kt0904',   c:'所以勒 你不錄是要誰錄'},
-  {f:'22F',u:'ytl_lin',  c:'抱歉 我到時候還是會去 但那段我沒辦法'},
+  {f:'1F', u:'kt0904',   c:'欸 下禮拜五欣怡生日欸（行政那個）',t:'06/12 10:22'},
+  {f:'2F', u:'siyu_1120',c:'真的假的！！要幫她辦一下嗎',t:'06/12 10:26'},
+  {f:'3F', u:'kt0904',   c:'辦啊 而且我想到一個超讚的點子',t:'06/12 10:31'},
+  {f:'4F', u:'tsonghan', c:'什麼點子',t:'06/12 10:35'},
+  {f:'5F', u:'yalin_w',  c:'說啊',t:'06/12 10:36'},
+  {f:'6F', u:'siyu_1120',c:'我也很好奇XD',t:'06/12 10:40'},
+  {f:'8F', u:'kt0904',   c:'她很怕鬼 我們可以在她抽屜放個東西嚇她 順便全程錄下來',t:'06/12 11:04'},
+  {f:'9F', u:'ytl_lin',  c:'我可以幫忙拍',t:'06/12 11:19'},
+  {f:'13F',u:'tsonghan', c:'道具我來弄 晚點拿給你們看',t:'06/16 15:47'},
+  {f:'14F',u:'siyu_1120',c:'蛋糕我訂了！！草莓的 她說她最喜歡',t:'06/17 09:53'},
+  {f:'17F',u:'ytl_lin',  c:'欸 那個東西會不會太嚇人 我剛剛想了一下',t:'06/18 22:31'},
+  {f:'18F',u:'kt0904',   c:'蛤 哪會 就嚇一下而已 又不會怎樣',t:'06/18 22:38'},
+  {f:'19F',u:'tsonghan', c:'而且都準備好了 現在講這個',t:'06/18 22:44'},
+  {f:'20F',u:'ytl_lin',  c:'我覺得不太好 我可能沒辦法錄了',t:'06/18 23:12'},
+  {f:'21F',u:'kt0904',   c:'所以勒 你不錄是要誰錄',t:'06/18 23:20'},
+  {f:'22F',u:'ytl_lin',  c:'抱歉 我到時候還是會去 但那段我沒辦法',t:'06/18 23:35'},
   {f:'',   u:'',         c:'此文已由作者刪除',del:1,
-   rid:'r_prank',rdel:{when:'2015/06/20 01:07',by:'作者',ts:TS(2015,6,20)}},
+   rid:'r_prank',rdel:{when:'2015/06/18 23:41',by:'作者',ts:TS(2015,6,18)}},
   {f:'—',  u:'ytl_lin',  c:'我不是要掃興\n我只是在想 如果被這樣弄的人是我\n我大概也會裝作沒事 然後回家一直想',
-   rid:'r_prank'},
-  {f:'23F',u:'tsonghan', c:'先答應又反悔 是怎樣'},
-  {f:'24F',u:'haoge',    c:'隨便他 東西還在 誰要錄自己錄'}
+   t:'06/18 23:36',rid:'r_prank'},
+  {f:'23F',u:'tsonghan', c:'先答應又反悔 是怎樣',t:'06/19 00:02'},
+  {f:'24F',u:'haoge',    c:'隨便他 東西還在 誰要錄自己錄',t:'06/20 09:14'}
  ]},
 
 /* ---------- 第一章 ---------- */
@@ -487,26 +494,26 @@ const DOCS=[
  idx:{f:'31F',by:'haoge',when:'2015/10/26',ts:TS(2015,10,26)},
  meta:'五樓 › 整理　│　發文者 haoge　│　2015/09/28 – 2015/10/26　│　板主已編輯',
  posts:[
-  {f:'1F', u:'haoge',     c:'開一串。資料都貼這裡，不要私下傳。'},
-  {f:'2F', u:'haoge',     c:'帳號我開好了。tsche0710。\n密碼是她的員編。用完登出。'},
-  {f:'3F', u:'yalin_w',   c:'管理部　2015/08/17 到職　主管張副理　住三重'},
-  {f:'4F', u:'kt0904',    c:'檔案我存 每天存一份啦 交給我'},
-  {f:'5F', u:'tsonghan',  c:'我來整理…思妤妳照著講就好。'},
-  {f:'6F', u:'siyu_1120', c:'好啦！！我盡量XD'},
-  {f:'9F', u:'ytl_lin',   c:'欸 這樣真的好嗎'},
-  {f:'10F',u:'haoge',     c:'你不做可以說。'},
-  {f:'11F',u:'ytl_lin',   c:'…'},
-  {f:'12F',u:'kt0904',    c:'欸昱庭 沒事啦 又不會怎樣'},
-  {f:'14F',u:'siyu_1120', c:'她今天跟我說她主管很兇！！雅琳妳知道張副理嗎'},
-  {f:'15F',u:'yalin_w',   c:'知道 我查一下'},
-  {f:'16F',u:'siyu_1120', c:'謝啦～^^'},
-  {f:'19F',u:'siyu_1120', c:'我今天發燒 真的不行QQ\n幫我頂一下拜託！！！'},
+  {f:'1F', u:'haoge',     c:'開一串。資料都貼這裡，不要私下傳。',t:'09/28 19:51'},
+  {f:'2F', u:'haoge',     c:'帳號我開好了。tsche0710。\n密碼是她的員編。用完登出。',t:'09/28 19:53'},
+  {f:'3F', u:'yalin_w',   c:'管理部　2015/08/17 到職　主管張副理　住三重',t:'09/28 22:14'},
+  {f:'4F', u:'kt0904',    c:'檔案我存 每天存一份啦 交給我',t:'09/28 22:31'},
+  {f:'5F', u:'tsonghan',  c:'我來整理…思妤妳照著講就好。',t:'09/28 22:40'},
+  {f:'6F', u:'siyu_1120', c:'好啦！！我盡量XD',t:'09/28 22:44'},
+  {f:'9F', u:'ytl_lin',   c:'欸 這樣真的好嗎',t:'09/29 09:20'},
+  {f:'10F',u:'haoge',     c:'你不做可以說。',t:'09/29 09:26'},
+  {f:'11F',u:'ytl_lin',   c:'…',t:'09/29 09:41'},
+  {f:'12F',u:'kt0904',    c:'欸昱庭 沒事啦 又不會怎樣',t:'09/29 10:03'},
+  {f:'14F',u:'siyu_1120', c:'她今天跟我說她主管很兇！！雅琳妳知道張副理嗎',t:'10/05 13:12'},
+  {f:'15F',u:'yalin_w',   c:'知道 我查一下',t:'10/05 13:15'},
+  {f:'16F',u:'siyu_1120', c:'謝啦～^^',t:'10/05 13:20'},
+  {f:'19F',u:'siyu_1120', c:'我今天發燒 真的不行QQ\n幫我頂一下拜託！！！',t:'10/14 21:33'},
   {f:'',   u:'',          c:'此文已由板主刪除',del:1,
-   rid:'r_sort',rdel:{when:'2015/10/14 23:51',by:'板主',ts:TS(2015,10,14)}},
-  {f:'20F',u:'ytl_lin',   c:'我頂。\n妳去睡。',rid:'r_sort'},
-  {f:'23F',u:'kt0904',    c:'昨天那份比較大 我有存'},
-  {f:'25F',u:'tsonghan',  c:'我看過了…那份先不要動。'},
-  {f:'31F',u:'haoge',     c:'不要再貼了。到此為止。'}
+   rid:'r_sort',rdel:{when:'2015/11/28 02:18',by:'板主',ts:TS(2015,11,28)}},
+  {f:'20F',u:'ytl_lin',   c:'我頂。\n妳去睡。',rid:'r_sort',t:'10/14 23:51'},
+  {f:'23F',u:'kt0904',    c:'昨天那份比較大 我有存',t:'10/15 08:41'},
+  {f:'25F',u:'tsonghan',  c:'我看過了…那份先不要動。',t:'10/19 12:07'},
+  {f:'31F',u:'haoge',     c:'不要再貼了。到此為止。',t:'10/26 18:55'}
  ]},
 
 {id:'a_im',at:1,peek:'本機檔案　路徑不存在',skin:'archive',site:'本機檔案',
@@ -592,7 +599,7 @@ const DOCS=[
    body:'弄好了，網址在下面。\n\nhttp://wulou.5gbfree.com/\n\n你們的帳號我照英文名字開好了，密碼先都設你們的生日，登進去自己改。\n\n板務後台的帳號是 ytl_lin，密碼 5f2015。\n我怕我哪天請假你們要用，先跟你們講一聲，不要外流。\n\n板名我取「五樓」，因為就是我們那層樓。宗翰說沒創意，可是我想不到更好的。\n\n以後閒聊都可以貼這裡。公司內網有在看，這裡沒有。'},
   {id:'yalin_hr',box:'in',at:1,
    from:'yalin_w',fromFull:'yalin.wang@shengyue.com.tw',
-   date:'2015/09/29 10:12',subj:'張副理',
+   date:'2015/10/05 14:47',subj:'張副理',
    body:'妳要的資料我查到了。\n\n張O瑋，副理，管理部\n2015/08/17 到職那批的直屬主管\n\n附件是名冊，不要外流喔哈哈。\n\n有需要再跟我說，我這邊調資料很快。',
    att:'人事名冊_9月.xlsx　（12 KB）'},
   {id:'siyu_draft1',box:'draft',at:1,
@@ -650,29 +657,29 @@ const DOCS=[
  idx:{f:'28F',by:'haoge',when:'2015/11/21',ts:TS(2015,11,21)},
  meta:'五樓 › 閒聊　│　2015/11/16 – 2015/11/21　│　共 28 篇，顯示 22 篇　│　板主已編輯',
  posts:[
-  {f:'1F', u:'ytl_lin',   c:'這件事要收了。不要再做了。'},
-  {f:'2F', u:'haoge',     c:'為什麼'},
-  {f:'3F', u:'ytl_lin',   c:'沒有為什麼。就是不要再做了。'},
-  {f:'4F', u:'tsonghan',  c:'我們搞了快兩個月 你現在說收就收？'},
-  {f:'5F', u:'kt0904',    c:'昱庭 是不是出了什麼事'},
-  {f:'6F', u:'ytl_lin',   c:'沒事。就這樣。'},
-  {f:'9F', u:'haoge',     c:'那她之前傳給阿哲的那些東西呢'},
-  {f:'10F',u:'ytl_lin',   c:'什麼東西'},
-  {f:'11F',u:'haoge',     c:'她傳的那些照片。你不是也看過。'},
-  {f:'12F',u:'ytl_lin',   c:'那個跟這個沒關係。'},
-  {f:'13F',u:'haoge',     c:'我倒覺得剛好有關係。'},
-  {f:'14F',u:'haoge',     c:'那些東西流出去，大家只會覺得她精神有問題，沒有人會信她說的話。'},
-  {f:'15F',u:'tsonghan',  c:'這樣說不定還比較快解決。'},
-  {f:'18F',u:'kt0904',    c:'這樣會不會有點……'},
-  {f:'19F',u:'siyu_1120', c:'這樣好像太過分了吧'},
-  {f:'20F',u:'haoge',     c:'過分？東西是她自己傳的，又不是我們造假。'},
-  {f:'21F',u:'yalin_w',   c:'喔'},
-  {f:'24F',u:'ytl_lin',   c:'不行。'},
-  {f:'25F',u:'ytl_lin',   c:'我說不行就是不行。這件事到此為止，誰都不准動。'},
-  {f:'26F',u:'haoge',     c:'你今天是怎樣'},
-  {f:'27F',u:'ytl_lin',   c:'我沒事。這件事結束了。'},
+  {f:'1F', u:'ytl_lin',   c:'這件事要收了。不要再做了。',t:'11/16 20:14'},
+  {f:'2F', u:'haoge',     c:'為什麼',t:'11/16 20:22'},
+  {f:'3F', u:'ytl_lin',   c:'沒有為什麼。就是不要再做了。',t:'11/16 20:29'},
+  {f:'4F', u:'tsonghan',  c:'我們搞了快兩個月 你現在說收就收？',t:'11/16 20:41'},
+  {f:'5F', u:'kt0904',    c:'昱庭 是不是出了什麼事',t:'11/16 20:47'},
+  {f:'6F', u:'ytl_lin',   c:'沒事。就這樣。',t:'11/16 21:03'},
+  {f:'9F', u:'haoge',     c:'那她之前傳給阿哲的那些東西呢',t:'11/17 21:12'},
+  {f:'10F',u:'ytl_lin',   c:'什麼東西',t:'11/17 21:15'},
+  {f:'11F',u:'haoge',     c:'她傳的那些照片。你不是也看過。',t:'11/17 21:19'},
+  {f:'12F',u:'ytl_lin',   c:'那個跟這個沒關係。',t:'11/17 21:24'},
+  {f:'13F',u:'haoge',     c:'我倒覺得剛好有關係。',t:'11/17 21:26'},
+  {f:'14F',u:'haoge',     c:'那些東西流出去，大家只會覺得她精神有問題，沒有人會信她說的話。',t:'11/17 21:33'},
+  {f:'15F',u:'tsonghan',  c:'這樣說不定還比較快解決。',t:'11/17 21:40'},
+  {f:'18F',u:'kt0904',    c:'這樣會不會有點……',t:'11/17 21:58'},
+  {f:'19F',u:'siyu_1120', c:'這樣好像太過分了吧',t:'11/17 22:06'},
+  {f:'20F',u:'haoge',     c:'過分？東西是她自己傳的，又不是我們造假。',t:'11/17 22:11'},
+  {f:'21F',u:'yalin_w',   c:'喔',t:'11/17 22:19'},
+  {f:'24F',u:'ytl_lin',   c:'不行。',t:'11/17 23:47'},
+  {f:'25F',u:'ytl_lin',   c:'我說不行就是不行。這件事到此為止，誰都不准動。',t:'11/17 23:50'},
+  {f:'26F',u:'haoge',     c:'你今天是怎樣',t:'11/17 23:58'},
+  {f:'27F',u:'ytl_lin',   c:'我沒事。這件事結束了。',t:'11/18 00:14'},
   {f:'',   u:'',          c:'此文已由板主刪除',del:1},
-  {f:'28F',u:'haoge',     c:'隨便你。'}
+  {f:'28F',u:'haoge',     c:'隨便你。',t:'11/21 10:33'}
  ]},
 
 {id:'t_after',at:3,peek:'五樓　板主已鎖定',skin:'wulou',site:'五樓',
@@ -680,17 +687,17 @@ const DOCS=[
  idx:{f:'12F',by:'haoge',when:'2015/12/03',ts:TS(2015,12,3)},
  meta:'五樓 › 閒聊　│　2015/11/28 – 2015/12/03　│　共 12 篇，顯示 9 篇　│　板主已編輯',
  posts:[
-  {f:'1F', u:'kt0904',    c:'昨天他講的那些 我沒有全部聽懂'},
-  {f:'2F', u:'tsonghan',  c:'我也是。他講得太快了…而且一直在發抖。'},
-  {f:'3F', u:'yalin_w',   c:'他一直在說對不起'},
-  {f:'4F', u:'tsonghan',  c:'我只記得他一直說「不要再做了」。'},
-  {f:'5F', u:'kt0904',    c:'他好像有說什麼一直在看 我沒聽清楚'},
-  {f:'6F', u:'siyu_1120', c:'他說他一直在看'},
-  {f:'7F', u:'kt0904',    c:'看什麼啦'},
-  {f:'8F', u:'siyu_1120', c:'我不知道'},
+  {f:'1F', u:'kt0904',    c:'昨天他講的那些 我沒有全部聽懂',t:'11/28 10:07'},
+  {f:'2F', u:'tsonghan',  c:'我也是。他講得太快了…而且一直在發抖。',t:'11/28 10:19'},
+  {f:'3F', u:'yalin_w',   c:'他一直在說對不起',t:'11/28 10:26'},
+  {f:'4F', u:'tsonghan',  c:'我只記得他一直說「不要再做了」。',t:'11/28 10:34'},
+  {f:'5F', u:'kt0904',    c:'他好像有說什麼一直在看 我沒聽清楚',t:'11/28 10:41'},
+  {f:'6F', u:'siyu_1120', c:'他說他一直在看',t:'11/28 11:02'},
+  {f:'7F', u:'kt0904',    c:'看什麼啦',t:'11/28 11:05'},
+  {f:'8F', u:'siyu_1120', c:'我不知道',t:'11/28 11:20'},
   {f:'',   u:'',          c:'此文已由板主刪除',del:1},
-  {f:'11F',u:'haoge',     c:'這串刪掉。以後不要再提這件事。'},
-  {f:'12F',u:'haoge',     c:'我說真的。刪掉。'}
+  {f:'11F',u:'haoge',     c:'這串刪掉。以後不要再提這件事。',t:'12/02 09:16'},
+  {f:'12F',u:'haoge',     c:'我說真的。刪掉。',t:'12/03 08:47'}
  ]},
 
 {id:'t_who',at:3,peek:'五樓　找不到這個頁面',skin:'wulou',site:'五樓',
@@ -976,7 +983,7 @@ function renderPage(){
 
 /* ---------- 板首頁 ---------- */
 function renderBoardIndex(vp){
-  const line=x=>`${x.f}　│　最後回覆 ${x.by.padEnd(10,' ')}│　${x.when}`;
+  const line=x=>`${x.f}　│　最後回覆 ${who(x.by).padEnd(6,'　')}│　${x.when}`;
   const rows=boardRows().map(r=>{
     if(r.deco) return `<div class="idx-row deco"><div class="t">${esc(r.label)}</div>
       <div class="m">${esc(line(r.x))}</div></div>`;
@@ -1007,8 +1014,11 @@ function renderThread(vp,d){
   }).map(p=>{
     if(p.silence) return `<div class="silence">${esc(p.silence)}</div>`;
     return `<div class="rp${p.del?' del':''}${p.u===ME.uid?' mine':''}${p.today?' today':''}${p.rid&&!p.del?' restored':''}">
-      <div class="f">${esc(p.f)}</div><div class="u">${esc(p.u)}${p.u===ME.uid?'<span class="me">（你）</span>':''}</div>
-      <div class="c">${esc(p.c)}${p.t?`<span class="t">${esc(p.t)}</span>`:''}</div></div>`;
+      <div class="f">${esc(p.f)}</div>
+      <div class="u">${p.u?`<span class="nm">${esc(who(p.u))}${p.u===ME.uid?'<span class="me">（你）</span>':''}</span>
+        <span class="uid">${esc(p.u)}</span>`:''}</div>
+      <div class="c">${esc(p.c)}</div>
+      <div class="t">${esc(p.t||'')}</div></div>`;
   }).join('');
 
   vp.innerHTML=`<div class="cols"><div class="main">
@@ -1078,7 +1088,7 @@ function renderInbox(vp,d){
       <div class="yh-listhd">${mailFolder==='in'?'收件匣':mailFolder==='trash'?'垃圾桶':mailFolder==='sent'?'寄件備份':'草稿匣'}</div>
       ${list.length?`<table class="yh-list">
         ${list.map(x=>`<tr data-mail="${x.id}" class="${x.unread?'ur':''}">
-          <td class="fr">${esc(isOut(x.box)?(x.to||''):x.from)}</td>
+          <td class="fr">${esc(isOut(x.box)?(x.to||''):who(x.from))}</td>
           <td class="sb">${esc(x.subj)}${x.att?' <span class="clip">📎</span>':''}</td>
           <td class="dt">${esc(x.date.slice(0,10))}</td></tr>`).join('')}
       </table>`:'<div class="yh-empty">這個資料夾是空的。</div>'}
