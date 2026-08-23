@@ -82,7 +82,8 @@ button{font-family:inherit;cursor:pointer}
   border-bottom:1px solid var(--line-soft);padding-bottom:8px}
 .rp{display:flex;gap:10px;padding:7px 0;border-bottom:1px dotted #E3E8EC}
 .rp:last-child{border-bottom:0}
-.rp .f{width:52px;flex:none;font-family:"Courier New",monospace;font-size:11px;color:#98A3AD}
+.rp .f{width:52px;flex:none;padding-left:5px;font-family:"Courier New",monospace;
+  font-size:11px;color:#98A3AD}
 .rp .u{width:82px;flex:none;font-size:11px;color:var(--board-dark)}
 .rp .c{flex:1;font-family:"MingLiU","SimSun",serif;font-size:14px;white-space:pre-wrap;line-height:1.9}
 .rp.del .c{font-style:italic;color:#A2A9AF;font-family:inherit;font-size:12px}
@@ -91,6 +92,8 @@ button{font-family:inherit;cursor:pointer}
 .rp.mine .u .me{font-weight:400;font-size:9px;color:var(--board-dark);margin-left:2px}
 .rp.today{background:#FBFCFD}
 .rp.today.mine{background:#E5EDF5}
+.rp.restored{background:#FBF7EF;box-shadow:inset 3px 0 0 var(--warm)}
+.rp.restored .u::after{content:'　已還原';font-size:9px;color:var(--warm);font-weight:400}
 .rp .t{font-size:10px;color:#B0B7BE;font-family:"Courier New",monospace;margin-left:6px}
 .silence{text-align:center;font-size:11px;color:#A2A9AF;padding:10px 0;letter-spacing:.12em;
   font-family:"Courier New",monospace}
@@ -101,7 +104,8 @@ button{font-family:inherit;cursor:pointer}
   border-bottom:1px solid var(--line-soft);padding:9px 4px;font-size:13px}
 .idx-row:last-child{border-bottom:0}
 .idx-row .t{color:var(--link);text-decoration:underline}
-.idx-row .m{font-size:11px;color:#98A3AD;font-family:"Courier New",monospace;margin-top:2px}
+.idx-row .m{font-size:11px;color:#98A3AD;font-family:"Courier New",monospace;margin-top:2px;
+  white-space:pre}
 .idx-row:hover{background:#F4F8FB}
 .idx-row.new .t::after{content:'　new';color:#8C3A3A;font-size:9px;text-decoration:none}
 .idx-row.deco{cursor:default;opacity:.6}
@@ -158,6 +162,7 @@ button{font-family:inherit;cursor:pointer}
 .yh-att{margin-top:18px;padding-top:12px;border-top:1px solid #E4D2EC;
   font-size:12px;color:#5C3A6B}
 .yh-att .a{color:var(--link);text-decoration:underline;font-family:"Courier New",monospace}
+.yh-att button.a{background:none;border:0;padding:0;font-size:12px}
 
 /* ===== 即時通存檔（裸 HTML） ===== */
 .vp-archive{background:#fff;padding:0}
@@ -272,11 +277,23 @@ button{font-family:inherit;cursor:pointer}
 .step .mk{font-family:"Courier New",monospace;color:#9AA4AD;margin-right:6px}
 .step.done .mk{color:var(--board)}
 .step.now .mk{color:#8C6A3A}
+.step.future{color:#B0B7BE}
+.step.future .mk{color:#C4CAD0}
 .step .sub{font-size:11px;color:var(--ink-soft);margin:4px 0 0 20px;line-height:1.7}
 .gotab{display:block;width:100%;text-align:left;background:none;border:0;
   border-top:1px solid var(--line-soft);padding:8px 10px;font-size:12px;color:var(--link);
   text-decoration:underline}
 .gotab:hover{background:#F4F8FB}
+
+/* ===== 過場旁白 ===== */
+.vp-said{background:#1C1F23;padding:0}
+.said{max-width:520px;margin:0 auto;padding:20vh 24px 30vh;text-align:center;
+  font-family:"MingLiU","SimSun",serif;font-size:16px;line-height:2.3;color:#D6DBE0}
+.said p{margin:0 0 34px;white-space:pre-wrap;opacity:0;animation:fin 1.2s ease forwards}
+.said .btn{background:none;border:1px solid #4A5560;color:#9AA4AD;padding:7px 26px;
+  font-size:12px;letter-spacing:.16em;opacity:0;animation:fin 1s ease forwards;animation-delay:1.3s}
+.said .btn:hover{background:#262B31;color:#D6DBE0}
+@media (prefers-reduced-motion:reduce){.said p,.said .btn{opacity:1;animation:none}}
 
 /* ===== 終幕 ===== */
 .vp-end{background:#1C1F23;padding:0}
@@ -330,6 +347,9 @@ function norm(s){return (s||'')
   .replace(/[\uFF01-\uFF5E]/g,c=>String.fromCharCode(c.charCodeAt(0)-0xFEE0))
   .replace(/[\s\u3000:：\-—–_.,、。／/()（）]/g,'').toLowerCase().trim();}
 const match=(v,l)=>{const n=norm(v);return n.length>0&&l.some(a=>norm(a)===n);};
+/* 板首頁排序用：舊文照日期，今天開的串一律排在最前面 */
+const TS=(y,m,d)=>(((y*100+m)*100+d)*10000);
+const TS_NOW=hhmm=>1e12+hhmm;
 
 /* ================= 你 ================= */
 const ME={uid:'siyu_1120',name:'陳思妤',pw:'1120'};
@@ -340,6 +360,7 @@ const DOCS=[
 /* ---------- 序章 ---------- */
 {id:'t_today',at:0,skin:'wulou',site:'五樓',
  title:'[閒聊] 又到了',
+ idx:{f:'73F',by:'kt0904',when:'今天 11:04',ts:TS_NOW(1104)},
  meta:'五樓 › 閒聊　│　2016/11/27 – __TODAY__　│　共 47 篇，顯示 20 篇',
  posts:[
   {f:'1F', u:'kt0904',   c:'2016　今年也沒事 大家平安啦XD'},
@@ -392,6 +413,7 @@ const DOCS=[
 
 {id:'t_new',at:0,skin:'wulou',site:'五樓',
  title:'[閒聊] 新來的那個',
+ idx:{f:'52F',by:'ytl_lin',when:'2015/11/20',ts:TS(2015,11,20)},
  meta:'五樓 › 閒聊　│　2015/09/18 – 2015/11/20　│　共 52 篇，顯示 18 篇',
  posts:[
   {f:'1F', u:'tsonghan',  c:'今天來了一個新的。坐窗邊那個。'},
@@ -420,6 +442,7 @@ const DOCS=[
 
 {id:'t_prank',at:0,skin:'wulou',site:'五樓',
  title:'[閒聊] 欣怡生日',
+ idx:{f:'24F',by:'haoge',when:'2015/06/20',ts:TS(2015,6,20)},
  meta:'五樓 › 閒聊　│　2015/06/12 – 2015/06/20　│　共 24 篇，顯示 18 篇',
  posts:[
   {f:'1F', u:'kt0904',   c:'欸 下禮拜五欣怡生日欸（行政那個）'},
@@ -446,6 +469,7 @@ const DOCS=[
 /* ---------- 第一章 ---------- */
 {id:'t_sort',at:1,peek:'五樓　找不到這個頁面',skin:'wulou',site:'五樓',
  title:'[整理] 她',
+ idx:{f:'31F',by:'haoge',when:'2015/10/26',ts:TS(2015,10,26)},
  meta:'五樓 › 整理　│　發文者 haoge　│　2015/09/28 – 2015/10/26　│　板主已編輯',
  posts:[
   {f:'1F', u:'haoge',     c:'開一串。資料都貼這裡，不要私下傳。'},
@@ -462,7 +486,8 @@ const DOCS=[
   {f:'15F',u:'yalin_w',   c:'知道 我查一下'},
   {f:'16F',u:'siyu_1120', c:'謝啦～^^'},
   {f:'19F',u:'siyu_1120', c:'我今天發燒 真的不行QQ\n幫我頂一下拜託！！！'},
-  {f:'',   u:'',          c:'此文已由板主刪除',del:1},
+  {f:'',   u:'',          c:'此文已由板主刪除',del:1,till:3},
+  {f:'20F',u:'ytl_lin',   c:'我頂。\n妳去睡。',at:3,restored:1},
   {f:'23F',u:'kt0904',    c:'昨天那份比較大 我有存'},
   {f:'25F',u:'tsonghan',  c:'我看過了…那份先不要動。'},
   {f:'31F',u:'haoge',     c:'不要再貼了。到此為止。'}
@@ -544,7 +569,7 @@ const DOCS=[
    from:'haoge',fromFull:'tai.wenhao@shengyue.com.tw',
    date:'2015/09/28 19:44',subj:'帳號',
    body:'密碼寫在這裡，不要貼在板上。\n\ntsche0710\n密碼：她的員編後四碼\n\n用完登出。\n每天的紀錄冠廷會存一份，連結在附件。\n\n不要私下傳。',
-   att:'2015-10.htm　（38 KB）'},
+   att:'2015-10.htm　（38 KB）',attDoc:'a_im'},
   {id:'yalin_hr',box:'in',at:1,
    from:'yalin_w',fromFull:'yalin.wang@shengyue.com.tw',
    date:'2015/09/29 10:12',subj:'張副理',
@@ -573,7 +598,8 @@ const DOCS=[
 /* ---------- 群體查案（隨 prog 陸續解鎖，戴文豪全程不出現） ---------- */
 {id:'t_dig',at:1,peek:'五樓　找不到這個頁面',skin:'wulou',site:'五樓',
  title:'[閒聊] 你們該不會都還留著吧',
- meta:'五樓 › 閒聊　│　今天 13:14 – 13:34',
+ idx:{f:'20F',by:'siyu_1120',when:'今天 13:55',ts:TS_NOW(1355)},
+ meta:'五樓 › 閒聊　│　今天 13:14 – 13:55',
  posts:[
   {f:'1F',u:'kt0904',   c:'欸我剛剛把舊硬碟接起來翻了一下',t:'今天 13:14',today:1},
   {f:'2F',u:'kt0904',   c:'我根本沒刪過 全部都在',t:'今天 13:15',today:1},
@@ -589,13 +615,18 @@ const DOCS=[
   {f:'12F',u:'kt0904',  c:'她發燒那樓 底下也有一樓不見了',t:'今天 13:42',today:1},
   {f:'13F',u:'yalin_w', c:'我看一下……欸真的欸',t:'今天 13:44',today:1},
   {f:'14F',u:'tsonghan',c:'板主權限才刪得動吧',t:'今天 13:46',today:1},
-  {f:'15F',u:'kt0904',  c:'這個破站好像還留著備份還原後台 帳密之前是共用的',t:'今天 13:48',today:1},
-  {f:'16F',u:'siyu_1120',c:'……我去試試看',t:'今天 13:52',today:1},
+  {f:'15F',u:'yalin_w', c:'板主到現在都還掛著昱庭的名字欸',t:'今天 13:47',today:1},
+  {f:'16F',u:'kt0904',  c:'沒人改啊 誰要去改',t:'今天 13:48',today:1},
+  {f:'17F',u:'kt0904',  c:'這個破站好像還留著備份還原後台 帳密之前是共用的',t:'今天 13:50',today:1},
+  {f:'18F',u:'kt0904',  c:'密碼十一年沒改過 笑死',t:'今天 13:51',today:1},
+  {f:'19F',u:'tsonghan',c:'你們要弄就弄。我不想知道是誰。',t:'今天 13:53',today:1},
+  {f:'20F',u:'siyu_1120',c:'……我去試試看',t:'今天 13:55',today:1},
   {silence:'—— 之後沒有人再回覆 ——'}
  ]},
 
 {id:'t_stop',at:3,peek:'五樓　權限不足',skin:'wulou',site:'五樓',
  title:'[閒聊] 收手',
+ idx:{f:'28F',by:'haoge',when:'2015/11/21',ts:TS(2015,11,21)},
  meta:'五樓 › 閒聊　│　2015/11/16 – 2015/11/21　│　共 28 篇，顯示 22 篇　│　板主已編輯',
  posts:[
   {f:'1F', u:'ytl_lin',   c:'這件事要收了。不要再做了。'},
@@ -625,6 +656,7 @@ const DOCS=[
 
 {id:'t_after',at:3,peek:'五樓　板主已鎖定',skin:'wulou',site:'五樓',
  title:'[閒聊] 那天之後',
+ idx:{f:'12F',by:'haoge',when:'2015/12/03',ts:TS(2015,12,3)},
  meta:'五樓 › 閒聊　│　2015/11/28 – 2015/12/03　│　共 12 篇，顯示 9 篇　│　板主已編輯',
  posts:[
   {f:'1F', u:'kt0904',    c:'昨天他講的那些 我沒有全部聽懂'},
@@ -641,7 +673,8 @@ const DOCS=[
  ]},
 
 {id:'t_who',at:3,peek:'五樓　找不到這個頁面',skin:'wulou',site:'五樓',
- title:'[閒聊] 是昱庭',
+ title:'[閒聊] 是昱庭',lockTitle:'[閒聊] ██',
+ idx:{f:'11F',by:'yalin_w',when:'今天 16:09',ts:TS_NOW(1609)},
  meta:'五樓 › 閒聊　│　今天 15:48 – 16:09',
  posts:[
   {f:'1F',u:'siyu_1120',c:'……是昱庭。是他幫我頂的。',t:'今天 15:48',today:1},
@@ -683,7 +716,8 @@ const DOCS=[
  ]},
 
 {id:'t_found',at:5,peek:'五樓　找不到這個頁面',skin:'wulou',site:'五樓',
- title:'[閒聊] 找到了',
+ title:'[閒聊] 找到了',lockTitle:'[閒聊] ██',
+ idx:{f:'9F',by:'tsonghan',when:'今天 18:43',ts:TS_NOW(1843)},
  meta:'五樓 › 閒聊　│　今天 18:22 – 18:43',
  posts:[
   {f:'1F',u:'kt0904',   c:'找到了？',t:'今天 18:22',today:1},
@@ -700,15 +734,20 @@ const DOCS=[
 ];
 
 /* ================= 板首頁 ================= */
-const BOARD_INDEX=[
- {doc:'t_today', label:'[閒聊] 又到了',        meta:'73F　│　最後回覆 kt0904　│　今天 11:04'},
- {deco:1,         label:'[閒聊] 有人要一起吃飯嗎',meta:'5F　│　最後回覆 siyu_1120　│　2023/08/02'},
- {doc:'t_prank',  label:'[閒聊] 欣怡生日',      meta:'24F　│　最後回覆 haoge　　│　2015/06/20'},
- {deco:1,         label:'[心得] 那間拉麵有夠雷', meta:'9F　│　最後回覆 kt0904　　│　2021/11/09'},
- {doc:'t_new',    label:'[閒聊] 新來的那個',    meta:'52F　│　最後回覆 ytl_lin　│　2015/11/20'},
- {deco:1,         label:'[閒聊] 附近停車怎麼那麼難停', meta:'4F　│　最後回覆 yalin_w　│　2019/05/17'},
- {deco:1,         label:'[公告] 這個月開會改到禮拜三', meta:'2F　│　最後回覆 haoge　　│　2017/03/02'}
+/* 裝飾用的串：點不開，只是讓板看起來像活過十一年 */
+const BOARD_DECO=[
+ {label:'[閒聊] 有人要一起吃飯嗎',        f:'5F',by:'siyu_1120',when:'2023/08/02',ts:TS(2023,8,2)},
+ {label:'[心得] 那間拉麵有夠雷',          f:'9F',by:'kt0904',  when:'2021/11/09',ts:TS(2021,11,9)},
+ {label:'[閒聊] 附近停車怎麼那麼難停',    f:'4F',by:'yalin_w', when:'2019/05/17',ts:TS(2019,5,17)},
+ {label:'[公告] 這個月開會改到禮拜三',    f:'2F',by:'haoge',   when:'2017/03/02',ts:TS(2017,3,2)}
 ];
+/* 已解鎖的串 + 裝飾串，一起依最後回覆時間排序 */
+function boardRows(){
+  return DOCS.filter(d=>d.skin==='wulou'&&prog>=d.at&&d.idx)
+    .map(d=>({doc:d.id,label:d.title,x:d.idx}))
+    .concat(BOARD_DECO.map(x=>({deco:1,label:x.label,x})))
+    .sort((a,b)=>b.x.ts-a.x.ts);
+}
 
 /* ================= 閘 ================= */
 const GATES=[
@@ -719,9 +758,12 @@ const GATES=[
   need:'你當年設密碼的習慣',
   fields:[
    {label:'帳號',prefill:'chen.siyu',locked:true,remember:true},
-   {label:'密碼',type:'password',answer:['1120sy','1120siyu']}
+   {label:'密碼',type:'password',
+    answer:['1120sy','1120siyu','1120cs','1120csy','1120chensiyu',
+            'sy1120','siyu1120','cs1120','csy1120','chensiyu1120']}
   ],
   forgot:{hint:'生日加上名字縮寫'},
+  nudge:{'1120':'密碼不正確。這個信箱的密碼不只四碼。'},
   err:'密碼不正確，請再試一次。'},
 
  {id:'g_admin',ch:'第一章',label:'還原 19F 底下被刪的那樓',
@@ -776,6 +818,7 @@ let boardTab='board_index';              // 五樓這個站台目前顯示的頁
 const seen=new Set();
 let gateDone={};
 let mailFolder='in', mailOpen=null;      // 信箱內部狀態
+let saidNow='';                          // 過閘之後要先播的那句旁白
 const MAX_DOC_TABS=3;                    // 文件分頁上限，超過自動關掉最舊的
 const NOTES_TAB_ENABLED=false;           // 「我的最愛」分頁先隱藏：跟留言板調性不搭、破壞沉浸感
                                           // 程式碼保留，之後想要重新設計或恢復再打開這個開關即可
@@ -867,6 +910,7 @@ function renderChrome(){
 function renderPage(){
   const vp=document.getElementById('viewport');
   if(prog>=6) return renderEnd(vp);
+  if(saidNow){ vp.className='viewport vp-said'; return renderSaid(vp); }
   const g=curGate();
   if(g&&active===g.id){ vp.className='viewport vp-'+g.skin; return renderGate(vp,g); }
   if(active==='board_index'){ vp.className='viewport vp-wulou'; return renderBoardIndex(vp); }
@@ -882,18 +926,19 @@ function renderPage(){
 
 /* ---------- 板首頁 ---------- */
 function renderBoardIndex(vp){
-  const rows=BOARD_INDEX.map(x=>{
-    if(x.deco) return `<div class="idx-row deco"><div class="t">${esc(x.label)}</div>
-      <div class="m">${esc(x.meta)}</div></div>`;
-    return `<button class="idx-row${seen.has(x.doc)?'':' new'}" data-idx="${x.doc}">
-      <div class="t">${esc(x.label)}</div><div class="m">${esc(x.meta)}</div></button>`;
+  const line=x=>`${x.f}　│　最後回覆 ${x.by.padEnd(10,' ')}│　${x.when}`;
+  const rows=boardRows().map(r=>{
+    if(r.deco) return `<div class="idx-row deco"><div class="t">${esc(r.label)}</div>
+      <div class="m">${esc(line(r.x))}</div></div>`;
+    return `<button class="idx-row${seen.has(r.doc)?'':' new'}" data-idx="${r.doc}">
+      <div class="t">${esc(r.label)}</div><div class="m">${esc(line(r.x))}</div></button>`;
   }).join('');
 
   vp.innerHTML=`<div class="cols"><div class="main">
     <div class="wl-hd"><span class="lg">五樓</span>
       <span class="nv"><button data-home>主板</button>　│　精華區　│　板規</span>
       <span class="me">${esc(ME.name)}（${esc(ME.uid)}）</span></div>
-    <div class="wl-sub">主板　│　依最後回覆排序</div>
+    <div class="wl-sub">主板　│　板主 ytl_lin　│　依最後回覆排序</div>
     <div class="wl-body idx-list">${rows}</div>
   </div></div>`;
 
@@ -905,9 +950,10 @@ function renderBoardIndex(vp){
 /* ---------- 板 ---------- */
 function renderThread(vp,d){
   const isMain=d.id==='t_today';
-  const body=d.posts.map(p=>{
+  const body=d.posts.filter(p=>(p.at===undefined||prog>=p.at)
+      &&(p.till===undefined||prog<p.till)).map(p=>{
     if(p.silence) return `<div class="silence">${esc(p.silence)}</div>`;
-    return `<div class="rp${p.del?' del':''}${p.u===ME.uid?' mine':''}${p.today?' today':''}">
+    return `<div class="rp${p.del?' del':''}${p.u===ME.uid?' mine':''}${p.today?' today':''}${p.restored?' restored':''}">
       <div class="f">${esc(p.f)}</div><div class="u">${esc(p.u)}${p.u===ME.uid?'<span class="me">（你）</span>':''}</div>
       <div class="c">${esc(p.c)}${p.t?`<span class="t">${esc(p.t)}</span>`:''}</div></div>`;
   }).join('');
@@ -949,15 +995,14 @@ function renderArchive(vp,d){
 /* ---------- 信箱 ---------- */
 function renderInbox(vp,d){
   const list=d.mails.filter(m=>m.box===mailFolder&&prog>=m.at);
-  const trashN=d.mails.filter(m=>m.box==='trash'&&prog>=m.at).length;
-  const inN=d.mails.filter(m=>m.box==='in'&&prog>=m.at).length;
   const m=mailOpen?d.mails.find(x=>x.id===mailOpen):null;
 
+  const cnt=f=>d.mails.filter(x=>x.box===f&&prog>=x.at).length;
+  const fold=(f,name)=>{const c=cnt(f);
+    return `<div class="f${mailFolder===f?' on':''}" data-fd="${f}">${name}`
+      +`${c?`<span class="n">${c}</span>`:''}</div>`;};
   const side=`<div class="yh-side">
-    <div class="f${mailFolder==='in'?' on':''}" data-fd="in">收件匣${inN?`<span class="n">${inN}</span>`:''}</div>
-    <div class="f" data-fd="draft">草稿匣</div>
-    <div class="f" data-fd="sent">寄件備份</div>
-    <div class="f${mailFolder==='trash'?' on':''}" data-fd="trash">垃圾桶${trashN?`<span class="n">${trashN}</span>`:''}</div>
+    ${fold('in','收件匣')}${fold('draft','草稿匣')}${fold('sent','寄件備份')}${fold('trash','垃圾桶')}
   </div>`;
 
   const isOut=f=>f==='sent'||f==='draft';   // 寄件備份／草稿匣：她自己是寄件人
@@ -971,7 +1016,9 @@ function renderInbox(vp,d){
         <div><b>收件人</b>${esc(isOut(m.box)?(m.toFull||m.to||''):d.acct)}</div>
         <div><b>日期</b>${esc(m.date)}</div></div>
       <div class="mbody">${esc(m.body)}</div>
-      ${m.att?`<div class="yh-att">附件：<span class="a">${esc(m.att)}</span></div>`:''}
+      ${m.att?`<div class="yh-att">附件：${m.attDoc&&prog>=(DOCS.find(x=>x.id===m.attDoc)||{at:99}).at
+        ?`<button class="a" data-att="${esc(m.attDoc)}">${esc(m.att)}</button>`
+        :`<span class="a">${esc(m.att)}</span>`}</div>`:''}
     </div>`;
   } else {
     main=`<div class="yh-main">
@@ -996,6 +1043,8 @@ function renderInbox(vp,d){
       b.onclick=()=>{ mailFolder=b.dataset.fd; mailOpen=null; render(); };});
     document.querySelectorAll('[data-mail]').forEach(r=>{
       r.onclick=()=>{ mailOpen=r.dataset.mail; render(); };});
+    document.querySelectorAll('[data-att]').forEach(a=>{
+      a.onclick=()=>{ openDoc(a.dataset.att); };});
     const b=document.getElementById('mBack');
     if(b) b.onclick=()=>{ mailOpen=null; render(); };
   },0);
@@ -1053,14 +1102,24 @@ function renderGate(vp,g){
     const submit=()=>{
       const vals=g.fields.map((x,i)=>(document.getElementById('f'+i)||{}).value||'');
       const ok=g.fields.every((x,i)=>x.locked||match(vals[i],x.answer));
-      if(!ok){ if(msg)msg.textContent=g.err; return; }
+      if(!ok){
+        if(msg){
+          let t=g.err;
+          if(g.nudge) for(const k in g.nudge) if(vals.some(v=>norm(v)===norm(k))) t=g.nudge[k];
+          msg.textContent=t;
+        }
+        return;
+      }
 
       if(g.id==='g_search'){ showSearchResult(); return; }
       gateDone[g.id]=true;
       prog=AFTER[g.id].unlockAt;
+      saidNow=AFTER[g.id].said||'';
       if(g.id==='g_mail'){                 // 登入成功 → 留在信箱
         mailFolder='in'; mailOpen=null;
-        openTab('m_box');
+        seen.add('m_box'); openTab('m_box');
+      } else if(g.id==='g_admin'){         // 還原成功 → 直接回到那一串，看還原出來的 20F
+        openDoc('t_sort');
       } else {
         goHome();
       }
@@ -1092,22 +1151,34 @@ function showSearchResult(){
       <div class="d">找不到這個頁面。</div></div>
   </div>`;
   const h=document.getElementById('hit');
-  if(h) h.onclick=()=>{ gateDone.g_search=true; prog=5; openTab('blog'); };
+  if(h) h.onclick=()=>{ gateDone.g_search=true; prog=5; seen.add('blog'); openTab('blog'); };
+}
+
+/* ---------- 過場旁白 ---------- */
+function renderSaid(vp){
+  vp.innerHTML=`<div class="said"><p>${esc(saidNow)}</p>
+    <button class="btn" id="saidGo">繼續</button></div>`;
+  const b=document.getElementById('saidGo');
+  if(b) b.onclick=()=>{ saidNow=''; render(); window.scrollTo(0,0); };
 }
 
 /* ---------- 我的最愛 ---------- */
 function notesContent(){
   const g=curGate();
+  const ahead=DOCS.filter(d=>d.at>prog&&d.peek).map(d=>d.at);
+  const nextAt=ahead.length?Math.min(...ahead):-1;   // 只預告下一階，不把整條線一次攤開
   const docs=DOCS.map(d=>{
     if(prog>=d.at) return `<button class="doc${seen.has(d.id)?'':' new'}" data-doc="${d.id}">
       <div class="t">${esc(d.title)}</div><div class="m">${esc(d.site)}</div></button>`;
-    if(d.peek) return `<div class="doc lock">
-      <div class="t">${esc(d.title)}</div><div class="m">${esc(d.peek)}</div></div>`;
+    if(d.peek&&d.at===nextAt) return `<div class="doc lock">
+      <div class="t">${esc(d.lockTitle||d.title)}</div><div class="m">${esc(d.peek)}</div></div>`;
     return '';
   }).join('');
-  const steps=GATES.map(x=>{
+  const gi=g?GATES.findIndex(x=>x.id===g.id):GATES.length;
+  const steps=GATES.map((x,i)=>{
     const done=!!gateDone[x.id];
     const now=g&&g.id===x.id;
+    if(i>gi) return `<div class="step future"><span class="mk">□</span>${esc(x.ch)}　？？？</div>`;
     return `<div class="step${done?' done':''}${now?' now':''}">
       <span class="mk">${done?'■':'□'}</span>${esc(x.ch)}　${esc(x.label)}
       ${now?`<div class="sub">${esc(x.need)}</div>`:''}</div>`;
