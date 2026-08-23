@@ -20,8 +20,46 @@ body{background:#9BA3AB;color:var(--ink);
   font-size:13px;line-height:1.75}
 button{font-family:inherit;cursor:pointer}
 
+/* ===== 開場：現在的聊天室 ===== */
+#prelude{max-width:380px;margin:10vh auto 0;padding:0 16px}
+.pl-wrap{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;
+  box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.pl-top{padding:12px 14px;border-bottom:1px solid var(--line-soft);font-size:13px;
+  font-weight:600;color:var(--ink);background:#F3F5F7}
+.pl-top .sub{display:block;font-weight:400;font-size:11px;color:var(--ink-soft);margin-top:2px}
+.pl-msgs{padding:14px;display:flex;flex-direction:column;gap:8px;max-height:62vh;overflow-y:auto}
+.pl-row{display:flex;align-items:flex-end;gap:7px;max-width:88%}
+.pl-row.other{align-self:flex-start}
+.pl-row.me{align-self:flex-end;flex-direction:row-reverse}
+.pl-av{width:26px;height:26px;border-radius:50%;flex:none;color:#fff;font-size:11px;
+  display:flex;align-items:center;justify-content:center;font-weight:600}
+.pl-col{display:flex;flex-direction:column;min-width:0}
+.pl-row.other .pl-col{align-items:flex-start}
+.pl-row.me .pl-col{align-items:flex-end}
+.pl-name{font-size:11px;color:var(--ink-soft);margin:0 3px 3px}
+.pl-bub{padding:8px 12px;border-radius:15px;font-size:13px;line-height:1.6;white-space:pre-wrap}
+.pl-row.other .pl-bub{background:#EEF0F2;color:var(--ink);border-bottom-left-radius:4px}
+.pl-row.me .pl-bub{background:var(--board);color:#fff;border-bottom-right-radius:4px}
+.pl-typing .pl-bub{padding:11px 14px;display:flex;gap:3px;align-items:center}
+.pl-typing .dot{width:6px;height:6px;border-radius:50%;background:#9AA4AD;
+  animation:pldot 1.1s infinite ease-in-out}
+.pl-typing .dot:nth-child(2){animation-delay:.15s}
+.pl-typing .dot:nth-child(3){animation-delay:.3s}
+@keyframes pldot{0%,60%,100%{opacity:.35;transform:translateY(0)}30%{opacity:1;transform:translateY(-2px)}}
+.pl-link{display:block;width:100%;text-align:left;padding:10px 12px;border-radius:13px;
+  border:1px solid var(--line);background:#FAFBFC;color:var(--link);font-size:12px;
+  border-bottom-right-radius:4px}
+.pl-link:hover{background:#F0F3F6}
+.pl-link .lbl{display:block;color:var(--ink-soft);font-size:11px;margin-bottom:3px}
+.pl-link .url{font-family:"Courier New",monospace}
+.pl-row.me .pl-draft{cursor:pointer;border:1px dashed rgba(255,255,255,.7);
+  background:var(--board);opacity:.55;font-family:inherit;text-align:left}
+.pl-row.me .pl-draft:hover{opacity:.8}
+.pl-foot{padding:10px 14px;border-top:1px solid var(--line-soft);text-align:center;
+  font-size:11px;color:var(--ink-soft)}
+
 /* ===== 登入 ===== */
-#login{max-width:330px;margin:14vh auto 0;padding:0 16px}
+#login{display:none;max-width:330px;margin:14vh auto 0;padding:0 16px}
 .brand{font-family:"MingLiU","SimSun","Songti TC",serif;font-size:50px;letter-spacing:.22em;
   color:#2C3E50;text-align:center;margin:0 0 2px;text-indent:.22em}
 .brand-sub{text-align:center;color:#5C6873;font-size:11px;letter-spacing:.3em;
@@ -325,6 +363,14 @@ button{font-family:inherit;cursor:pointer}
 </head>
 <body>
 
+<div id="prelude">
+  <div class="pl-wrap">
+    <div class="pl-top">茶水間<span class="sub">冠廷、宗翰、雅琳、你</span></div>
+    <div class="pl-msgs" id="plMsgs"></div>
+    <div class="pl-foot">今天 08:5x</div>
+  </div>
+</div>
+
 <div id="login">
   <div class="brand">五樓</div>
   <div class="brand-sub">EST. 2015</div>
@@ -371,14 +417,100 @@ const USERS={siyu_1120:'思妤',yalin_w:'雅琳',kt0904:'冠廷',
              tsonghan:'宗翰',haoge:'文豪',ytl_lin:'昱庭'};
 const who=u=>USERS[u]||u||'';
 
+/* ================= 開場：現在的聊天室 =================
+   在她登入五樓之前，先讓玩家看到「為什麼今天會回去看」——
+   四個還在聯絡的人（不含文豪，他今天稍後會第一個拒答離線）在群組裡聊起舊板。
+   玩家點草稿泡泡＝思妤主動送出訊息，送出後對方才輪流「輸入中」→回話，
+   兩輪之後冠廷貼出網址，玩家點下去才銜接到既有的登入頁。 */
+const AVATARS={
+  siyu_1120:{ch:'思',bg:'#4A6D8C'}, kt0904:{ch:'冠',bg:'#8C6A3A'},
+  tsonghan:{ch:'宗',bg:'#5C6873'},  yalin_w:{ch:'雅',bg:'#7A4A73'}
+};
+/* 開場墊場：三人先隨口聊到「以前公司那時候」，但還沒點名五樓，
+   讓思妤接下來主動說出「五樓那個板」顯得是她把話題講明確，而不是憑空冒出來。
+   一開場就整段顯示在畫面上，不用「輸入中」動畫、不用玩家點擊。 */
+const PRELUDE_INTRO=[
+ {u:'kt0904',   c:'欸 想到以前公司那些事'},
+ {u:'tsonghan', c:'幹嘛突然講這個'},
+ {u:'kt0904',   c:'就滑到舊照片而已'},
+ {u:'yalin_w',  c:'好多年沒想到那時候的事了'}
+];
+const PRELUDE=[
+ {trigger:'欸 我剛剛忽然想到五樓那個板 你們還記得嗎',then:[
+   {u:'kt0904',   c:'記得啊 幹嘛突然問'},
+   {u:'tsonghan', c:'很久沒人登入了吧'}
+ ]},
+ {trigger:'我想回去看看 帳號密碼你們還留著嗎',then:[
+   {u:'yalin_w',  c:'好懷念喔 我們是不是快十年沒上去了'},
+   {u:'kt0904',   c:'網址我還留著 傳給你'},
+   {u:'kt0904',   link:'http://wulou.5gbfree.com/'},
+   {u:'siyu_1120',c:'謝謝！'}
+ ]}
+];
+let plBeat=0;                 // 現在等待玩家觸發第幾輪（PRELUDE 的 index）
+let plShown=[];                // 已經顯示在畫面上的訊息（含思妤自己送出的）
+let plTyping=null;             // 目前正在顯示「輸入中」的人是誰
+let plBusy=true;               // 正在自動播放墊場／某一輪的回覆時，不能顯示草稿泡泡
+function plAvatar(u){ const a=AVATARS[u]||{ch:who(u)[0]||'?',bg:'#8A9299'};
+  return `<div class="pl-av" style="background:${a.bg}">${esc(a.ch)}</div>`; }
+function plRow(u,inner,extraCls){
+  const mine=u===ME.uid;
+  return `<div class="pl-row${mine?' me':' other'}${extraCls?' '+extraCls:''}">
+    ${plAvatar(u)}<div class="pl-col">
+      ${mine?'':`<div class="pl-name">${esc(who(u))}</div>`}
+      ${inner}</div></div>`;
+}
+function renderPrelude(){
+  const rows=plShown.map(m=>{
+    if(m.link) return plRow(m.u,`<button class="pl-link" id="plLink"><span class="lbl">五樓</span>
+      <span class="url">${esc(m.link)}</span></button>`);
+    return plRow(m.u,`<div class="pl-bub">${esc(m.c)}</div>`);
+  });
+  if(plTyping) rows.push(plRow(plTyping,
+    `<div class="pl-bub"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>`,
+    'pl-typing'));
+  if(!plBusy&&plBeat<PRELUDE.length)
+    rows.push(plRow(ME.uid,`<button class="pl-bub pl-draft" id="plDraft">${esc(PRELUDE[plBeat].trigger)}</button>`));
+  document.getElementById('plMsgs').innerHTML=rows.join('');
+  const draft=document.getElementById('plDraft'); if(draft) draft.onclick=plSend;
+  const link=document.getElementById('plLink'); if(link) link.onclick=()=>{
+    document.getElementById('prelude').style.display='none';
+    document.getElementById('login').style.display='block';
+    document.getElementById('u').focus();
+  };
+  const box=document.getElementById('plMsgs'); box.scrollTop=box.scrollHeight;
+}
+function plSend(){
+  const beat=PRELUDE[plBeat];
+  plBusy=true;
+  plShown.push({u:ME.uid,c:beat.trigger});
+  renderPrelude();
+  plPlayThen(beat.then,0,()=>{ plBeat++; renderPrelude(); });
+}
+/* 播完 list 就呼叫 onDone；list 裡若是思妤自己的訊息（例如貼連結後的「謝謝！」），
+   跳過「輸入中」動畫——那個效果是做給別人看的，不是她自己打字給自己看。 */
+function plPlayThen(list,i,onDone){
+  if(i>=list.length){ plBusy=false; onDone(); return; }
+  const m=list[i], self=m.u===ME.uid;
+  const reveal=()=>{ plShown.push(m); renderPrelude(); setTimeout(()=>plPlayThen(list,i+1,onDone),450); };
+  if(self){ setTimeout(reveal,600); return; }
+  plTyping=m.u; renderPrelude();
+  setTimeout(()=>{ plTyping=null; reveal(); },900+Math.random()*500);
+}
+plShown=PRELUDE_INTRO.slice();  // 墊場閒聊直接整段顯示，不跑輸入中動畫
+plBusy=false;
+renderPrelude();
+
 /* ================= 文件 ================= */
+/* wulou 串裡每則 posts[].f 只是撰寫時的參考標號，畫面上實際顯示的樓層數字
+   由 renderThread() 依目前看得到的樓層自動連續編號（見該函式），不會跳號。 */
 const DOCS=[
 
 /* ---------- 序章 ---------- */
 {id:'t_today',at:0,skin:'wulou',site:'五樓',
  title:'[閒聊] 又到了',
- idx:{f:'73F',by:'kt0904',when:'今天 11:04',ts:TS_NOW(1104)},
- meta:'五樓 › 閒聊　│　2016/11/27 – __TODAY__　│　共 73 篇，顯示 43 篇',
+ idx:{f:'44F',by:'kt0904',when:'今天 11:04',ts:TS_NOW(1104)},
+ meta:'五樓 › 閒聊　│　2016/11/27 – __TODAY__',
  posts:[
   {f:'1F', u:'kt0904',   c:'今年也沒事 大家平安啦XD',t:'2016/11/27'},
   {f:'5F', u:'tsonghan', c:'今年也是…沒什麼好說的。',t:'2017/11/27'},
@@ -432,8 +564,8 @@ const DOCS=[
 
 {id:'t_new',at:0,skin:'wulou',site:'五樓',
  title:'[閒聊] 新來的那個',
- idx:{f:'52F',by:'ytl_lin',when:'2015/11/20',ts:TS(2015,11,20)},
- meta:'五樓 › 閒聊　│　2015/09/18 – 2015/11/20　│　共 52 篇，顯示 22 篇',
+ idx:{f:'22F',by:'ytl_lin',when:'2015/11/20',ts:TS(2015,11,20)},
+ meta:'五樓 › 閒聊　│　2015/09/18 – 2015/11/20',
  posts:[
   {f:'1F', u:'tsonghan',  c:'今天來了一個新的。坐窗邊那個。',t:'09/18 09:41'},
   {f:'2F', u:'kt0904',    c:'看到了啦 感覺很難聊',t:'09/18 09:48'},
@@ -461,8 +593,8 @@ const DOCS=[
 
 {id:'t_prank',at:0,skin:'wulou',site:'五樓',
  title:'[閒聊] 欣怡生日',
- idx:{f:'24F',by:'haoge',when:'2015/06/20',ts:TS(2015,6,20)},
- meta:'五樓 › 閒聊　│　2015/06/12 – 2015/06/20　│　共 24 篇，顯示 18 篇',
+ idx:{f:'19F',by:'haoge',when:'2015/06/20',ts:TS(2015,6,20)},
+ meta:'五樓 › 閒聊　│　2015/06/12 – 2015/06/20',
  posts:[
   {f:'1F', u:'kt0904',   c:'欸 下禮拜五欣怡生日欸（行政那個）',t:'06/12 10:22'},
   {f:'2F', u:'siyu_1120',c:'真的假的！！要幫她辦一下嗎',t:'06/12 10:26'},
@@ -491,7 +623,7 @@ const DOCS=[
 /* ---------- 第一章 ---------- */
 {id:'t_sort',at:1,peek:'五樓　找不到這個頁面',skin:'wulou',site:'五樓',
  title:'[整理] 她',
- idx:{f:'31F',by:'haoge',when:'2015/10/26',ts:TS(2015,10,26)},
+ idx:{f:'18F',by:'haoge',when:'2015/10/26',ts:TS(2015,10,26)},
  meta:'五樓 › 整理　│　發文者 haoge　│　2015/09/28 – 2015/10/26　│　板主已編輯',
  posts:[
   {f:'1F', u:'haoge',     c:'開一串。資料都貼這裡，不要私下傳。',t:'09/28 19:51'},
@@ -654,8 +786,8 @@ const DOCS=[
 
 {id:'t_stop',at:3,peek:'五樓　權限不足',skin:'wulou',site:'五樓',
  title:'[閒聊] 收手',
- idx:{f:'28F',by:'haoge',when:'2015/11/21',ts:TS(2015,11,21)},
- meta:'五樓 › 閒聊　│　2015/11/16 – 2015/11/21　│　共 28 篇，顯示 22 篇　│　板主已編輯',
+ idx:{f:'23F',by:'haoge',when:'2015/11/21',ts:TS(2015,11,21)},
+ meta:'五樓 › 閒聊　│　2015/11/16 – 2015/11/21　│　板主已編輯',
  posts:[
   {f:'1F', u:'ytl_lin',   c:'這件事要收了。不要再做了。',t:'11/16 20:14'},
   {f:'2F', u:'haoge',     c:'為什麼',t:'11/16 20:22'},
@@ -684,8 +816,8 @@ const DOCS=[
 
 {id:'t_after',at:3,peek:'五樓　板主已鎖定',skin:'wulou',site:'五樓',
  title:'[閒聊] 那天之後',
- idx:{f:'12F',by:'haoge',when:'2015/12/03',ts:TS(2015,12,3)},
- meta:'五樓 › 閒聊　│　2015/11/28 – 2015/12/03　│　共 12 篇，顯示 10 篇　│　板主已編輯',
+ idx:{f:'11F',by:'haoge',when:'2015/12/03',ts:TS(2015,12,3)},
+ meta:'五樓 › 閒聊　│　2015/11/28 – 2015/12/03　│　板主已編輯',
  posts:[
   {f:'1F', u:'kt0904',    c:'昨天他講的那些 我沒有全部聽懂',t:'11/28 10:07'},
   {f:'2F', u:'tsonghan',  c:'我也是。他講得太快了…而且一直在發抖。',t:'11/28 10:19'},
@@ -810,7 +942,7 @@ const GATES=[
   site:'五樓',skin:'restore',url:'http://wulou.5gbfree.com/admin.php?act=restore',
   brand:['五樓　板務後台','RESTORE'],
   note:'以下為本板尚可還原之已刪除文章。備份僅保留文章本體，刪除者身分依板務紀錄顯示。',
-  need:'思妤發燒那天，19F 底下的那一樓',
+  need:'思妤發燒那天，14F 底下的那一樓',
   fields:[]},
 
  {id:'g_search',ch:'第二章',label:'查他現在在哪裡',
@@ -1007,14 +1139,17 @@ function renderBoardIndex(vp){
 /* ---------- 板 ---------- */
 function renderThread(vp,d){
   const isMain=d.id==='t_today';
+  let floorNo=0;
   const body=d.posts.filter(p=>{
     if(p.at!==undefined&&prog<p.at) return false;
     if(p.rid) return p.del?!restored.has(p.rid):restored.has(p.rid);
     return true;
   }).map(p=>{
     if(p.silence) return `<div class="silence">${esc(p.silence)}</div>`;
+    floorNo++;                       // 樓層連續編號，不因隱藏樓層而跳號
+    const label=p.del?'':floorNo+'F';
     return `<div class="rp${p.del?' del':''}${p.u===ME.uid?' mine':''}${p.today?' today':''}${p.rid&&!p.del?' restored':''}">
-      <div class="f">${esc(p.f)}</div>
+      <div class="f">${esc(label)}</div>
       <div class="u">${p.u?`<span class="nm">${esc(who(p.u))}${p.u===ME.uid?'<span class="me">（你）</span>':''}</span>
         <span class="uid">${esc(p.u)}</span>`:''}</div>
       <div class="c">${esc(p.c)}</div>
