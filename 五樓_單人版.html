@@ -183,6 +183,16 @@ button{font-family:inherit;cursor:pointer}
 .ad .in{padding:16px 18px}
 .ad h2{margin:0 0 3px;font-size:15px;color:#2C3E50}
 .ad .sub{font-size:11px;color:var(--ink-soft);letter-spacing:.1em;margin-bottom:14px}
+.ad.wide{max-width:600px}
+.ad .rst{width:100%;border-collapse:collapse;font-size:12px;margin:2px 0 14px}
+.ad .rst th{text-align:left;font-weight:600;color:var(--ink-soft);font-size:11px;
+  letter-spacing:.06em;border-bottom:1px solid #8A949D;padding:4px 6px}
+.ad .rst td{padding:7px 6px;border-bottom:1px solid #C0C6CC}
+.ad .rst tr:hover td{background:#E7EAED}
+.ad .rst tr[data-rid]{cursor:pointer}
+.ad .rst .w{font-family:"Courier New",monospace;color:var(--ink-soft);white-space:nowrap}
+.ad .rst-none{font-size:12px;color:var(--ink-soft);padding:14px 0}
+.ad .ok{font-size:12px;color:#3A6B3A;min-height:19px;margin-top:9px;white-space:pre-wrap}
 
 /* ===== 搜尋 ===== */
 .vp-search{background:#fff;padding:0}
@@ -375,7 +385,9 @@ const DOCS=[
   {f:'42F',u:'tsonghan', c:'什麼那時候的。',t:'今天 09:16',today:1},
   {f:'43F',u:'kt0904',   c:'就那時候啊',t:'今天 09:17',today:1},
   {f:'44F',u:'kt0904',   c:'我以為早就沒了 怎麼會還在我這',t:'今天 09:18',today:1},
-  {f:'',   u:'',         c:'此文已由作者刪除',del:1,today:1},
+  {f:'',   u:'',         c:'此文已由作者刪除',del:1,today:1,
+   rid:'r_today',rdel:{when:'今天 09:20',by:'作者',ts:TS_NOW(920)}},
+  {f:'45F',u:'kt0904',   c:'我剛剛翻到前面幾張\n有點看不下去',t:'今天 09:20',today:1,rid:'r_today'},
   {f:'46F',u:'haoge',    c:'丟掉。',t:'今天 09:22',today:1},
   {f:'47F',u:'siyu_1120',c:'欸 文豪好久沒上來了！！',t:'今天 09:24',today:1},
   {f:'48F',u:'haoge',    c:'我說丟掉。不要拍照，不要貼上來。',t:'今天 09:25',today:1},
@@ -458,7 +470,10 @@ const DOCS=[
   {f:'20F',u:'ytl_lin',  c:'我覺得不太好 我可能沒辦法錄了'},
   {f:'21F',u:'kt0904',   c:'所以勒 你不錄是要誰錄'},
   {f:'22F',u:'ytl_lin',  c:'抱歉 我到時候還是會去 但那段我沒辦法'},
-  {f:'',   u:'',         c:'此文已由作者刪除',del:1},
+  {f:'',   u:'',         c:'此文已由作者刪除',del:1,
+   rid:'r_prank',rdel:{when:'2015/06/20 01:07',by:'作者',ts:TS(2015,6,20)}},
+  {f:'—',  u:'ytl_lin',  c:'我不是要掃興\n我只是在想 如果被這樣弄的人是我\n我大概也會裝作沒事 然後回家一直想',
+   rid:'r_prank'},
   {f:'23F',u:'tsonghan', c:'先答應又反悔 是怎樣'},
   {f:'24F',u:'haoge',    c:'隨便他 東西還在 誰要錄自己錄'}
  ]},
@@ -483,8 +498,9 @@ const DOCS=[
   {f:'15F',u:'yalin_w',   c:'知道 我查一下'},
   {f:'16F',u:'siyu_1120', c:'謝啦～^^'},
   {f:'19F',u:'siyu_1120', c:'我今天發燒 真的不行QQ\n幫我頂一下拜託！！！'},
-  {f:'',   u:'',          c:'此文已由板主刪除',del:1,till:3},
-  {f:'20F',u:'ytl_lin',   c:'我頂。\n妳去睡。',at:3,restored:1},
+  {f:'',   u:'',          c:'此文已由板主刪除',del:1,
+   rid:'r_sort',rdel:{when:'2015/10/14 23:51',by:'板主',ts:TS(2015,10,14)}},
+  {f:'20F',u:'ytl_lin',   c:'我頂。\n妳去睡。',rid:'r_sort'},
   {f:'23F',u:'kt0904',    c:'昨天那份比較大 我有存'},
   {f:'25F',u:'tsonghan',  c:'我看過了…那份先不要動。'},
   {f:'31F',u:'haoge',     c:'不要再貼了。到此為止。'}
@@ -567,6 +583,10 @@ const DOCS=[
    date:'2015/09/28 19:44',subj:'帳號',
    body:'密碼寫在這裡，不要貼在板上。\n\ntsche0710\n密碼：她的員編後四碼\n\n用完登出。\n每天的紀錄冠廷會存一份，連結在附件。\n\n不要私下傳。',
    att:'2015-10.htm　（38 KB）',attDoc:'a_im'},
+  {id:'ytl_setup',box:'in',at:1,
+   from:'ytl_lin',fromFull:'ytl@shengyue.com.tw',
+   date:'2015/04/13 12:48',subj:'五樓開好了',
+   body:'弄好了，網址在下面。\n\nhttp://wulou.5gbfree.com/\n\n你們的帳號我照英文名字開好了，密碼先都設你們的生日，登進去自己改。\n\n板務後台的帳號是 ytl_lin，密碼 5f2015。\n我怕我哪天請假你們要用，先跟你們講一聲，不要外流。\n\n板名我取「五樓」，因為就是我們那層樓。宗翰說沒創意，可是我想不到更好的。\n\n以後閒聊都可以貼這裡。公司內網有在看，這裡沒有。'},
   {id:'yalin_hr',box:'in',at:1,
    from:'yalin_w',fromFull:'yalin.wang@shengyue.com.tw',
    date:'2015/09/29 10:12',subj:'張副理',
@@ -614,8 +634,8 @@ const DOCS=[
   {f:'14F',u:'tsonghan',c:'板主權限才刪得動吧',t:'今天 13:46',today:1},
   {f:'15F',u:'yalin_w', c:'板主到現在都還掛著昱庭的名字欸',t:'今天 13:47',today:1},
   {f:'16F',u:'kt0904',  c:'沒人改啊 誰要去改',t:'今天 13:48',today:1},
-  {f:'17F',u:'kt0904',  c:'這個破站好像還留著備份還原後台 帳密之前是共用的',t:'今天 13:50',today:1},
-  {f:'18F',u:'kt0904',  c:'密碼十一年沒改過 笑死',t:'今天 13:51',today:1},
+  {f:'17F',u:'kt0904',  c:'這個破站好像還留著板務後台 帳密當年是共用的',t:'今天 13:50',today:1},
+  {f:'18F',u:'kt0904',  c:'密碼我早忘了 但一定沒改過啦 他那種人不會改',t:'今天 13:51',today:1},
   {f:'19F',u:'tsonghan',c:'你們要弄就弄。我不想知道是誰。',t:'今天 13:53',today:1},
   {f:'20F',u:'siyu_1120',c:'……我去試試看',t:'今天 13:55',today:1},
   {silence:'—— 之後沒有人再回覆 ——'}
@@ -763,13 +783,23 @@ const GATES=[
   nudge:{'1120':'密碼不正確。這個信箱的密碼不只四碼。'},
   err:'密碼不正確，請再試一次。'},
 
- {id:'g_admin',ch:'第一章',label:'還原 19F 底下被刪的那樓',
-  site:'五樓',skin:'admin',url:'http://wulou.5gbfree.com/admin.php?act=restore',
+ {id:'g_ytl',ch:'第一章',label:'登入板務後台',
+  site:'五樓',skin:'admin',url:'http://wulou.5gbfree.com/admin.php',
+  brand:['五樓　板務後台','LOGIN'],
+  note:'本區僅限板務人員使用。\n本帳號上次登入：4021 天前。',
+  need:'板主帳號的密碼——當年他寄過給大家',
+  fields:[
+   {label:'帳號',prefill:'ytl_lin',locked:true},
+   {label:'密碼',type:'password',answer:['5f2015']}
+  ],
+  err:'密碼不正確。'},
+
+ {id:'g_admin',ch:'第一章',label:'還原被刪掉的那一樓',
+  site:'五樓',skin:'restore',url:'http://wulou.5gbfree.com/admin.php?act=restore',
   brand:['五樓　板務後台','RESTORE'],
-  note:'欲還原已刪除之文章，請輸入該文之發文者 ID。系統將與備份比對。',
-  need:'那天幫你頂的人是誰',
-  fields:[{label:'發文者 ID',answer:['ytl_lin','林昱庭','昱庭','ytl']}],
-  err:'與備份不符。無法還原。'},
+  note:'以下為本板尚可還原之已刪除文章。備份僅保留文章本體，刪除者身分依板務紀錄顯示。',
+  need:'思妤發燒那天，19F 底下的那一樓',
+  fields:[]},
 
  {id:'g_search',ch:'第二章',label:'查他現在在哪裡',
   site:'搜尋',skin:'search',url:'https://www.google.com.tw/search',
@@ -781,6 +811,7 @@ const GATES=[
 /* 過閘之後多出來的東西 */
 const AFTER={
  g_mail:{unlockAt:1, said:'你把帳號打進去的時候才發現，這個信箱你十一年沒開過。'},
+ g_ytl:{unlockAt:2, said:'密碼十一年沒有改過，一次就進去了。\n畫面右上角寫著「ytl_lin」。\n\n你現在是他。'},
  g_admin:{unlockAt:3, said:'那樓還原出來了。發文者是 ytl_lin。\n那天幫你頂的人，是他。'},
  g_search:{unlockAt:5, said:''}
 };
@@ -802,6 +833,7 @@ const SITE={
  m_box   :{tab:'Yahoo!奇摩電子信箱',  url:'https://tw.mail.yahoo.com/mail/', fav:'#7B0099'},
  blog    :{tab:'一個人的公休日',      url:'http://ytl-holiday.blogspot.com/', fav:'#8A8272'},
  g_mail  :{tab:'Yahoo!奇摩 － 登入',  url:'https://login.yahoo.com.tw/config/login', fav:'#7B0099'},
+ g_ytl   :{tab:'五樓 － 板務後台',    url:'http://wulou.5gbfree.com/admin.php', fav:'#6E7A85'},
  g_admin :{tab:'五樓 － 板務後台',    url:'http://wulou.5gbfree.com/admin.php?act=restore', fav:'#6E7A85'},
  g_search:{tab:'搜尋',                url:'https://www.google.com.tw/', fav:'#4A6D8C'},
  board   :{tab:'五樓 － 又到了',      url:'http://wulou.5gbfree.com/board.php?t=1127', fav:'#4A6D8C'},
@@ -816,13 +848,26 @@ const seen=new Set();
 let gateDone={};
 let mailFolder='in', mailOpen=null;      // 信箱內部狀態
 let saidNow='';                          // 過閘之後要先播的那句旁白
+const restored=new Set();                // 已經在板務後台還原出來的樓層
+let restoreMsg='';
 const MAX_DOC_TABS=3;                    // 文件分頁上限，超過自動關掉最舊的
 
 function curGate(){
-  if(prog===0) return GATES[0];
-  if(prog===1||prog===2) return GATES[1];
-  if(prog===3||prog===4) return GATES[2];
+  if(prog===0) return GATES[0];          // g_mail
+  if(prog===1) return GATES[1];          // g_ytl（登入板務後台）
+  if(prog===2) return GATES[2];          // g_admin（還原）
+  if(prog===3||prog===4) return GATES[3];// g_search
   return null;
+}
+/* 板務後台可以還原的東西：已解鎖的串裡，還沒被還原的刪除樓層 */
+function restorables(){
+  const out=[];
+  DOCS.forEach(d=>{
+    if(d.skin!=='wulou'||prog<d.at) return;
+    d.posts.forEach(p=>{ if(p.rid&&p.del&&!restored.has(p.rid))
+      out.push({rid:p.rid,title:d.title,when:p.rdel.when,by:p.rdel.by,ts:p.rdel.ts}); });
+  });
+  return out.sort((a,b)=>b.ts-a.ts);
 }
 function availDocs(){ return DOCS.filter(d=>prog>=d.at); }
 function isBoardDoc(id){ if(id==='board_index') return true;
@@ -906,7 +951,10 @@ function renderPage(){
   if(prog>=6) return renderEnd(vp);
   if(saidNow){ vp.className='viewport vp-said'; return renderSaid(vp); }
   const g=curGate();
-  if(g&&active===g.id){ vp.className='viewport vp-'+g.skin; return renderGate(vp,g); }
+  if(g&&active===g.id){
+    vp.className='viewport vp-'+(g.skin==='restore'?'admin':g.skin);
+    return g.skin==='restore'?renderRestore(vp,g):renderGate(vp,g);
+  }
   if(active==='board_index'){ vp.className='viewport vp-wulou'; return renderBoardIndex(vp); }
   if(active==='notes'){ vp.className='viewport vp-notes'; return renderNotes(vp); }
   const d=DOCS.find(x=>x.id===active);
@@ -944,10 +992,13 @@ function renderBoardIndex(vp){
 /* ---------- 板 ---------- */
 function renderThread(vp,d){
   const isMain=d.id==='t_today';
-  const body=d.posts.filter(p=>(p.at===undefined||prog>=p.at)
-      &&(p.till===undefined||prog<p.till)).map(p=>{
+  const body=d.posts.filter(p=>{
+    if(p.at!==undefined&&prog<p.at) return false;
+    if(p.rid) return p.del?!restored.has(p.rid):restored.has(p.rid);
+    return true;
+  }).map(p=>{
     if(p.silence) return `<div class="silence">${esc(p.silence)}</div>`;
-    return `<div class="rp${p.del?' del':''}${p.u===ME.uid?' mine':''}${p.today?' today':''}${p.restored?' restored':''}">
+    return `<div class="rp${p.del?' del':''}${p.u===ME.uid?' mine':''}${p.today?' today':''}${p.rid&&!p.del?' restored':''}">
       <div class="f">${esc(p.f)}</div><div class="u">${esc(p.u)}${p.u===ME.uid?'<span class="me">（你）</span>':''}</div>
       <div class="c">${esc(p.c)}${p.t?`<span class="t">${esc(p.t)}</span>`:''}</div></div>`;
   }).join('');
@@ -1112,8 +1163,8 @@ function renderGate(vp,g){
       if(g.id==='g_mail'){                 // 登入成功 → 留在信箱
         mailFolder='in'; mailOpen=null;
         seen.add('m_box'); openTab('m_box');
-      } else if(g.id==='g_admin'){         // 還原成功 → 直接回到那一串，看還原出來的 20F
-        openDoc('t_sort');
+      } else if(g.id==='g_ytl'){           // 登入板務後台 → 人就留在後台，接著還原
+        go('g_admin');
       } else {
         goHome();
       }
@@ -1131,6 +1182,48 @@ function renderGate(vp,g){
     const firstIdx=g.fields.findIndex(x=>!x.locked);
     const first=document.getElementById('f'+(firstIdx<0?0:firstIdx)); if(first)first.focus();
   },0);
+}
+
+/* ---------- 板務後台：還原清單 ---------- */
+function renderRestore(vp,g){
+  const rows=restorables();
+  const body=rows.length?`<table class="rst">
+    <tr><th style="width:26px"></th><th>所在討論串</th><th>刪除時間</th><th style="width:56px">刪除者</th></tr>
+    ${rows.map(r=>`<tr data-rid="${esc(r.rid)}">
+      <td><input type="radio" name="rst" value="${esc(r.rid)}"></td>
+      <td>${esc(r.title)}</td>
+      <td class="w">${esc(r.when)}</td>
+      <td class="w">${esc(r.by)}</td></tr>`).join('')}
+  </table>`:'<div class="rst-none">目前沒有可以還原的文章。</div>';
+
+  vp.innerHTML=`<div class="ad wide"><div class="ttl">${esc(g.brand[0])}</div>
+    <div class="in"><h2>還原已刪除文章</h2><div class="sub">${esc(g.brand[1])}</div>
+    <div class="form"><div class="note">${esc(g.note)}</div></div>
+    ${body}
+    ${rows.length?`<button class="btn" id="rstGo">確認還原</button>`:''}
+    <div class="ok" id="rstMsg">${esc(restoreMsg)}</div>
+    </div></div>`;
+
+  document.querySelectorAll('[data-rid]').forEach(tr=>{
+    tr.onclick=()=>{ const r=tr.querySelector('input'); if(r) r.checked=true; };});
+  const b=document.getElementById('rstGo');
+  if(b) b.onclick=()=>{
+    const sel=document.querySelector('input[name=rst]:checked');
+    const msg=document.getElementById('rstMsg');
+    if(!sel){ if(msg){msg.style.color='#8C3A3A';msg.textContent='請先選擇要還原的文章。';} return; }
+    const rid=sel.value, row=rows.find(r=>r.rid===rid);
+    restored.add(rid);
+    if(rid==='r_sort'){                  // 這一樓才是第一章要的
+      restoreMsg='';
+      gateDone[g.id]=true;
+      prog=AFTER[g.id].unlockAt;
+      saidNow=AFTER[g.id].said||'';
+      openDoc('t_sort');
+    } else {                             // 其他的還原了也沒關係，是額外的東西
+      restoreMsg='已還原。〈'+row.title+'〉那一樓現在看得到了。';
+      render();
+    }
+  };
 }
 
 function showSearchResult(){
