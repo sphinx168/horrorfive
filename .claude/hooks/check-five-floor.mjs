@@ -48,12 +48,12 @@ if (a < 0 || b < 0 || b <= a) {
 let tables;
 try {
   tables = new Function(`${src.slice(a, b)}
-    return {DOCS, GATES, AFTER, SITE, BOARD_DECO, USERS, ME};`)();
+    return {DOCS, GATES, AFTER, SITE, BOARD_DECO, USERS, ME, CHAT, AVATARS};`)();
 } catch (e) {
   errs.push(`資料表區段有語法／執行錯誤，遊戲一定開不起來：${e.message}`);
   report(); process.exit(2);
 }
-const { DOCS, GATES, AFTER, SITE, BOARD_DECO, USERS, ME } = tables;
+const { DOCS, GATES, AFTER, SITE, BOARD_DECO, USERS, ME, CHAT, AVATARS } = tables;
 
 /* 真正會被指派到的 prog 值 = 0 ∪ AFTER.unlockAt ∪ 程式裡寫死的 prog=N */
 const reachable = new Set([0]);
@@ -95,8 +95,38 @@ for (const id in AFTER)
   if (!GATES.some(g => g.id === id))
     errs.push(`AFTER 有「${id}」，但 GATES 裡沒有這一關。`);
 for (const id in SITE)
-  if (!docIds.has(id) && !GATES.some(g => g.id === id) && !['board_index','notes','board','end'].includes(id))
+  if (!docIds.has(id) && !GATES.some(g => g.id === id) && !['board_index','notes','chat','end'].includes(id))
     errs.push(`SITE 有「${id}」，但 DOCS／GATES 都沒有——是不是刪掉內容後忘了清？`);
+
+/* ---------- 三之二、茶水間 ---------- */
+/* 今天的劇情全在 CHAT 裡，這裡把「貼出去的連結點不開」「沒有人講話的段落」
+   「終章送不出去」這幾種會直接卡死流程的錯抓出來。 */
+const sceneIds = new Set();
+let hasEnd = false;
+for (const sc of CHAT ?? []) {
+  if (sceneIds.has(sc.id)) errs.push(`CHAT 有兩段都叫「${sc.id}」，後面那段永遠不會播（chatFired 以 id 去重）。`);
+  sceneIds.add(sc.id);
+  if (typeof sc.when !== 'function') errs.push(`CHAT「${sc.id}」沒有 when()，永遠不會被排進佇列。`);
+  if (!sc.steps?.length) errs.push(`CHAT「${sc.id}」沒有任何 steps。`);
+  for (const st of sc.steps ?? []) {
+    if (st.share && !docIds.has(st.share))
+      errs.push(`CHAT「${sc.id}」貼出的連結「${st.share}」不在 DOCS 裡，點下去會是空白頁。`);
+    if (st.u && !known.has(st.u))
+      errs.push(`CHAT「${sc.id}」的發話者「${st.u}」不在 USERS 裡，聊天室只會顯示帳號。`);
+    if (st.u && !AVATARS[st.u])
+      errs.push(`CHAT「${sc.id}」的發話者「${st.u}」沒有 AVATARS 頭像設定。`);
+    if (st.end) hasEnd = true;
+  }
+}
+if (!hasEnd)
+  errs.push('CHAT 裡沒有任何一步標了 end:1，玩家走完全部流程也進不了終幕。');
+/* 每一次推進 prog 都該有人在群組裡反應，不然玩家會不知道發生了什麼 */
+for (const id in AFTER) {
+  const at = AFTER[id].unlockAt;
+  const src2 = CHAT.map(sc => String(sc.when)).join(' | ');
+  if (!src2.includes(`prog>=${at}`) && !src2.includes(`prog >= ${at}`))
+    errs.push(`過「${id}」之後 prog 會變成 ${at}，但 CHAT 裡沒有任何一段是等這個值的——這一步過完聊天室會是安靜的。`);
+}
 
 /* idx.ts 撞值 → 板上排序不穩定 */
 const seenTs = new Map();
