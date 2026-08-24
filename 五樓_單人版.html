@@ -369,6 +369,47 @@ button{font-family:inherit;cursor:pointer}
   letter-spacing:.14em;margin-top:40px;animation-delay:7.4s}
 @keyframes fin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.end p{opacity:1;animation:none}}
+/* ===== 手機／窄螢幕 =====
+   固定寬的樓層欄（52px）＋暱稱欄（100px）＋時間欄（78px）在手機上會把內文擠成
+   一行三、四個字。窄螢幕改成上下兩段：樓層／暱稱／時間縮成一條標頭，內文自己佔一整行。 */
+@media(max-width:600px){
+  .viewport{padding:10px 6px 34px}
+  .tabstrip{padding:5px 4px 0}
+  .tab{min-width:0;max-width:46vw;padding:6px 8px 7px;font-size:11px;gap:5px}
+  .omni{padding:6px 7px;gap:6px}
+  .toast{top:auto;bottom:14px;right:10px;max-width:70vw}
+
+  .wl-hd{padding:7px 10px;gap:4px 10px}
+  .wl-hd .me{margin-left:0;width:100%}
+  .wl-sub{padding:4px 10px}
+  .wl-body{padding:12px 10px}
+
+  .rp{display:grid;grid-template-columns:auto minmax(0,1fr) auto;
+    grid-template-areas:"f u t" "c c c";gap:0 8px;padding:9px 0 10px 8px}
+  .rp .f{grid-area:f;width:auto;padding-left:0;line-height:1.6}
+  .rp .u{grid-area:u;width:auto;padding-top:0;line-height:1.6;
+    display:flex;align-items:baseline;flex-wrap:wrap;gap:0 6px}
+  .rp .u .nm,.rp .u .uid{display:inline}
+  .rp .t{grid-area:t;width:auto;padding-top:0;line-height:1.6}
+  .rp .c{grid-area:c;font-size:15px;line-height:1.95;margin-top:4px}
+  .rp.del .c{font-size:13px}
+  .rp.restored .u::after{content:'已還原'}
+
+  /* 板首頁那行「最後回覆…」是等寬對齊排的，窄螢幕讓它折行而不是撐破版面 */
+  .idx-row .m{white-space:pre-wrap;word-break:break-word}
+
+  .ar{padding:14px 12px}
+  .ar .foot{word-break:break-all}
+  .yh-main{padding:12px 12px}
+  .yh-list .fr{width:74px}
+  .yh-list .dt{width:66px}
+  .mhead b{width:44px}
+  .bl{padding:20px 14px 44px}
+  .nt{padding:20px 14px 44px}
+  .said{padding:16vh 18px 22vh}
+  .end{padding:12vh 18px 16vh}
+  .ad .in{padding:14px 12px}
+}
 </style>
 </head>
 <body>
