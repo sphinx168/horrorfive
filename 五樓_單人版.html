@@ -518,6 +518,11 @@ const CHAT=[
  {u:'yalin_w', c:'嗯'},
  {u:'kt0904',  c:'…你們不覺得那年很怪嗎'},
  {u:'kt0904',  c:'欸 不然我們把那時候的東西找出來看看好了'},
+ {u:'kt0904',  c:'板上以前的串都還在欸 我隨便翻兩串'},
+ {u:'kt0904',  share:'t_new'},
+ {u:'kt0904',  share:'t_prank'},
+ {u:'yalin_w', c:'欣怡那次我還記得'},
+ {u:'kt0904',  c:'哈哈哈她嚇到把杯子打翻'},
  {u:'tsonghan',c:'你們要弄就弄。'},
  {me:'那時候的信 我信箱應該還留著'},
  {u:'kt0904',  c:'妳那個 yahoo 還開得起來喔'},
@@ -1175,7 +1180,7 @@ function chatRows(){
 function chatBind(){
   const d=document.getElementById('plDraft'); if(d) d.onclick=chatSend;
   document.querySelectorAll('[data-login]').forEach(b=>{ b.onclick=()=>{
-    document.getElementById('prelude').style.display='none';
+    const pl=document.getElementById('prelude'); if(pl) pl.style.display='none';
     document.getElementById('login').style.display='block';
     document.getElementById('u').focus();
   };});
@@ -1216,6 +1221,10 @@ document.getElementById('go').onclick=()=>{
   document.getElementById('login').style.display='none';
   document.getElementById('browser').style.display='block';
   loggedIn=true;                       // 聊天室從此搬進瀏覽器分頁，序章那段接著在那裡演
+  /* 開場那個容器要真的拿掉，不能只是藏起來：它跟聊天室分頁共用 #plMsgs 這個 id，
+     留著的話 getElementById 會一直抓到藏起來的那一個，「捲到最新訊息」就會打空，
+     真正的聊天室每次重繪都停在整段對話的最上面。 */
+  const pl=document.getElementById('prelude'); if(pl) pl.remove();
   syncTabs(); render(); window.scrollTo(0,0);
 };
 document.getElementById('p').addEventListener('keydown',e=>{
