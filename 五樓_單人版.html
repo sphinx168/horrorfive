@@ -397,6 +397,24 @@ button{font-family:inherit;cursor:pointer}
   .rp.del .c{font-size:13px}
   .rp.restored .u::after{content:'已還原'}
 
+  /* ===== 除錯面板：只在網址帶 #dev 時才存在，正常玩的人看不到也碰不到 ===== */
+  #dev{position:fixed;left:0;bottom:0;z-index:60;font-size:12px}
+  #devTab{background:#1C1F23;color:#7FD4A8;border:0;border-radius:0 6px 0 0;
+    padding:8px 12px;font:600 11px/1 ui-monospace,monospace;letter-spacing:.1em;opacity:.55}
+  #devTab:hover,#devTab.on{opacity:1}
+  #devPanel{background:#12151A;color:#D7DEE5;border-radius:0 8px 0 0;padding:12px;
+    max-width:min(94vw,380px);max-height:76vh;overflow-y:auto;
+    box-shadow:0 -2px 18px rgba(0,0,0,.5)}
+  #devPanel h4{margin:0 0 6px;font-size:11px;color:#7FD4A8;letter-spacing:.12em;font-weight:600}
+  #devPanel .st{color:#8A949E;font:11px/1.7 ui-monospace,monospace;margin-bottom:10px;
+    word-break:break-all}
+  #devPanel .grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+  #devPanel button.j{background:#232932;color:#D7DEE5;border:1px solid #2F3742;
+    border-radius:6px;padding:9px 11px;font-size:12px;min-height:38px}
+  #devPanel button.j:hover{background:#2E3742}
+  #devPanel button.j.doc{font-size:11px;padding:7px 9px;min-height:32px;color:#A8B3BE}
+  #devPanel label.sw{display:flex;align-items:center;gap:7px;color:#A8B3BE;margin-bottom:10px}
+
   /* 板首頁那行「最後回覆…」是等寬對齊排的，窄螢幕讓它折行而不是撐破版面 */
   .idx-row .m{white-space:pre-wrap;word-break:break-word}
 
@@ -435,6 +453,8 @@ button{font-family:inherit;cursor:pointer}
   </div>
   <div class="footnote">本板不開放註冊　│　目前 6 個帳號<br>上次登入：365 天前</div>
 </div>
+
+<div id="dev" hidden><button id="devTab">DEV</button><div id="devPanel" hidden></div></div>
 
 <div id="browser">
   <div class="tabstrip" id="tabstrip"></div>
@@ -1129,6 +1149,7 @@ const SITE={
 };
 
 /* ================= 狀態 ================= */
+let devFast=false;       // 除錯用：秒播聊天室（見檔尾 #dev 面板），正常玩永遠是 false
 let prog=0;              // 0..6
 let tabs=[], active='board_index', hist=[];
 let boardTab='board_index';              // 五樓這個站台目前顯示的頁面（首頁或某一串）
@@ -1252,17 +1273,18 @@ function chatNext(){
     if(loggedIn) render(); else chatCheck(); return; }
   if(st.me!==undefined){ chatQueue.shift(); chatBusy=false; chatDraft=st; chatPaint(); return; }
   chatQueue.shift();
+  const dly=ms=>devFast?0:ms;                        // 秒播模式把所有等待壓成 0
   const reveal=()=>{ chatShown.push(st); chatPaint();
-    if(st.now) chatNext(); else setTimeout(chatNext,st.sys?320:450); };
+    if(st.now) chatNext(); else setTimeout(chatNext,dly(st.sys?320:450)); };
   if(st.now) return reveal();                        // 開場墊場：整段直接出現
-  if(st.sys||st.u===ME.uid) return void setTimeout(reveal,600);
+  if(st.sys||st.u===ME.uid) return void setTimeout(reveal,dly(600));
   chatTyping=st.u; chatPaint();                      // 別人講話才有「輸入中」
   /* 「輸入中」的長度跟著字數走：一句「嗯」跟一句三十幾個字的話打一樣久，
      是最容易讓人看出這是排好的稿子的地方。短句放快也順便把序章開頭
      那段只能看不能動的空檔壓短一點。 */
   const len=(st.c||'').length;
   setTimeout(()=>{ chatTyping=null; reveal(); },
-             360+Math.min(len,30)*32+Math.random()*260);
+             dly(360+Math.min(len,30)*32+Math.random()*260));
 }
 /* 玩家點下草稿泡泡＝思妤把那句話送出去 */
 function chatSend(){
@@ -1763,6 +1785,96 @@ function renderEnd(vp){
 
 document.getElementById('navBack').onclick=back;
 document.getElementById('navRel').onclick=()=>render();
+
+/* ================= 除錯面板 =================
+   只有網址後面帶 #dev 才會存在（例如 …/五樓_單人版.html#dev）。hash 重整不會掉，
+   所以手機上輸入一次就好；沒帶 hash 的人完全看不到、也碰不到任何相關程式碼。
+
+   為什麼不做成遊戲內的章節選單：這是恐怖遊戲，可見的跳關入口會直接毀掉沉浸感。
+
+   跳段的時候會把「那個時間點之前所有該播完的聊天段落」整段補進聊天室（照原本的
+   順序，草稿泡泡直接算成她已經送出），所以跳過去就能直接往回捲讀完整對話——
+   這是拿來校內容的，不是存檔。 */
+const DEV=location.hash.toLowerCase().includes('dev');
+
+/* 每一段要把遊戲狀態擺成什麼樣子。順序＝面板上的按鈕順序 */
+const DEV_STAGES=[
+ {k:'開場',      note:'重新載入，從頭演',reload:1},
+ {k:'序章',      prog:0, at:'chat'},
+ {k:'序章·板首頁',prog:0, at:'board_index'},
+ {k:'①信箱',     prog:1, done:['g_mail'], at:'m_box'},
+ {k:'①板務後台', prog:1, done:['g_mail'], at:'g_ytl'},
+ {k:'①還原',     prog:2, done:['g_mail','g_ytl'], at:'g_admin'},
+ {k:'②搜尋',     prog:3, done:['g_mail','g_ytl','g_admin'], rst:1, at:'g_search'},
+ {k:'②部落格',   prog:5, done:['g_mail','g_ytl','g_admin','g_search'], rst:1, at:'blog'},
+ {k:'終幕',      prog:6, done:['g_mail','g_ytl','g_admin','g_search'], rst:1, at:'end'}
+];
+
+function devApply(st){
+  if(st.reload) return location.reload();
+  /* 先把聊天室清空重建，否則會疊在開場已經自己播出來的那幾則上面 */
+  chatShown=[]; chatQueue=[]; chatDraft=null; chatTyping=null; chatBusy=false;
+  chatFired.clear(); chatDone.clear();
+  seen.clear(); mailRead.clear(); restored.clear(); gateDone={};
+  restoreMsg=''; saidNow=''; hist=[]; blogRead=false;
+
+  loggedIn=true;
+  const pl=document.getElementById('prelude'); if(pl) pl.remove();
+  document.getElementById('login').style.display='none';
+  document.getElementById('browser').style.display='block';
+
+  prog=st.prog;
+  (st.done||[]).forEach(g=>gateDone[g]=true);
+  if(st.prog>=1){ seen.add('m_box'); seen.add('t_new'); seen.add('t_prank'); }
+  if(st.rst){ restored.add('r_sort'); seen.add('a_im'); mailRead.add('ytl'); blogRead=st.prog>=5; }
+  if(st.prog>=5) seen.add('blog');
+
+  /* 條件已經成立的段落直接補完文字（c_end 例外：那顆草稿要留給人自己送出） */
+  CHAT.forEach(sc=>{
+    if(sc.id==='c_end'||!sc.when()) return;
+    chatFired.add(sc.id); chatDone.add(sc.id);
+    sc.steps.forEach(t=>{
+      if(t._done||t.url) return;          // 開場那張網址卡片會把登入頁叫回來，補歷史時略過
+      chatShown.push(t.me!==undefined?{u:ME.uid,c:t.me}:t);
+    });
+  });
+
+  boardTab=st.at==='board_index'?'board_index':boardTab;
+  syncTabs();
+  if(st.at&&st.at!=='end'){ if(!tabs.some(t=>t.id===st.at)) tabs.push({id:st.at,kind:'doc'}); active=st.at; }
+  render(); window.scrollTo(0,0); devPaint();
+}
+
+function devPaint(){
+  const box=document.getElementById('devPanel'); if(!box||box.hidden) return;
+  const stages=DEV_STAGES.map((x,i)=>
+    `<button class="j" data-stage="${i}">${esc(x.k)}</button>`).join('');
+  const docs=DOCS.map(d=>
+    `<button class="j doc" data-doc="${esc(d.id)}">${esc(d.title)}</button>`).join('');
+  /* 常用的（跳段、秒播、狀態）擺前面，長長的文件清單放最後才不會把它們擠出畫面 */
+  box.innerHTML=`<h4>跳段</h4><div class="grid">${stages}</div>
+    <label class="sw"><input type="checkbox" id="devF"${devFast?' checked':''}>秒播聊天室（不跑輸入中動畫）</label>
+    <div class="st">prog=${prog}　active=${esc(active)}　loggedIn=${loggedIn}<br>
+      分頁：${tabs.map(t=>esc(t.id)).join(' / ')}</div>
+    <h4>直接開文件（無視解鎖）</h4><div class="grid">${docs}</div>`;
+  box.querySelectorAll('[data-stage]').forEach(b=>{
+    b.onclick=()=>devApply(DEV_STAGES[+b.dataset.stage]); });
+  box.querySelectorAll('[data-doc]').forEach(b=>{
+    b.onclick=()=>{ const d=DOCS.find(x=>x.id===b.dataset.doc);
+      if(d&&prog<d.at) prog=d.at;            // 鎖住的也讓它開得起來
+      openDoc(b.dataset.doc); devPaint(); }; });
+  const f=document.getElementById('devF');
+  if(f) f.onchange=()=>{ devFast=f.checked; chatPump(); };
+}
+
+if(DEV){
+  const wrap=document.getElementById('dev'), tab=document.getElementById('devTab'),
+        box=document.getElementById('devPanel');
+  wrap.hidden=false;
+  tab.onclick=()=>{ box.hidden=!box.hidden; tab.classList.toggle('on',!box.hidden); devPaint(); };
+  const _render=render;                       // 面板上的狀態列跟著畫面一起更新
+  render=function(){ _render.apply(null,arguments); devPaint(); };
+}
 
 chatCheck();   // 開場那段從這裡開始播（此時還沒登入，畫在 #prelude 裡）
 </script>
