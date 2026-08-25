@@ -55,8 +55,6 @@ button{font-family:inherit;cursor:pointer}
 .pl-row.me .pl-draft{cursor:pointer;border:1px dashed rgba(255,255,255,.7);
   background:var(--board);opacity:.55;font-family:inherit;text-align:left}
 .pl-row.me .pl-draft:hover{opacity:.8}
-.pl-foot{padding:10px 14px;border-top:1px solid var(--line-soft);text-align:center;
-  font-size:11px;color:var(--ink-soft)}
 .pl-sys{align-self:center;max-width:92%;text-align:center;padding:3px 10px;
   font-size:11px;color:#98A3AD;letter-spacing:.06em;line-height:1.7}
 .pl-row.other .pl-link{border-bottom-left-radius:4px;border-bottom-right-radius:13px}
@@ -68,7 +66,7 @@ button{font-family:inherit;cursor:pointer}
 .chatpane .pl-msgs{max-height:66vh;min-height:52vh}
 .pl-in{padding:9px 14px;border-top:1px solid var(--line-soft);background:#FAFBFC;
   font-size:12px;color:#A2AAB2}
-.pl-in.act{color:var(--board)}
+.pl-in.act{color:var(--board);text-align:right}   /* 提示靠右，那個↑才指得到右邊的草稿泡泡 */
 
 /* ===== 登入 ===== */
 #login{display:none;max-width:330px;margin:14vh auto 0;padding:0 16px}
@@ -422,7 +420,7 @@ button{font-family:inherit;cursor:pointer}
   <div class="pl-wrap">
     <div class="pl-top">茶水間<span class="sub">冠廷、宗翰、雅琳、你</span></div>
     <div class="pl-msgs" id="plMsgs"></div>
-    <div class="pl-foot">今天 08:5x</div>
+    <div class="pl-in" id="plIn">輸入訊息…</div>
   </div>
 </div>
 
@@ -435,7 +433,7 @@ button{font-family:inherit;cursor:pointer}
     <button class="btn wide" id="go">登入</button>
     <div class="loginerr" id="lerr"></div>
   </div>
-  <div class="footnote">本板不開放註冊　│　目前 6 個帳號<br>上次登入：3 天前</div>
+  <div class="footnote">本板不開放註冊　│　目前 6 個帳號<br>上次登入：365 天前</div>
 </div>
 
 <div id="browser">
@@ -511,9 +509,9 @@ const CHAT=[
  {u:'yalin_w', c:'好多年沒想到那時候的事了',now:1},
  {me:'欸 我剛剛忽然想到五樓那個板 你們還記得嗎'},
  {u:'kt0904',  c:'記得啊 幹嘛突然問'},
- {u:'tsonghan',c:'很久沒人登入了吧'},
- {me:'我想回去看看 帳號密碼你們還留著嗎'},
- {u:'yalin_w', c:'好懷念喔 我們是不是快十年沒上去了'},
+ {u:'tsonghan',c:'上面早就沒人在講話了吧'},
+ {me:'我想回去看看 網址你們還留著嗎'},
+ {u:'yalin_w', c:'好懷念喔 那時候的事都十一年了欸'},
  {u:'kt0904',  c:'網址我還留著 傳給你'},
  {u:'kt0904',  url:'http://wulou.5gbfree.com/',lbl:'五樓'},
  {u:'siyu_1120',c:'謝謝！'}
@@ -525,7 +523,7 @@ const CHAT=[
    讓玩家自己把那個錯誤的印象打出去，終章才有得還。 */
 {id:'c_intro',when:()=>loggedIn,steps:[
  {u:'kt0904',  c:'進去了嗎'},
- {me:'進去了 板居然還在'},
+ {u:'siyu_1120',c:'進去了 板居然還在'},
  {u:'kt0904',  c:'我就說吧'},
  {u:'kt0904',  c:'幹 我剛剛整理櫃子翻到一個箱子'},
  {u:'kt0904',  c:'裡面有一疊印出來的東西 有夠厚\n是那時候的'},
@@ -566,12 +564,13 @@ const CHAT=[
  {u:'kt0904',  c:'板上以前的串都還在欸 我隨便翻兩串'},
  {u:'kt0904',  share:'t_new'},
  {u:'kt0904',  share:'t_prank'},
+ {me:'等一下 我看一下'},
  {u:'yalin_w', c:'欣怡那次我還記得'},
  {u:'kt0904',  c:'哈哈哈她嚇到把杯子打翻'},
  {u:'tsonghan',c:'你們要弄就弄。'},
  {me:'那時候的信 我信箱應該還留著'},
  {u:'kt0904',  c:'妳那個 yahoo 還開得起來喔'},
- {me:'不知道 我試試看'}
+ {u:'siyu_1120',c:'不知道 我試試看'}
 ]},
 
 /* ---------- 第一章：一起翻，指出〈整理〉那樓不見了（prog 1） ----------
@@ -1059,6 +1058,7 @@ const GATES=[
   brand:['Yahoo! 奇摩','電子信箱'],
   note:'本帳號已超過 4000 天未登入。',
   need:'你當年設密碼的習慣',
+  needChat:'c_intro',          // 序章那段演完，她開口提到信箱，這個分頁才出現
   fields:[
    {label:'帳號',prefill:'chen.siyu',locked:true,remember:true},
    {label:'密碼',type:'password',
@@ -1173,8 +1173,12 @@ function syncTabs(){
   /* 茶水間永遠釘在第一格、關不掉——遊戲的「今天」都在那裡發生 */
   tabs=[{id:'chat',kind:'chat'},{id:boardTab,kind:'board'}].concat(keep);
   const g=curGate();
-  if(g&&!gateDone[g.id]) tabs.splice(2,0,{id:g.id,kind:'gate'});
-  if(NOTES_TAB_ENABLED) tabs.splice(g&&!gateDone[g.id]?3:2,0,{id:'notes',kind:'notes'});
+  /* 閘的分頁不能比劇情早出現：g_mail 要等序章那段演完（她自己說「那時候的信
+     我信箱應該還留著」）才掛上去，否則玩家一登入就看到一個 Yahoo 登入頁，
+     還能直接跳過整個序章去解謎。其他關要比照辦理，加 needChat 即可。 */
+  const gateReady=g&&(!g.needChat||chatDone.has(g.needChat));
+  if(g&&gateReady&&!gateDone[g.id]) tabs.splice(2,0,{id:g.id,kind:'gate'});
+  if(NOTES_TAB_ENABLED) tabs.splice(g&&gateReady&&!gateDone[g.id]?3:2,0,{id:'notes',kind:'notes'});
   if(prog>=6) tabs=[{id:'end',kind:'end'}];
   if(!tabs.some(t=>t.id===active)) active=boardTab;
 }
@@ -1242,7 +1246,10 @@ function chatNext(){
   if(!chatQueue.length){ chatBusy=false; chatCheck(); return; }
   if(!chatHere()){ chatBusy=false; return; }        // 玩家走開了，剩下的等他回來
   const st=chatQueue[0];
-  if(st._done){ chatQueue.shift(); chatBusy=false; chatDone.add(st._done); chatCheck(); return; }
+  /* 一段播完：重畫一次整個瀏覽器框，因為有些分頁（例如 g_mail）是等這一段
+     播完才掛上去的，光重畫聊天室看不到那個新分頁。render() 結尾會再叫 chatCheck。 */
+  if(st._done){ chatQueue.shift(); chatBusy=false; chatDone.add(st._done);
+    if(loggedIn) render(); else chatCheck(); return; }
   if(st.me!==undefined){ chatQueue.shift(); chatBusy=false; chatDraft=st; chatPaint(); return; }
   chatQueue.shift();
   const reveal=()=>{ chatShown.push(st); chatPaint();
@@ -1250,7 +1257,12 @@ function chatNext(){
   if(st.now) return reveal();                        // 開場墊場：整段直接出現
   if(st.sys||st.u===ME.uid) return void setTimeout(reveal,600);
   chatTyping=st.u; chatPaint();                      // 別人講話才有「輸入中」
-  setTimeout(()=>{ chatTyping=null; reveal(); },900+Math.random()*500);
+  /* 「輸入中」的長度跟著字數走：一句「嗯」跟一句三十幾個字的話打一樣久，
+     是最容易讓人看出這是排好的稿子的地方。短句放快也順便把序章開頭
+     那段只能看不能動的空檔壓短一點。 */
+  const len=(st.c||'').length;
+  setTimeout(()=>{ chatTyping=null; reveal(); },
+             360+Math.min(len,30)*32+Math.random()*260);
 }
 /* 玩家點下草稿泡泡＝思妤把那句話送出去 */
 function chatSend(){
@@ -1303,6 +1315,15 @@ function chatBind(){
   document.querySelectorAll('[data-share]').forEach(b=>{
     b.onclick=()=>{ openDoc(b.dataset.share); };});
   const box=document.getElementById('plMsgs'); if(box) box.scrollTop=box.scrollHeight;
+  chatInBar();
+}
+/* 輸入列：沒有草稿泡泡時是灰字佔位，有草稿時換成「點上面那句話送出」。
+   登入前的 #prelude 跟登入後的聊天室分頁共用同一條——遊戲的第一個必要動作
+   就是點草稿泡泡，那個提示不能等到登入之後才出現。 */
+function chatInBar(){
+  const el=document.getElementById('plIn'); if(!el) return;
+  el.className='pl-in'+(chatDraft?' act':'');
+  el.textContent=chatDraft?'↑ 點上面那句話送出':'輸入訊息…';
 }
 function chatPaint(){
   if(!loggedIn){ document.getElementById('plMsgs').innerHTML=chatRows(); chatBind(); return; }
@@ -1313,7 +1334,7 @@ function renderChat(vp){
   vp.innerHTML=`<div class="chatpane"><div class="pl-wrap">
     <div class="pl-top">${esc(CHAT_TITLE)}<span class="sub">${esc(CHAT_SUB)}</span></div>
     <div class="pl-msgs" id="plMsgs">${chatRows()}</div>
-    <div class="pl-in${chatDraft?' act':''}">${chatDraft?'↑ 點上面那句話送出':'輸入訊息…'}</div>
+    <div class="pl-in" id="plIn"></div>
   </div></div>`;
   chatBind();
 }
@@ -1341,6 +1362,10 @@ document.getElementById('go').onclick=()=>{
      留著的話 getElementById 會一直抓到藏起來的那一個，「捲到最新訊息」就會打空，
      真正的聊天室每次重繪都停在整段對話的最上面。 */
   const pl=document.getElementById('prelude'); if(pl) pl.remove();
+  /* 她剛剛人就在聊天室裡，登入完不該被丟到一個十一年沒動的板首頁：
+     直接停在茶水間分頁，開場最後那句「謝謝！」和整段序章才會就地接著演完，
+     不會變成另一個分頁上的未讀數。板首頁等她自己去點。 */
+  active='chat';
   syncTabs(); render(); window.scrollTo(0,0);
 };
 document.getElementById('p').addEventListener('keydown',e=>{
