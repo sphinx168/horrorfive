@@ -20,14 +20,36 @@ body{background:#9BA3AB;color:var(--ink);
   font-size:13px;line-height:1.75}
 button{font-family:inherit;cursor:pointer}
 
-/* ===== 開場：現在的聊天室 ===== */
-#prelude{max-width:380px;margin:10vh auto 0;padding:0 16px}
-.pl-wrap{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;
-  box-shadow:0 1px 3px rgba(0,0,0,.15)}
-.pl-top{padding:12px 14px;border-bottom:1px solid var(--line-soft);font-size:13px;
-  font-weight:600;color:var(--ink);background:#F3F5F7}
-.pl-top .sub{display:block;font-weight:400;font-size:11px;color:var(--ink-soft);margin-top:2px}
-.pl-msgs{padding:14px;display:flex;flex-direction:column;gap:8px;max-height:62vh;overflow-y:auto}
+/* ===== 茶水間：一支獨立的聊天 App =====
+   手機上沒有人會在瀏覽器的分頁裡聊天——聊天軟體本來就是另一支 App。
+   #chatapp 因此不畫在假瀏覽器裡面，而是蓋在整個畫面上的一層：手機滿版，
+   桌機停在右下角像一扇聊天視窗。收起來之後右下角留一顆 #chatdock 把它叫回來，
+   新訊息則從畫面上緣以推播橫幅的樣子掉下來。 */
+#chatapp{position:fixed;z-index:60;display:none;flex-direction:column;overflow:hidden;
+  right:20px;bottom:0;width:352px;height:min(600px,84vh);background:#DFE3E7;
+  border:1px solid #78848E;border-bottom:0;border-radius:13px 13px 0 0;
+  box-shadow:0 8px 30px rgba(0,0,0,.34)}
+#chatapp.on{display:flex}
+/* 登入之前後面是一片空的，靠在右下角看起來像壞掉：置中成一支手機的樣子 */
+#chatapp.solo{left:50%;right:auto;top:50%;bottom:auto;transform:translate(-50%,-50%);
+  width:min(400px,92vw);height:min(660px,86vh);border:1px solid #78848E;border-radius:13px}
+.ca-top{flex:none;display:flex;align-items:center;gap:9px;color:#fff;background:#2F5468;
+  padding:10px 12px;padding-top:calc(10px + env(safe-area-inset-top,0px))}
+.ca-back{flex:none;background:none;border:0;color:#fff;font-size:21px;line-height:1;
+  padding:1px 6px 3px;opacity:.85}
+.ca-back:hover{opacity:1}
+#chatapp.solo .ca-back{display:none}      /* 登入之前沒有「上一個畫面」可以回去 */
+.ca-av{flex:none;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.16);
+  display:flex;align-items:center;justify-content:center;font-size:13px;
+  font-family:"MingLiU","SimSun",serif}
+.ca-ttl{min-width:0;font-size:14px;font-weight:600;line-height:1.4}
+.ca-ttl .sub{display:block;font-weight:400;font-size:11px;opacity:.7;margin-top:1px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl-msgs{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;padding:14px 12px;display:flex;flex-direction:column}
+/* 訊息貼著下緣長上來（margin-top:auto，而不是 justify-content:flex-end——
+   後者在訊息長到滿出來之後會捲不回最上面） */
+.pl-stack{margin-top:auto;display:flex;flex-direction:column;gap:8px}
 .pl-row{display:flex;align-items:flex-end;gap:7px;max-width:88%}
 .pl-row.other{align-self:flex-start}
 .pl-row.me{align-self:flex-end;flex-direction:row-reverse}
@@ -37,6 +59,10 @@ button{font-family:inherit;cursor:pointer}
 .pl-row.other .pl-col{align-items:flex-start}
 .pl-row.me .pl-col{align-items:flex-end}
 .pl-name{font-size:11px;color:var(--ink-soft);margin:0 3px 3px}
+/* 同一個人連著講的第二句以後：頭像留著位子但不畫，名字整個省掉 */
+.pl-row.cont{margin-top:-4px}
+.pl-row.cont .pl-av{visibility:hidden}
+.pl-row.cont .pl-name{display:none}
 .pl-bub{padding:8px 12px;border-radius:15px;font-size:13px;line-height:1.6;white-space:pre-wrap}
 .pl-row.other .pl-bub{background:#EEF0F2;color:var(--ink);border-bottom-left-radius:4px}
 .pl-row.me .pl-bub{background:var(--board);color:#fff;border-bottom-right-radius:4px}
@@ -60,13 +86,45 @@ button{font-family:inherit;cursor:pointer}
 .pl-row.other .pl-link{border-bottom-left-radius:4px;border-bottom-right-radius:13px}
 .pl-link .tt{display:block;color:var(--ink);font-size:12.5px;margin-bottom:2px}
 
-/* 登入後：同一個聊天室搬進瀏覽器分頁 */
-.vp-chat{background:#DFE3E7}
-.chatpane{max-width:540px;margin:0 auto}
-.chatpane .pl-msgs{max-height:66vh;min-height:52vh}
-.pl-in{padding:9px 14px;border-top:1px solid var(--line-soft);background:#FAFBFC;
-  font-size:12px;color:#A2AAB2}
-.pl-in.act{color:var(--board);text-align:right}   /* 提示靠右，那個↑才指得到右邊的草稿泡泡 */
+/* 輸入列：平常是一條按不下去的假輸入框，輪到她講話時整條換成送出提示 */
+.pl-in{flex:none;display:flex;align-items:center;gap:8px;padding:9px 12px;background:#F1F4F6;
+  border-top:1px solid #C9D0D6;font-size:12.5px;color:#A2AAB2;
+  padding-bottom:calc(9px + env(safe-area-inset-bottom,0px))}
+.pl-in .fld{flex:1;min-width:0;padding:6px 12px;border-radius:14px;background:#fff;
+  border:1px solid #D3DAE0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pl-in .snd{flex:none;color:#B0B8BF}
+.pl-in.act{justify-content:flex-end;color:var(--board);font-weight:600}
+  /* 提示靠右，那個↑才指得到右邊的草稿泡泡 */
+
+/* 把茶水間叫回來的那顆浮球（App 收起來的時候才在） */
+#chatdock{position:fixed;z-index:55;right:16px;width:54px;height:54px;border-radius:50%;
+  bottom:calc(16px + env(safe-area-inset-bottom,0px));
+  background:#2F5468;color:#fff;border:0;box-shadow:0 4px 15px rgba(0,0,0,.33);
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+  font-family:"MingLiU","SimSun",serif}
+#chatdock[hidden]{display:none}
+#chatdock .bd{position:absolute;top:-4px;right:-4px;min-width:20px;height:20px;padding:0 5px;
+  border-radius:10px;background:#B03A3A;border:2px solid #9BA3AB;color:#fff;
+  font-family:"Courier New",monospace;font-size:11px;line-height:1;
+  display:flex;align-items:center;justify-content:center}
+#chatdock.un{animation:dockpulse 2s ease-in-out infinite}
+@keyframes dockpulse{0%,100%{box-shadow:0 4px 15px rgba(0,0,0,.33)}
+  50%{box-shadow:0 4px 15px rgba(0,0,0,.33),0 0 0 9px rgba(47,84,104,.15)}}
+
+/* 推播橫幅：人不在茶水間的時候，新訊息從畫面上緣掉下來 */
+.toast{position:fixed;z-index:70;right:16px;width:288px;cursor:pointer;display:flex;
+  align-items:center;gap:10px;top:calc(12px + env(safe-area-inset-top,0px));
+  background:rgba(34,40,46,.96);color:#EDF1F4;border-radius:14px;padding:10px 13px;
+  line-height:1.55;box-shadow:0 8px 24px rgba(0,0,0,.36);animation:banner .34s ease}
+.toast[hidden]{display:none}
+.toast .ic{flex:none;width:27px;height:27px;border-radius:8px;background:#2F5468;
+  display:flex;align-items:center;justify-content:center;font-size:13px;
+  font-family:"MingLiU","SimSun",serif}
+.toast .t{display:block;font-size:12.5px;font-weight:600}
+.toast .s{font-size:11px;color:#A9B4BE}
+@keyframes banner{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){#chatdock.un{animation:none}
+  .toast{animation:none}}
 
 /* ===== 登入 ===== */
 #login{display:none;max-width:330px;margin:14vh auto 0;padding:0 16px}
@@ -100,15 +158,6 @@ button{font-family:inherit;cursor:pointer}
 .tab .fav{width:11px;height:11px;flex:none;border-radius:2px}
 .tab .tt{overflow:hidden;text-overflow:ellipsis}
 .tab .cl{margin-left:auto;background:none;border:0;color:#6E7A85;font-size:12px;padding:0 2px;line-height:1}
-.tab .bd{margin-left:auto;flex:none;background:#B03A3A;color:#fff;padding:0 4px;
-  min-width:15px;height:15px;border-radius:8px;font-size:9px;line-height:1;
-  font-family:"Courier New",monospace;display:flex;align-items:center;justify-content:center}
-.toast{position:fixed;top:14px;right:16px;z-index:40;max-width:250px;cursor:pointer;
-  background:#2C3E50;color:#EDF1F4;border-radius:8px;padding:9px 14px;line-height:1.6;
-  box-shadow:0 3px 12px rgba(0,0,0,.32);animation:fin .35s ease}
-.toast[hidden]{display:none}
-.toast .t{display:block;font-size:12px;font-weight:600}
-.toast .s{font-size:11px;color:#A9B4BE}
 .omni{display:flex;align-items:center;gap:8px;padding:7px 10px;
   background:var(--chrome);border-bottom:1px solid #A6ADB4}
 .omni .navb button{background:none;border:0;color:#6E7A85;font-size:14px;padding:1px 5px}
@@ -379,7 +428,18 @@ button{font-family:inherit;cursor:pointer}
   .tabstrip{padding:5px 4px 0}
   .tab{min-width:0;max-width:46vw;padding:6px 8px 7px;font-size:11px;gap:5px}
   .omni{padding:6px 7px;gap:6px}
-  .toast{top:auto;bottom:14px;right:10px;max-width:70vw}
+
+  /* 手機上茶水間就是一支滿版的 App，不是角落的小視窗 */
+  #chatapp,#chatapp.solo{left:0;right:0;top:0;bottom:0;width:auto;height:auto;
+    transform:none;border:0;border-radius:0;box-shadow:none}
+  .pl-row{max-width:84%}
+  .pl-bub{font-size:14.5px;padding:9px 13px}
+  .pl-name{font-size:11.5px}
+  .pl-sys{font-size:11.5px}
+  .pl-link{font-size:13px}
+  .pl-link .tt{font-size:13.5px}
+  .pl-in{font-size:13px}
+  .toast{left:10px;right:10px;width:auto}
 
   .wl-hd{padding:7px 10px;gap:4px 10px}
   .wl-hd .me{margin-left:0;width:100%}
@@ -416,13 +476,19 @@ button{font-family:inherit;cursor:pointer}
 </head>
 <body>
 
-<div id="prelude">
-  <div class="pl-wrap">
-    <div class="pl-top">茶水間<span class="sub">冠廷、宗翰、雅琳、你</span></div>
-    <div class="pl-msgs" id="plMsgs"></div>
-    <div class="pl-in" id="plIn">輸入訊息…</div>
+<!-- 茶水間：整場遊戲從頭到尾都是同一支 App、同一份訊息列。
+     登入前佔滿畫面，登入後浮在假瀏覽器上面，收起來就變成右下角那顆浮球。 -->
+<div id="chatapp" class="on solo">
+  <div class="ca-top">
+    <button class="ca-back" id="caBack" title="收起茶水間">‹</button>
+    <div class="ca-av">茶</div>
+    <div class="ca-ttl" id="caTtl"></div>
   </div>
+  <div class="pl-msgs" id="plMsgs"></div>
+  <div class="pl-in" id="plIn"></div>
 </div>
+<button id="chatdock" hidden aria-label="茶水間"></button>
+<div class="toast" id="toast" hidden></div>
 
 <div id="login">
   <div class="brand">五樓</div>
@@ -447,7 +513,6 @@ button{font-family:inherit;cursor:pointer}
     <span class="url" id="omniUrl"></span>
   </div>
   <div class="viewport" id="viewport"></div>
-  <div class="toast" id="toast" hidden></div>
 </div>
 
 <script>
@@ -1105,7 +1170,6 @@ const AFTER={
 
 /* ================= 站台 ================= */
 const SITE={
- chat    :{tab:'茶水間',              url:'https://web.messenger.com/t/5f', fav:'#3F8F6B'},
  board_index:{tab:'五樓',             url:'http://wulou.5gbfree.com/board.php', fav:'#4A6D8C'},
  notes   :{tab:'我的最愛',            url:'about:favorites', fav:'#C9A227'},
  t_new   :{tab:'五樓 － 新來的那個',  url:'http://wulou.5gbfree.com/board.php?t=0918', fav:'#4A6D8C'},
@@ -1137,6 +1201,7 @@ let gateDone={};
 let mailFolder='in', mailOpen=null;      // 信箱內部狀態
 const mailRead=new Set();                // 已經點開過的信（茶水間有幾段靠它觸發）
 let loggedIn=false;                      // 開場聊天室 → 登入頁 → 瀏覽器
+let chatOpen=true;                       // 茶水間 App 現在是不是開著（登入前一定開著）
 let blogRead=false;                      // 部落格真的捲到底了才算讀完，終章那段才會排進來
 let saidNow='';                          // 過閘之後要先播的那句旁白
 const restored=new Set();                // 已經在板務後台還原出來的樓層
@@ -1170,15 +1235,15 @@ function isBoardDoc(id){ if(id==='board_index') return true;
 function syncTabs(){
   const keep=tabs.filter(t=>t.kind==='doc'&&!isBoardDoc(t.id)
     &&prog>=(DOCS.find(d=>d.id===t.id)||{at:99}).at);
-  /* 茶水間永遠釘在第一格、關不掉——遊戲的「今天」都在那裡發生 */
-  tabs=[{id:'chat',kind:'chat'},{id:boardTab,kind:'board'}].concat(keep);
+  /* 茶水間不在這排分頁裡：它是另一支 App（#chatapp），不是瀏覽器的一頁 */
+  tabs=[{id:boardTab,kind:'board'}].concat(keep);
   const g=curGate();
   /* 閘的分頁不能比劇情早出現：g_mail 要等序章那段演完（她自己說「那時候的信
      我信箱應該還留著」）才掛上去，否則玩家一登入就看到一個 Yahoo 登入頁，
      還能直接跳過整個序章去解謎。其他關要比照辦理，加 needChat 即可。 */
   const gateReady=g&&(!g.needChat||chatDone.has(g.needChat));
-  if(g&&gateReady&&!gateDone[g.id]) tabs.splice(2,0,{id:g.id,kind:'gate'});
-  if(NOTES_TAB_ENABLED) tabs.splice(g&&gateReady&&!gateDone[g.id]?3:2,0,{id:'notes',kind:'notes'});
+  if(g&&gateReady&&!gateDone[g.id]) tabs.splice(1,0,{id:g.id,kind:'gate'});
+  if(NOTES_TAB_ENABLED) tabs.splice(g&&gateReady&&!gateDone[g.id]?2:1,0,{id:'notes',kind:'notes'});
   if(prog>=6) tabs=[{id:'end',kind:'end'}];
   if(!tabs.some(t=>t.id===active)) active=boardTab;
 }
@@ -1203,15 +1268,15 @@ function openDoc(id){
 function goHome(){ boardTab='board_index'; go('board_index'); }
 function closeTab(id){ tabs=tabs.filter(t=>t.id!==id); if(active===id) goHome(); else render(); }
 function go(id){ if(active!==id) hist.push(active); active=id;
-  if(id==='chat') hideToast();
   render(); window.scrollTo(0,0); }
 function back(){ if(!hist.length)return; const p=hist.pop();
   if(isBoardDoc(p)) boardTab=p;
   active=tabs.some(t=>t.id===p)||isBoardDoc(p)?p:tabs[0].id; render(); window.scrollTo(0,0); }
 
 /* ================= 茶水間：播放器 =================
-   同一份 CHAT 資料，登入前畫在 #prelude 裡、登入後畫在 chat 分頁裡。
-   不在聊天室的時候不播——訊息先排在佇列裡、分頁跳未讀數並彈通知，
+   從頭到尾都是同一支 App、同一個訊息列（#chatapp／#plMsgs）：登入前佔滿畫面，
+   登入後浮在假瀏覽器上面，收起來縮成右下角那顆浮球。
+   App 沒開就不播——訊息先排在佇列裡，浮球跳未讀數、畫面上緣掉一則推播，
    玩家切回來才「現場」一句一句冒出來，這樣每一段都不會被錯過。 */
 let chatShown=[];          // 已經出現在畫面上的訊息
 let chatQueue=[];          // 還沒播的步驟
@@ -1222,9 +1287,13 @@ let toastT=null;
 const chatFired=new Set(); // 已經排進佇列的段落
 const chatDone=new Set();  // 已經播完的段落
 
-const chatHere=()=>!loggedIn||(active==='chat'&&!saidNow&&prog<6);
-/* 分頁上要跳的未讀數：只算「輪到玩家講話之前」的那幾則，不預告後面還有多少 */
-function chatPending(){ let n=0;
+const chatHere=()=>chatOpen&&!saidNow&&prog<6;
+/* 浮球上要跳的未讀數：只算「輪到玩家講話之前」的那幾則，不預告後面還有多少。
+   已經輪到她講話（草稿泡泡還在等人點）的時候算 1：後面那些話根本還沒送出來，
+   算進去等於預告接下來會有幾句，但浮球又不能完全不叫——不然玩家把 App 收起來
+   之後，那顆等著被點的草稿泡泡就沒有任何東西提醒他了。 */
+function chatPending(){ if(chatDraft) return 1;
+  let n=0;
   for(const st of chatQueue){ if(st._done) continue; if(st.me!==undefined) break; n++; }
   return n; }
 
@@ -1237,7 +1306,7 @@ function chatCheck(){
     chatQueue=chatQueue.concat(sc.steps,[{_done:sc.id}]);
     added=true;
   });
-  if(added&&!chatHere()){ showToast(); if(loggedIn) renderChrome(); }  // 分頁上的未讀數也要立刻跳出來
+  if(added&&!chatHere()){ showToast(); syncApp(); }   // 浮球上的未讀數也要立刻跳出來
   chatPump();
 }
 function chatPump(){ if(chatBusy||chatDraft||!chatQueue.length||!chatHere()) return;
@@ -1268,7 +1337,7 @@ function chatNext(){
 function chatSend(){
   const st=chatDraft; if(!st) return;
   chatDraft=null; chatShown.push({u:ME.uid,c:st.me}); chatPaint();
-  if(st.end){ prog=6; setTimeout(()=>{ render(); window.scrollTo(0,0); },1100); return; }
+  if(st.end){ prog=6; setTimeout(()=>{ closeChat(); render(); window.scrollTo(0,0); },1100); return; }
   chatBusy=true; setTimeout(chatNext,500);
 }
 
@@ -1292,59 +1361,75 @@ function chatCard(m){
     <span class="tt">${esc(d.title||'')}</span>
     <span class="url">${esc(st.url||'')}</span></button>`;
 }
+/* 同一個人連著講好幾句的時候，只有第一句掛頭像跟名字——聊天軟體都是這樣，
+   一句一個名字看起來會像是四個人輪流各講一次。 */
 function chatRows(){
+  let prev=null;
   const rows=chatShown.map(m=>{
-    if(m.sys) return `<div class="pl-sys">${esc(m.sys)}</div>`;
-    if(m.url||m.share) return plRow(m.u,chatCard(m));
-    return plRow(m.u,`<div class="pl-bub">${esc(m.c)}</div>`);
+    if(m.sys){ prev=null; return `<div class="pl-sys">${esc(m.sys)}</div>`; }
+    const cont=prev===m.u?'cont':''; prev=m.u;
+    if(m.url||m.share) return plRow(m.u,chatCard(m),cont);
+    return plRow(m.u,`<div class="pl-bub">${esc(m.c)}</div>`,cont);
   });
   if(chatTyping) rows.push(plRow(chatTyping,
     `<div class="pl-bub"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>`,
-    'pl-typing'));
+    'pl-typing'+(prev===chatTyping?' cont':'')));
   if(chatDraft) rows.push(plRow(ME.uid,
-    `<button class="pl-bub pl-draft" id="plDraft">${esc(chatDraft.me)}</button>`));
-  return rows.join('');
+    `<button class="pl-bub pl-draft" id="plDraft">${esc(chatDraft.me)}</button>`,
+    prev===ME.uid?'cont':''));
+  return `<div class="pl-stack">${rows.join('')}</div>`;
 }
 function chatBind(){
   const d=document.getElementById('plDraft'); if(d) d.onclick=chatSend;
+  /* 點冠廷傳來的網址＝切去瀏覽器把它打開：茶水間收起來，後面是五樓的登入頁 */
   document.querySelectorAll('[data-login]').forEach(b=>{ b.onclick=()=>{
-    const pl=document.getElementById('prelude'); if(pl) pl.style.display='none';
+    closeChat();
     document.getElementById('login').style.display='block';
-    document.getElementById('u').focus();
+    if(window.matchMedia('(min-width:601px)').matches) document.getElementById('u').focus();
   };});
+  /* 群組裡貼出來的連結也一樣：開在瀏覽器那邊，茶水間讓位 */
   document.querySelectorAll('[data-share]').forEach(b=>{
-    b.onclick=()=>{ openDoc(b.dataset.share); };});
+    b.onclick=()=>{ closeChat(); openDoc(b.dataset.share); };});
   const box=document.getElementById('plMsgs'); if(box) box.scrollTop=box.scrollHeight;
   chatInBar();
 }
-/* 輸入列：沒有草稿泡泡時是灰字佔位，有草稿時換成「點上面那句話送出」。
-   登入前的 #prelude 跟登入後的聊天室分頁共用同一條——遊戲的第一個必要動作
-   就是點草稿泡泡，那個提示不能等到登入之後才出現。 */
+/* 輸入列：沒有草稿泡泡時是一條按不下去的假輸入框，有草稿時整條換成
+   「點上面那句話送出」——遊戲的第一個必要動作就是點草稿泡泡，
+   那個提示在登入之前就得在。 */
 function chatInBar(){
   const el=document.getElementById('plIn'); if(!el) return;
   el.className='pl-in'+(chatDraft?' act':'');
-  el.textContent=chatDraft?'↑ 點上面那句話送出':'輸入訊息…';
+  el.innerHTML=chatDraft?'↑ 點上面那句話送出'
+    :'<span class="fld">輸入訊息…</span><span class="snd">送出</span>';
 }
 function chatPaint(){
-  if(!loggedIn){ document.getElementById('plMsgs').innerHTML=chatRows(); chatBind(); return; }
-  if(active==='chat'&&!saidNow&&prog<6) renderChat(document.getElementById('viewport'));
-  else render();
+  const box=document.getElementById('plMsgs'); if(!box) return;
+  box.innerHTML=chatRows(); chatBind(); syncApp();
 }
-function renderChat(vp){
-  vp.innerHTML=`<div class="chatpane"><div class="pl-wrap">
-    <div class="pl-top">${esc(CHAT_TITLE)}<span class="sub">${esc(CHAT_SUB)}</span></div>
-    <div class="pl-msgs" id="plMsgs">${chatRows()}</div>
-    <div class="pl-in" id="plIn"></div>
-  </div></div>`;
-  chatBind();
+/* App 的開關：整支聊天室只是蓋在畫面上的一層，開關就是加減一個 class。
+   收起來不會丟掉任何東西——訊息列一直都在，回來就接著往下播。
+   （syncApp 要排在 chatPaint 前面：藏著的元素量不出高度，捲到最新訊息會落空。） */
+function openChat(){ chatOpen=true; hideToast(); syncApp(); chatPaint(); chatCheck(); }
+function closeChat(){ chatOpen=false; syncApp(); }
+function syncApp(){
+  const app=document.getElementById('chatapp'), dock=document.getElementById('chatdock');
+  if(!app||!dock) return;
+  const live=prog<6;                        // 終幕之後整支 App 收掉
+  app.classList.toggle('on',chatOpen&&live);
+  app.classList.toggle('solo',!loggedIn);   // 還沒登入：後面沒有瀏覽器，置中成一支手機
+  const n=chatPending();
+  dock.hidden=!(loggedIn&&live&&!chatOpen);
+  dock.innerHTML='茶'+(n?`<span class="bd">${n}</span>`:'');
+  dock.classList.toggle('un',n>0);
 }
-/* 不在聊天室的時候，用一則通知把人叫回去 */
+/* App 收起來的時候，用一則推播把人叫回去 */
 function showToast(){
   const el=document.getElementById('toast'); if(!el) return;
-  el.innerHTML=`<span class="t">茶水間</span><span class="s">有新訊息</span>`;
+  el.innerHTML=`<span class="ic">茶</span><span><span class="t">茶水間</span>`
+    +`<span class="s">有新訊息</span></span>`;
   el.hidden=false;
-  el.onclick=()=>{ hideToast(); go('chat'); };
-  clearTimeout(toastT); toastT=setTimeout(hideToast,5200);
+  el.onclick=openChat;
+  clearTimeout(toastT); toastT=setTimeout(hideToast,6000);
 }
 function hideToast(){ const el=document.getElementById('toast');
   if(el) el.hidden=true; clearTimeout(toastT); }
@@ -1357,16 +1442,12 @@ document.getElementById('go').onclick=()=>{
   if(u!==ME.uid||p!==ME.pw){ e.textContent='帳號或密碼錯誤。'; return; }
   document.getElementById('login').style.display='none';
   document.getElementById('browser').style.display='block';
-  loggedIn=true;                       // 聊天室從此搬進瀏覽器分頁，序章那段接著在那裡演
-  /* 開場那個容器要真的拿掉，不能只是藏起來：它跟聊天室分頁共用 #plMsgs 這個 id，
-     留著的話 getElementById 會一直抓到藏起來的那一個，「捲到最新訊息」就會打空，
-     真正的聊天室每次重繪都停在整段對話的最上面。 */
-  const pl=document.getElementById('prelude'); if(pl) pl.remove();
-  /* 她剛剛人就在聊天室裡，登入完不該被丟到一個十一年沒動的板首頁：
-     直接停在茶水間分頁，開場最後那句「謝謝！」和整段序章才會就地接著演完，
-     不會變成另一個分頁上的未讀數。板首頁等她自己去點。 */
-  active='chat';
-  syncTabs(); render(); window.scrollTo(0,0);
+  loggedIn=true;                       // 從這裡開始，手上同時有兩支 App：瀏覽器跟茶水間
+  /* 她剛剛人就在茶水間裡，登入完不該被丟在一個十一年沒動的板首頁上：
+     聊天室浮回最上層，開場最後那句「謝謝！」和整段序章就地接著演完。
+     瀏覽器停在板首頁等她——她自己把茶水間收起來，才會看到那個板。 */
+  active='board_index'; boardTab='board_index';
+  syncTabs(); render(); openChat(); window.scrollTo(0,0);
 };
 document.getElementById('p').addEventListener('keydown',e=>{
   if(e.key==='Enter')document.getElementById('go').click();});
@@ -1374,7 +1455,7 @@ document.getElementById('p').addEventListener('keydown',e=>{
 /* ================= 繪製 ================= */
 function render(){ syncTabs(); renderChrome(); renderPage();
   document.querySelectorAll('[data-home]').forEach(b=>{ b.onclick=goHome; });
-  chatCheck(); }
+  syncApp(); chatCheck(); }
 
 function renderChrome(){
   const strip=document.getElementById('tabstrip');
@@ -1384,10 +1465,8 @@ function renderChrome(){
     const s=SITE[t.id]||{};
     const el=document.createElement('div');
     el.className='tab'+(active===t.id?' on':'');
-    const unread=t.kind==='chat'&&active!=='chat'?chatPending():0;
     el.innerHTML=`<span class="fav" style="background:${s.fav||'#8A9299'}"></span>`
       +`<span class="tt">${esc(s.tab||t.id)}</span>`
-      +(unread?`<span class="bd">${unread}</span>`:'')
       +(t.kind==='doc'?'<button class="cl">✕</button>':'');
     el.onclick=e=>{ if(e.target.classList.contains('cl')){closeTab(t.id);return;} go(t.id); };
     strip.appendChild(el);
@@ -1408,7 +1487,6 @@ function renderPage(){
     vp.className='viewport vp-'+(g.skin==='restore'?'admin':g.skin);
     return g.skin==='restore'?renderRestore(vp,g):renderGate(vp,g);
   }
-  if(active==='chat'){ vp.className='viewport vp-chat'; return renderChat(vp); }
   if(active==='board_index'){ vp.className='viewport vp-wulou'; return renderBoardIndex(vp); }
   if(active==='notes'){ vp.className='viewport vp-notes'; return renderNotes(vp); }
   const d=DOCS.find(x=>x.id===active);
@@ -1764,7 +1842,16 @@ function renderEnd(vp){
 document.getElementById('navBack').onclick=back;
 document.getElementById('navRel').onclick=()=>render();
 
-chatCheck();   // 開場那段從這裡開始播（此時還沒登入，畫在 #prelude 裡）
+/* 茶水間 App 的外框：群組名字只有一份資料，畫在這裡 */
+document.getElementById('caTtl').innerHTML=
+  `${esc(CHAT_TITLE)}<span class="sub">${esc(CHAT_SUB)}</span>`;
+document.getElementById('caBack').onclick=closeChat;
+document.getElementById('chatdock').onclick=openChat;
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&chatOpen&&loggedIn) closeChat(); });
+
+syncApp();
+chatCheck();   // 開場那段從這裡開始播（此時還沒登入，茶水間佔滿整個畫面）
 </script>
 </body>
 </html>
