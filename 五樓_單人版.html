@@ -171,6 +171,10 @@ button{font-family:inherit;cursor:pointer}
 .idx-row.deco{cursor:default;opacity:.6}
 .idx-row.deco:hover{background:none}
 .idx-row.deco .t{color:var(--ink);text-decoration:none}
+/* filler：跟裝飾串一樣灰、一樣沒有 new 標籤，但按得下去——
+   讓玩家分得出「這是背景閒聊」而不是線索，點了也不會撲空 */
+.idx-row.filler{opacity:.75}
+.idx-row.filler .t{color:var(--ink);text-decoration:none}
 
 /* ===== Yahoo 信箱 ===== */
 .vp-yahoo{background:#fff;padding:0}
@@ -938,6 +942,77 @@ const DOCS=[
   {f:'12F',u:'haoge',     c:'我說真的。刪掉。',t:'12/03 08:47'}
  ]},
 
+/* ---------- 板上背景閒聊（filler：可點，但跟主線無關） ----------
+   原本是板首頁上點不開的 BOARD_DECO 裝飾串，只用一行文字＋日期撐場面。
+   改成可以點開的短串，讓玩家「點了有反應」而不是踩到死連結；
+   但內容刻意寫得無懸念、無伏筆、跟劇情關鍵字（張副理／tsche0710／阿哲／
+   員編／照片…）完全不沾邊，也不用刪除樓層或分批貼文這些真線索才有的手法，
+   讀完就是讀完，不會誤導玩家去過度解讀。板首頁用 filler:1 標記，
+   顯示成跟裝飾串一樣低調的灰字（見 renderBoardIndex／.idx-row.filler），
+   但按下去點得開。 */
+{id:'t_reunion',at:0,filler:1,skin:'wulou',site:'五樓',
+ title:'[閒聊] 又到了',
+ idx:{f:'8F',by:'kt0904',when:'2025/11/27',ts:TS(2025,11,27)},
+ meta:'五樓 › 閒聊　│　2025/11/20 – 2025/11/27',
+ posts:[
+  {f:'1F',u:'kt0904',  c:'又到了，還在的人回一下',t:'11/20 21:03'},
+  {f:'2F',u:'yalin_w', c:'在',t:'11/21 08:47'},
+  {f:'3F',u:'tsonghan',c:'在，最近忙死',t:'11/22 19:12'},
+  {f:'4F',u:'siyu_1120',c:'在！！好久沒回來了',t:'11/23 12:30'},
+  {f:'5F',u:'haoge',   c:'在',t:'11/24 22:51'},
+  {f:'6F',u:'kt0904',  c:'每年都差不多這幾個人 哈哈',t:'11/25 09:16'},
+  {f:'7F',u:'yalin_w', c:'習慣了',t:'11/26 14:02'},
+  {f:'8F',u:'tsonghan',c:'明年見',t:'11/27 23:40'}
+ ]},
+
+{id:'t_dinner',at:0,filler:1,skin:'wulou',site:'五樓',
+ title:'[閒聊] 有人要一起吃飯嗎',
+ idx:{f:'5F',by:'siyu_1120',when:'2023/08/02',ts:TS(2023,8,2)},
+ meta:'五樓 › 閒聊　│　2023/08/01 – 2023/08/02',
+ posts:[
+  {f:'1F',u:'siyu_1120',c:'誒有人要一起吃飯嗎 附近新開一家',t:'08/01 11:20'},
+  {f:'2F',u:'kt0904',   c:'吃啊 幾點',t:'08/01 11:24'},
+  {f:'3F',u:'yalin_w',  c:'我要！！',t:'08/01 11:31'},
+  {f:'4F',u:'tsonghan', c:'訂位了嗎',t:'08/02 10:02'},
+  {f:'5F',u:'siyu_1120',c:'訂了 12點',t:'08/02 10:05'}
+ ]},
+
+{id:'t_ramen',at:0,filler:1,skin:'wulou',site:'五樓',
+ title:'[心得] 那間拉麵有夠雷',
+ idx:{f:'9F',by:'kt0904',when:'2021/11/09',ts:TS(2021,11,9)},
+ meta:'五樓 › 心得　│　2021/11/07 – 2021/11/09',
+ posts:[
+  {f:'1F',u:'kt0904',  c:'附近那間新開的拉麵 難吃到爆',t:'11/07 12:41'},
+  {f:'2F',u:'tsonghan',c:'我也去了 湯頭好鹹',t:'11/07 18:03'},
+  {f:'3F',u:'yalin_w', c:'叉燒還行吧',t:'11/08 09:22'},
+  {f:'4F',u:'kt0904',  c:'叉燒普通 重點湯真的不行',t:'11/08 09:30'},
+  {f:'5F',u:'haoge',   c:'我沒吃過 先觀望',t:'11/08 20:11'},
+  {f:'6F',u:'siyu_1120',c:'我也踩雷了QQ',t:'11/09 12:04'},
+  {f:'7F',u:'kt0904',  c:'揪團去別家好了',t:'11/09 12:09'},
+  {f:'8F',u:'tsonghan',c:'附近那間比較好吃',t:'11/09 12:15'},
+  {f:'9F',u:'yalin_w', c:'好啊 下次約',t:'11/09 12:20'}
+ ]},
+
+{id:'t_parking',at:0,filler:1,skin:'wulou',site:'五樓',
+ title:'[閒聊] 附近停車怎麼那麼難停',
+ idx:{f:'4F',by:'yalin_w',when:'2019/05/17',ts:TS(2019,5,17)},
+ meta:'五樓 › 閒聊　│　2019/05/16 – 2019/05/17',
+ posts:[
+  {f:'1F',u:'yalin_w', c:'今天找車位找了20分鐘',t:'05/16 18:47'},
+  {f:'2F',u:'kt0904',  c:'我都停巷口那個停車場',t:'05/16 19:02'},
+  {f:'3F',u:'tsonghan',c:'那個很貴欸',t:'05/17 09:14'},
+  {f:'4F',u:'yalin_w', c:'貴也沒辦法 不然要繞更久',t:'05/17 09:20'}
+ ]},
+
+{id:'t_meeting',at:0,filler:1,skin:'wulou',site:'五樓',
+ title:'[公告] 這個月開會改到禮拜三',
+ idx:{f:'2F',by:'haoge',when:'2017/03/02',ts:TS(2017,3,2)},
+ meta:'五樓 › 公告　│　2017/03/01 – 2017/03/02',
+ posts:[
+  {f:'1F',u:'haoge',c:'這個月開會改到禮拜三 下午兩點',t:'03/01 17:30'},
+  {f:'2F',u:'kt0904',c:'收到',t:'03/02 09:11'}
+ ]},
+
 /* ---------- 部落格 ---------- */
 {id:'blog',at:5,skin:'blog',site:'部落格',
  title:'一個人的公休日',
@@ -964,20 +1039,15 @@ const DOCS=[
 ];
 
 /* ================= 板首頁 ================= */
-/* 裝飾用的串：點不開，只是讓板看起來像活過十一年。
-   〈又到了〉那串年度報平安留在這裡當裝飾——每年 11/27 開一串的儀式還看得到，
-   但今年沒有人開，因為今天的話全部講在茶水間那個群組裡了。 */
-const BOARD_DECO=[
- {label:'[閒聊] 又到了',                  f:'42F',by:'kt0904',  when:'2025/11/27',ts:TS(2025,11,27)},
- {label:'[閒聊] 有人要一起吃飯嗎',        f:'5F',by:'siyu_1120',when:'2023/08/02',ts:TS(2023,8,2)},
- {label:'[心得] 那間拉麵有夠雷',          f:'9F',by:'kt0904',  when:'2021/11/09',ts:TS(2021,11,9)},
- {label:'[閒聊] 附近停車怎麼那麼難停',    f:'4F',by:'yalin_w', when:'2019/05/17',ts:TS(2019,5,17)},
- {label:'[公告] 這個月開會改到禮拜三',    f:'2F',by:'haoge',   when:'2017/03/02',ts:TS(2017,3,2)}
-];
-/* 已解鎖的串 + 裝飾串，一起依最後回覆時間排序 */
+/* 純裝飾、點不開的串留在這裡備用（目前是空的——原本這五則〈又到了〉
+   〈有人要一起吃飯嗎〉〈那間拉麵有夠雷〉〈附近停車怎麼那麼難停〉
+   〈這個月開會改到禮拜三〉已經改寫成可以點開的 filler 短串，搬進 DOCS 了，
+   見 DOCS 裡「板上背景閒聊」那個區塊）。 */
+const BOARD_DECO=[];
+/* 已解鎖的串（含 filler 閒聊）+ 裝飾串，一起依最後回覆時間排序 */
 function boardRows(){
   return DOCS.filter(d=>d.skin==='wulou'&&prog>=d.at&&d.idx)
-    .map(d=>({doc:d.id,label:d.title,x:d.idx}))
+    .map(d=>({doc:d.id,label:d.title,x:d.idx,filler:d.filler}))
     .concat(BOARD_DECO.map(x=>({deco:1,label:x.label,x})))
     .sort((a,b)=>b.x.ts-a.x.ts);
 }
@@ -1043,6 +1113,11 @@ const SITE={
  t_sort  :{tab:'五樓 － 整理',        url:'http://wulou.5gbfree.com/board.php?t=0928', fav:'#4A6D8C'},
  t_stop  :{tab:'五樓 － 收手',        url:'http://wulou.5gbfree.com/board.php?t=1116', fav:'#4A6D8C'},
  t_after :{tab:'五樓 － 那天之後',    url:'http://wulou.5gbfree.com/board.php?t=1128', fav:'#4A6D8C'},
+ t_reunion:{tab:'五樓 － 又到了',     url:'http://wulou.5gbfree.com/board.php?t=1127', fav:'#4A6D8C'},
+ t_dinner:{tab:'五樓 － 有人要一起吃飯嗎',url:'http://wulou.5gbfree.com/board.php?t=0801', fav:'#4A6D8C'},
+ t_ramen :{tab:'五樓 － 那間拉麵有夠雷',url:'http://wulou.5gbfree.com/board.php?t=1107', fav:'#4A6D8C'},
+ t_parking:{tab:'五樓 － 附近停車怎麼那麼難停',url:'http://wulou.5gbfree.com/board.php?t=0516', fav:'#4A6D8C'},
+ t_meeting:{tab:'五樓 － 這個月開會改到禮拜三',url:'http://wulou.5gbfree.com/board.php?t=0301', fav:'#4A6D8C'},
  a_im    :{tab:'2015-10.htm',         url:'file:///C:/Program Files/Yahoo!/Messenger/Profiles/tsche0710/Archive/2015-10.htm', fav:'#9A9A9A'},
  m_box   :{tab:'Yahoo!奇摩電子信箱',  url:'https://tw.mail.yahoo.com/mail/', fav:'#7B0099'},
  blog    :{tab:'一個人的公休日',      url:'http://ytl-holiday.blogspot.com/', fav:'#8A8272'},
@@ -1326,7 +1401,7 @@ function renderBoardIndex(vp){
   const rows=boardRows().map(r=>{
     if(r.deco) return `<div class="idx-row deco"><div class="t">${esc(r.label)}</div>
       <div class="m">${esc(line(r.x))}</div></div>`;
-    return `<button class="idx-row${seen.has(r.doc)?'':' new'}" data-idx="${r.doc}">
+    return `<button class="idx-row${r.filler?' filler':seen.has(r.doc)?'':' new'}" data-idx="${r.doc}">
       <div class="t">${esc(r.label)}</div><div class="m">${esc(line(r.x))}</div></button>`;
   }).join('');
 
