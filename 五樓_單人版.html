@@ -146,9 +146,12 @@ button{font-family:inherit;cursor:pointer}
 .footnote{text-align:center;color:#4A5560;font-size:11px;margin-top:20px;line-height:2}
 
 /* ===== 瀏覽器外殼 ===== */
-#browser{display:none;max-width:980px;margin:0 auto;min-height:100vh;
+/* 分頁列與網址列是「瀏覽器外框」，捲的是框裡的網頁：外殼吃滿一個螢幕高，
+   tabstrip／omni 固定不動，只有 .viewport 自己捲。 */
+#browser{display:none;flex-direction:column;max-width:980px;margin:0 auto;
+  height:100vh;height:100dvh;
   background:var(--chrome);box-shadow:0 0 0 1px #8A9299}
-.tabstrip{display:flex;align-items:flex-end;gap:1px;padding:6px 8px 0;
+.tabstrip{flex:none;display:flex;align-items:flex-end;gap:1px;padding:6px 8px 0;
   background:#B9BEC4;overflow-x:auto}
 .tab{display:flex;align-items:center;gap:6px;padding:6px 10px 7px;min-width:104px;max-width:220px;
   background:#C6CBD0;border:1px solid #A6ADB4;border-bottom:0;border-radius:5px 5px 0 0;
@@ -158,7 +161,7 @@ button{font-family:inherit;cursor:pointer}
 .tab .fav{width:11px;height:11px;flex:none;border-radius:2px}
 .tab .tt{overflow:hidden;text-overflow:ellipsis}
 .tab .cl{margin-left:auto;background:none;border:0;color:#6E7A85;font-size:12px;padding:0 2px;line-height:1}
-.omni{display:flex;align-items:center;gap:8px;padding:7px 10px;
+.omni{flex:none;display:flex;align-items:center;gap:8px;padding:7px 10px;
   background:var(--chrome);border-bottom:1px solid #A6ADB4}
 .omni .navb button{background:none;border:0;color:#6E7A85;font-size:14px;padding:1px 5px}
 .omni .navb button:disabled{color:#B0B7BE;cursor:default}
@@ -166,7 +169,8 @@ button{font-family:inherit;cursor:pointer}
   padding:4px 9px;font-family:"Courier New",monospace;font-size:12px;color:#3A424A;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .omni .url .sec{color:#8A9299}
-.viewport{min-height:78vh;padding:14px 12px 40px}
+.viewport{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;padding:14px 12px 40px}
 
 /* ===== 五樓 ===== */
 .vp-wulou{background:var(--page);
@@ -222,6 +226,35 @@ button{font-family:inherit;cursor:pointer}
    讓玩家分得出「這是背景閒聊」而不是線索，點了也不會撲空 */
 .idx-row.filler{opacity:.75}
 .idx-row.filler .t{color:var(--ink);text-decoration:none}
+/* 置頂公告：跟 filler 一樣低調，只是標題前面多一個置頂記號 */
+.idx-row.top .t::before{content:'置頂　';color:#8C3A3A;font-size:9px;text-decoration:none}
+
+/* 分頁列：舊板就算只有一頁也會把它印出來 */
+.wl-pager{display:flex;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;
+  padding:14px 0 4px;font-size:11px;color:var(--ink-soft);font-family:"Courier New",monospace}
+.wl-pager button{background:none;border:1px solid var(--line-soft);color:var(--link);
+  padding:2px 8px;font-size:11px;font-family:inherit;cursor:pointer}
+.wl-pager button:hover:not([disabled]){background:#F4F8FB}
+.wl-pager button[disabled]{color:#BFC6CC;border-color:#EDF0F3;cursor:default}
+.wl-pager .p.on{background:#EEF3F8;color:var(--ink);font-weight:700;border-color:var(--line)}
+.wl-pager .tot{margin-left:4px}
+
+/* 免費空間自動插在頁首的廣告條——2015 年的免費空間都會塞這個 */
+.wl-ad{display:flex;align-items:center;gap:8px;margin-bottom:6px;padding:5px 9px;
+  border:1px solid #D9B84A;background:linear-gradient(#FFFBE6,#FFEFB0);
+  font-size:11px;color:#7A5A00}
+.wl-ad .tag{border:1px solid #D9B84A;background:#fff;padding:0 4px;font-size:9px;flex:none}
+.wl-ad .txt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-weight:700}
+.wl-ad .x{background:none;border:0;color:#A08340;font-size:12px;line-height:1;padding:0 2px;
+  flex:none;cursor:pointer}
+
+/* 站尾：訪客計數器、Powered by、免費空間宣告 */
+.wl-foot{margin-top:8px;padding:9px 4px 2px;font-size:10.5px;line-height:1.95;
+  color:#98A3AD;text-align:center;font-family:"Courier New",monospace}
+.wl-foot .led{margin-left:6px;background:#1C1F23;color:#7FD4A8;padding:1px 6px;
+  letter-spacing:.3em}
+.wl-foot .pw{color:#B4BBC1}
 
 /* ===== Yahoo 信箱 ===== */
 .vp-yahoo{background:#fff;padding:0}
@@ -420,6 +453,25 @@ button{font-family:inherit;cursor:pointer}
   letter-spacing:.14em;margin-top:40px;animation-delay:7.4s}
 @keyframes fin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.end p{opacity:1;animation:none}}
+
+/* ===== 除錯面板：只在網址帶 #dev 時才存在，正常玩的人看不到也碰不到 ===== */
+#dev{position:fixed;left:0;bottom:0;z-index:60;font-size:12px}
+#devTab{background:#1C1F23;color:#7FD4A8;border:0;border-radius:0 6px 0 0;
+  padding:8px 12px;font:600 11px/1 ui-monospace,monospace;letter-spacing:.1em;opacity:.55}
+#devTab:hover,#devTab.on{opacity:1}
+#devPanel{background:#12151A;color:#D7DEE5;border-radius:0 8px 0 0;padding:12px;
+  max-width:min(94vw,380px);max-height:76vh;overflow-y:auto;
+  box-shadow:0 -2px 18px rgba(0,0,0,.5)}
+#devPanel h4{margin:0 0 6px;font-size:11px;color:#7FD4A8;letter-spacing:.12em;font-weight:600}
+#devPanel .st{color:#8A949E;font:11px/1.7 ui-monospace,monospace;margin-bottom:10px;
+  word-break:break-all}
+#devPanel .grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+#devPanel button.j{background:#232932;color:#D7DEE5;border:1px solid #2F3742;
+  border-radius:6px;padding:9px 11px;font-size:12px;min-height:38px}
+#devPanel button.j:hover{background:#2E3742}
+#devPanel button.j.doc{font-size:11px;padding:7px 9px;min-height:32px;color:#A8B3BE}
+#devPanel label.sw{display:flex;align-items:center;gap:7px;color:#A8B3BE;margin-bottom:10px}
+
 /* ===== 手機／窄螢幕 =====
    固定寬的樓層欄（52px）＋暱稱欄（100px）＋時間欄（78px）在手機上會把內文擠成
    一行三、四個字。窄螢幕改成上下兩段：樓層／暱稱／時間縮成一條標頭，內文自己佔一整行。 */
@@ -445,6 +497,8 @@ button{font-family:inherit;cursor:pointer}
   .wl-hd .me{margin-left:0;width:100%}
   .wl-sub{padding:4px 10px}
   .wl-body{padding:12px 10px}
+  /* 板首頁那一行是 white-space:pre，之後補新串時萬一更長，寧可切掉也不要把整頁撐寬 */
+  .idx-row .m{overflow:hidden;text-overflow:ellipsis}
 
   .rp{display:grid;grid-template-columns:auto minmax(0,1fr) auto;
     grid-template-areas:"f u t" "c c c";gap:0 8px;padding:9px 0 10px 8px}
@@ -456,24 +510,6 @@ button{font-family:inherit;cursor:pointer}
   .rp .c{grid-area:c;font-size:15px;line-height:1.95;margin-top:4px}
   .rp.del .c{font-size:13px}
   .rp.restored .u::after{content:'已還原'}
-
-  /* ===== 除錯面板：只在網址帶 #dev 時才存在，正常玩的人看不到也碰不到 ===== */
-  #dev{position:fixed;left:0;bottom:0;z-index:60;font-size:12px}
-  #devTab{background:#1C1F23;color:#7FD4A8;border:0;border-radius:0 6px 0 0;
-    padding:8px 12px;font:600 11px/1 ui-monospace,monospace;letter-spacing:.1em;opacity:.55}
-  #devTab:hover,#devTab.on{opacity:1}
-  #devPanel{background:#12151A;color:#D7DEE5;border-radius:0 8px 0 0;padding:12px;
-    max-width:min(94vw,380px);max-height:76vh;overflow-y:auto;
-    box-shadow:0 -2px 18px rgba(0,0,0,.5)}
-  #devPanel h4{margin:0 0 6px;font-size:11px;color:#7FD4A8;letter-spacing:.12em;font-weight:600}
-  #devPanel .st{color:#8A949E;font:11px/1.7 ui-monospace,monospace;margin-bottom:10px;
-    word-break:break-all}
-  #devPanel .grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
-  #devPanel button.j{background:#232932;color:#D7DEE5;border:1px solid #2F3742;
-    border-radius:6px;padding:9px 11px;font-size:12px;min-height:38px}
-  #devPanel button.j:hover{background:#2E3742}
-  #devPanel button.j.doc{font-size:11px;padding:7px 9px;min-height:32px;color:#A8B3BE}
-  #devPanel label.sw{display:flex;align-items:center;gap:7px;color:#A8B3BE;margin-bottom:10px}
 
   /* 板首頁那行「最後回覆…」是等寬對齊排的，窄螢幕讓它折行而不是撐破版面 */
   .idx-row .m{white-space:pre-wrap;word-break:break-word}
@@ -794,7 +830,7 @@ const DOCS=[
 /* ---------- 序章 ---------- */
 {id:'t_new',at:0,skin:'wulou',site:'五樓',
  title:'[閒聊] 新來的那個',
- idx:{f:'22F',by:'ytl_lin',when:'2015/11/20',ts:TS(2015,11,20)},
+ idx:{f:'22F',by:'ytl_lin',when:'2015/11/20',ts:TS(2015,11,20),hits:418},
  meta:'五樓 › 閒聊　│　2015/09/18 – 2015/11/20',
  posts:[
   {f:'1F', u:'tsonghan',  c:'管理部八月來的那個。坐窗邊那個。',t:'09/18 09:41'},
@@ -823,7 +859,7 @@ const DOCS=[
 
 {id:'t_prank',at:0,skin:'wulou',site:'五樓',
  title:'[閒聊] 欣怡生日',
- idx:{f:'19F',by:'haoge',when:'2015/06/20',ts:TS(2015,6,20)},
+ idx:{f:'19F',by:'haoge',when:'2015/06/20',ts:TS(2015,6,20),hits:233},
  meta:'五樓 › 閒聊　│　2015/06/12 – 2015/06/20',
  posts:[
   {f:'1F', u:'kt0904',   c:'欸 下禮拜五欣怡生日欸（行政那個）',t:'06/12 10:22'},
@@ -853,7 +889,7 @@ const DOCS=[
 /* ---------- 第一章 ---------- */
 {id:'t_sort',at:1,peek:'五樓　找不到這個頁面',skin:'wulou',site:'五樓',
  title:'[整理] 她',
- idx:{f:'19F',by:'haoge',when:'2015/10/26',ts:TS(2015,10,26)},
+ idx:{f:'19F',by:'haoge',when:'2015/10/26',ts:TS(2015,10,26),hits:507},
  meta:'五樓 › 整理　│　發文者 haoge　│　2015/09/28 – 2015/10/26　│　板主已編輯',
  posts:[
   {f:'1F', u:'haoge',     c:'開一串。資料都貼這裡，不要私下傳。',t:'09/28 19:51'},
@@ -991,7 +1027,7 @@ const DOCS=[
 /* ---------- 第二章 ---------- */
 {id:'t_stop',at:3,peek:'五樓　權限不足',skin:'wulou',site:'五樓',
  title:'[閒聊] 收手',
- idx:{f:'23F',by:'haoge',when:'2015/11/21',ts:TS(2015,11,21)},
+ idx:{f:'23F',by:'haoge',when:'2015/11/21',ts:TS(2015,11,21),hits:361},
  meta:'五樓 › 閒聊　│　2015/11/16 – 2015/11/21　│　板主已編輯',
  posts:[
   {f:'1F', u:'ytl_lin',   c:'這件事要收了。不要再做了。',t:'11/16 20:14'},
@@ -1021,7 +1057,7 @@ const DOCS=[
 
 {id:'t_after',at:3,peek:'五樓　板主已鎖定',skin:'wulou',site:'五樓',
  title:'[閒聊] 那天之後',
- idx:{f:'11F',by:'haoge',when:'2015/12/03',ts:TS(2015,12,3)},
+ idx:{f:'11F',by:'haoge',when:'2015/12/03',ts:TS(2015,12,3),hits:194},
  meta:'五樓 › 閒聊　│　2015/11/28 – 2015/12/03　│　板主已編輯',
  posts:[
   {f:'1F', u:'kt0904',    c:'昨天他講的那些 我沒有全部聽懂',t:'11/28 10:07'},
@@ -1035,6 +1071,28 @@ const DOCS=[
   {f:'',   u:'',          c:'此文已由板主刪除',del:1},
   {f:'11F',u:'haoge',     c:'這串刪掉。以後不要再提這件事。',t:'12/02 09:16'},
   {f:'12F',u:'haoge',     c:'我說真的。刪掉。',t:'12/03 08:47'}
+ ]},
+
+/* ---------- 板規（置頂） ----------
+   板是 2015/04 林昱庭架起來的（信箱裡那封〈五樓開好了〉是 04/13 12:48），
+   所以板上最舊的一串就是他貼的公告，而且它置頂在板首頁最上面：序章一開板，
+   ytl_lin 這個帳號就已經在畫面上了。他的名字其實到處都是——板主欄位、板規、
+   公告——只是十一年來沒有人對他說過話。這一串跟 filler 一樣寫得無懸念，
+   唯一有重量的是 2F 那條「這裡講的話不要帶出去」：整個團體唯一那條界線，
+   是他在什麼都還沒發生的時候，當成雜務順手寫下來的。 */
+{id:'t_rules',at:0,filler:1,top:1,skin:'wulou',site:'五樓',
+ title:'[公告] 板規',
+ idx:{f:'8F',by:'siyu_1120',when:'2015/04/14',ts:TS(2015,4,14),hits:342},
+ meta:'五樓 › 公告　│　2015/04/13 – 2015/04/14',
+ posts:[
+  {f:'1F',u:'ytl_lin',  c:'板開好了。網址不要貼給別人，這裡就我們六個。',t:'04/13 13:02'},
+  {f:'2F',u:'ytl_lin',  c:'沒什麼板規，就兩件事：\n一、不要用公司的電腦上來。\n二、這裡講的話不要帶出去。\n其他隨便你們。',t:'04/13 13:05'},
+  {f:'3F',u:'kt0904',   c:'收到 板主',t:'04/13 13:11'},
+  {f:'4F',u:'tsonghan', c:'我還是覺得五樓這個名字很沒創意',t:'04/13 13:20'},
+  {f:'5F',u:'ytl_lin',  c:'你想得到更好的再跟我說',t:'04/13 13:24'},
+  {f:'6F',u:'yalin_w',  c:'我覺得還好啊',t:'04/13 14:02'},
+  {f:'7F',u:'haoge',    c:'可以用就好。',t:'04/13 18:36'},
+  {f:'8F',u:'siyu_1120',c:'我加到我的最愛了！！^^',t:'04/14 09:15'}
  ]},
 
 /* ---------- 板上背景閒聊（filler：可點，但跟主線無關） ----------
@@ -1052,7 +1110,7 @@ const DOCS=[
    「新年快樂」。板首頁由上往下讀，就是這一年慢慢安靜下去的過程。 */
 {id:'t_ny',at:0,filler:1,skin:'wulou',site:'五樓',
  title:'[閒聊] 新年快樂',
- idx:{f:'3F',by:'kt0904',when:'2016/12/31',ts:TS(2016,12,31)},
+ idx:{f:'3F',by:'kt0904',when:'2016/12/31',ts:TS(2016,12,31),hits:19},
  meta:'五樓 › 閒聊　│　2016/12/31',
  posts:[
   {f:'1F',u:'kt0904', c:'跨年有人要出來嗎',t:'12/31 15:22'},
@@ -1062,7 +1120,7 @@ const DOCS=[
 
 {id:'t_reunion',at:0,filler:1,skin:'wulou',site:'五樓',
  title:'[閒聊] 又到了',
- idx:{f:'4F',by:'tsonghan',when:'2016/11/27',ts:TS(2016,11,27)},
+ idx:{f:'4F',by:'tsonghan',when:'2016/11/27',ts:TS(2016,11,27),hits:33},
  meta:'五樓 › 閒聊　│　2016/11/27',
  posts:[
   {f:'1F',u:'kt0904',  c:'又到了，還在的人回一下',t:'11/27 21:03'},
@@ -1073,7 +1131,7 @@ const DOCS=[
 
 {id:'t_dinner',at:0,filler:1,skin:'wulou',site:'五樓',
  title:'[閒聊] 有人要一起吃飯嗎',
- idx:{f:'5F',by:'siyu_1120',when:'2016/08/02',ts:TS(2016,8,2)},
+ idx:{f:'5F',by:'siyu_1120',when:'2016/08/02',ts:TS(2016,8,2),hits:47},
  meta:'五樓 › 閒聊　│　2016/08/01 – 2016/08/02',
  posts:[
   {f:'1F',u:'siyu_1120',c:'誒有人要一起吃飯嗎 附近新開一家',t:'08/01 11:20'},
@@ -1085,7 +1143,7 @@ const DOCS=[
 
 {id:'t_parking',at:0,filler:1,skin:'wulou',site:'五樓',
  title:'[閒聊] 附近停車怎麼那麼難停',
- idx:{f:'4F',by:'yalin_w',when:'2016/05/17',ts:TS(2016,5,17)},
+ idx:{f:'4F',by:'yalin_w',when:'2016/05/17',ts:TS(2016,5,17),hits:31},
  meta:'五樓 › 閒聊　│　2016/05/16 – 2016/05/17',
  posts:[
   {f:'1F',u:'yalin_w', c:'今天找車位找了20分鐘',t:'05/16 18:47'},
@@ -1096,7 +1154,7 @@ const DOCS=[
 
 {id:'t_meeting',at:0,filler:1,skin:'wulou',site:'五樓',
  title:'[公告] 這個月開會改到禮拜三',
- idx:{f:'2F',by:'kt0904',when:'2016/03/02',ts:TS(2016,3,2)},
+ idx:{f:'2F',by:'kt0904',when:'2016/03/02',ts:TS(2016,3,2),hits:22},
  meta:'五樓 › 公告　│　2016/03/01 – 2016/03/02',
  posts:[
   {f:'1F',u:'haoge',c:'這個月開會改到禮拜三 下午兩點',t:'03/01 17:30'},
@@ -1105,7 +1163,7 @@ const DOCS=[
 
 {id:'t_ramen',at:0,filler:1,skin:'wulou',site:'五樓',
  title:'[心得] 那間拉麵有夠雷',
- idx:{f:'9F',by:'yalin_w',when:'2016/01/09',ts:TS(2016,1,9)},
+ idx:{f:'9F',by:'yalin_w',when:'2016/01/09',ts:TS(2016,1,9),hits:63},
  meta:'五樓 › 心得　│　2016/01/07 – 2016/01/09',
  posts:[
   {f:'1F',u:'kt0904',  c:'附近那間新開的拉麵 難吃到爆',t:'01/07 12:41'},
@@ -1150,12 +1208,13 @@ const DOCS=[
    〈這個月開會改到禮拜三〉已經改寫成可以點開的 filler 短串，搬進 DOCS 了，
    見 DOCS 裡「板上背景閒聊」那個區塊）。 */
 const BOARD_DECO=[];
-/* 已解鎖的串（含 filler 閒聊）+ 裝飾串，一起依最後回覆時間排序 */
+/* 已解鎖的串（含 filler 閒聊、置頂公告）+ 裝飾串：置頂的永遠排最前面，
+   其餘依最後回覆時間排序 */
 function boardRows(){
   return DOCS.filter(d=>d.skin==='wulou'&&prog>=d.at&&d.idx)
-    .map(d=>({doc:d.id,label:d.title,x:d.idx,filler:d.filler}))
+    .map(d=>({doc:d.id,label:d.title,x:d.idx,filler:d.filler,top:d.top}))
     .concat(BOARD_DECO.map(x=>({deco:1,label:x.label,x})))
-    .sort((a,b)=>b.x.ts-a.x.ts);
+    .sort((a,b)=>(b.top?1:0)-(a.top?1:0)||b.x.ts-a.x.ts);
 }
 
 /* ================= 閘 ================= */
@@ -1219,6 +1278,7 @@ const SITE={
  t_sort  :{tab:'五樓 － 整理',        url:'http://wulou.5gbfree.com/board.php?t=0928', fav:'#4A6D8C'},
  t_stop  :{tab:'五樓 － 收手',        url:'http://wulou.5gbfree.com/board.php?t=1116', fav:'#4A6D8C'},
  t_after :{tab:'五樓 － 那天之後',    url:'http://wulou.5gbfree.com/board.php?t=1128', fav:'#4A6D8C'},
+ t_rules :{tab:'五樓 － 板規',        url:'http://wulou.5gbfree.com/board.php?t=0413', fav:'#4A6D8C'},
  t_reunion:{tab:'五樓 － 又到了',     url:'http://wulou.5gbfree.com/board.php?t=1127', fav:'#4A6D8C'},
  t_ny    :{tab:'五樓 － 新年快樂',    url:'http://wulou.5gbfree.com/board.php?t=1231', fav:'#4A6D8C'},
  t_dinner:{tab:'五樓 － 有人要一起吃飯嗎',url:'http://wulou.5gbfree.com/board.php?t=0801', fav:'#4A6D8C'},
@@ -1311,11 +1371,15 @@ function openDoc(id){
 }
 function goHome(){ boardTab='board_index'; go('board_index'); }
 function closeTab(id){ tabs=tabs.filter(t=>t.id!==id); if(active===id) goHome(); else render(); }
+/* 換頁要捲回頂端的是「網頁」，也就是 .viewport 這個捲動容器，不是整個 window
+   ——分頁列跟網址列現在是固定的外框，window 根本不會捲。 */
+function toTop(){ const v=document.getElementById('viewport'); if(v) v.scrollTop=0;
+  window.scrollTo(0,0); }
 function go(id){ if(active!==id) hist.push(active); active=id;
-  render(); window.scrollTo(0,0); }
+  render(); toTop(); }
 function back(){ if(!hist.length)return; const p=hist.pop();
   if(isBoardDoc(p)) boardTab=p;
-  active=tabs.some(t=>t.id===p)||isBoardDoc(p)?p:tabs[0].id; render(); window.scrollTo(0,0); }
+  active=tabs.some(t=>t.id===p)||isBoardDoc(p)?p:tabs[0].id; render(); toTop(); }
 
 /* ================= 茶水間：播放器 =================
    從頭到尾都是同一支 App、同一個訊息列（#chatapp／#plMsgs）：登入前佔滿畫面，
@@ -1382,7 +1446,7 @@ function chatNext(){
 function chatSend(){
   const st=chatDraft; if(!st) return;
   chatDraft=null; chatShown.push({u:ME.uid,c:st.me}); chatPaint();
-  if(st.end){ prog=6; setTimeout(()=>{ closeChat(); render(); window.scrollTo(0,0); },1100); return; }
+  if(st.end){ prog=6; setTimeout(()=>{ closeChat(); render(); toTop(); },1100); return; }
   chatBusy=true; setTimeout(chatNext,500);
 }
 
@@ -1486,13 +1550,13 @@ document.getElementById('go').onclick=()=>{
   const e=document.getElementById('lerr');
   if(u!==ME.uid||p!==ME.pw){ e.textContent='帳號或密碼錯誤。'; return; }
   document.getElementById('login').style.display='none';
-  document.getElementById('browser').style.display='block';
+  document.getElementById('browser').style.display='flex';
   loggedIn=true;                       // 從這裡開始，手上同時有兩支 App：瀏覽器跟茶水間
   /* 她剛剛人就在茶水間裡，登入完不該被丟在一個十年沒動的板首頁上：
      聊天室浮回最上層，開場最後那句「謝謝！」和整段序章就地接著演完。
      瀏覽器停在板首頁等她——她自己把茶水間收起來，才會看到那個板。 */
   active='board_index'; boardTab='board_index';
-  syncTabs(); render(); openChat(); window.scrollTo(0,0);
+  syncTabs(); render(); openChat(); toTop();
 };
 document.getElementById('p').addEventListener('keydown',e=>{
   if(e.key==='Enter')document.getElementById('go').click();});
@@ -1500,6 +1564,9 @@ document.getElementById('p').addEventListener('keydown',e=>{
 /* ================= 繪製 ================= */
 function render(){ syncTabs(); renderChrome(); renderPage();
   document.querySelectorAll('[data-home]').forEach(b=>{ b.onclick=goHome; });
+  document.querySelectorAll('[data-rules]').forEach(b=>{ b.onclick=()=>openDoc('t_rules'); });
+  const adx=document.getElementById('adX');
+  if(adx) adx.onclick=()=>{ adOpen=false; render(); };
   syncApp(); chatCheck(); }
 
 function renderChrome(){
@@ -1543,26 +1610,71 @@ function renderPage(){
   if(d.skin==='blog')    return renderBlog(vp,d);
 }
 
+/* ---------- 五樓的頁首廣告與站尾 ---------- */
+/* wulou.5gbfree.com 是免費空間，免費空間一定會在頁首插一條自己的廣告。
+   關得掉，但只在這次開著的期間有效——重整就回來，這也是真的。 */
+let adOpen=true;
+function wlAd(){
+  return adOpen?`<div class="wl-ad"><span class="tag">廣告</span>
+    <span class="txt">5GBfree 免費網頁空間　註冊就送 5GB　馬上擁有自己的網站 ▸</span>
+    <button class="x" id="adX" title="關閉">✕</button></div>`:'';
+}
+/* 站尾：訪客計數器、文章數、最後更新、Powered by。
+   這個板從 2016 年底就沒有人再上來過，計數器那串數字本身就是「沒有人來過」的證據；
+   「最後更新」是動態算出來的——玩家看到的永遠是板上真的最新那一天。 */
+function wlFoot(){
+  const rows=boardRows();
+  const ts=String(rows.reduce((m,r)=>Math.max(m,r.x.ts),0));
+  const last=ts.length>=8?`${ts.slice(0,4)}/${ts.slice(4,6)}/${ts.slice(6,8)}`:'—';
+  return `<div class="wl-foot">
+    <div>本站訪客人次<span class="led">006418</span></div>
+    <div>五樓　│　文章 ${rows.length} 篇　│　最後更新 ${esc(last)}　│　板主 ytl_lin</div>
+    <div class="pw">Powered by MiniBBS 1.2　│　本站空間由 5GBfree 免費提供，頁首廣告為系統自動插入</div>
+  </div>`;
+}
+
 /* ---------- 板首頁 ---------- */
+const PER_PAGE=8;        // 每頁篇數；置頂那串不算在內，每一頁都會出現
+let boardPage=1;
 function renderBoardIndex(vp){
-  const line=x=>`${x.f}　│　最後回覆 ${who(x.by).padEnd(6,'　')}│　${x.when}`;
-  const rows=boardRows().map(r=>{
-    if(r.deco) return `<div class="idx-row deco"><div class="t">${esc(r.label)}</div>
-      <div class="m">${esc(line(r.x))}</div></div>`;
-    return `<button class="idx-row${r.filler?' filler':seen.has(r.doc)?'':' new'}" data-idx="${r.doc}">
+  /* 手機上這一行只差幾個字就會擠出去，所以補白抓得剛好夠對齊就好（名字都是兩個字） */
+  const line=x=>`${x.f}　│　人氣 ${String(x.hits??0).padStart(4,' ')}　│　最後回覆 ${who(x.by).padEnd(4,'　')}│　${x.when}`;
+  const row=r=>r.deco
+    ?`<div class="idx-row deco"><div class="t">${esc(r.label)}</div>
+      <div class="m">${esc(line(r.x))}</div></div>`
+    :`<button class="idx-row${r.top?' top':''}${r.filler?' filler':seen.has(r.doc)?'':' new'}" data-idx="${r.doc}">
       <div class="t">${esc(r.label)}</div><div class="m">${esc(line(r.x))}</div></button>`;
-  }).join('');
+
+  const all=boardRows(), tops=all.filter(r=>r.top), rest=all.filter(r=>!r.top);
+  const pages=Math.max(1,Math.ceil(rest.length/PER_PAGE));
+  boardPage=Math.min(Math.max(1,boardPage),pages);
+  const rows=tops.concat(rest.slice((boardPage-1)*PER_PAGE,boardPage*PER_PAGE)).map(row).join('');
+
+  let nums='';
+  for(let i=1;i<=pages;i++)
+    nums+=`<button class="p${i===boardPage?' on':''}" data-pg="${i}">${i}</button>`;
+  const pager=`<div class="wl-pager">
+    <button data-pg="${boardPage-1}"${boardPage<=1?' disabled':''}>‹ 上一頁</button>
+    ${nums}
+    <button data-pg="${boardPage+1}"${boardPage>=pages?' disabled':''}>下一頁 ›</button>
+    <span class="tot">共 ${pages} 頁</span>
+  </div>`;
 
   vp.innerHTML=`<div class="cols"><div class="main">
+    ${wlAd()}
     <div class="wl-hd"><span class="lg">五樓</span>
-      <span class="nv"><button data-home>主板</button>　│　精華區　│　板規</span>
+      <span class="nv"><button data-home>主板</button>　│　精華區　│　<button data-rules>板規</button></span>
       <span class="me">${esc(ME.name)}（${esc(ME.uid)}）</span></div>
     <div class="wl-sub">主板　│　板主 ytl_lin　│　依最後回覆排序</div>
-    <div class="wl-body idx-list">${rows}</div>
+    <div class="wl-body idx-list">${rows}${pager}</div>
+    ${wlFoot()}
   </div></div>`;
 
   document.querySelectorAll('[data-idx]').forEach(b=>{
     b.onclick=()=>{ openDoc(b.dataset.idx); };
+  });
+  document.querySelectorAll('[data-pg]').forEach(b=>{
+    b.onclick=()=>{ boardPage=+b.dataset.pg; render(); };
   });
 }
 
@@ -1586,8 +1698,9 @@ function renderThread(vp,d){
   }).join('');
 
   vp.innerHTML=`<div class="cols"><div class="main">
+    ${wlAd()}
     <div class="wl-hd"><span class="lg">五樓</span>
-      <span class="nv"><button data-home>主板</button>　│　精華區　│　板規</span>
+      <span class="nv"><button data-home>主板</button>　│　精華區　│　<button data-rules>板規</button></span>
       <span class="me">${esc(ME.name)}（${esc(ME.uid)}）</span></div>
     <div class="wl-sub">${esc(T(d.meta))}</div>
     <div class="wl-body">
@@ -1595,6 +1708,7 @@ function renderThread(vp,d){
       <div class="wl-meta">現在時間 ${fmt(TODAY)}</div>
       ${body}
     </div>
+    ${wlFoot()}
   </div></div>`;
 }
 
@@ -1687,12 +1801,12 @@ function renderBlog(vp,d){
    得先讓玩家真的把十一年的日常一篇一篇看到底。 */
 function markBlogRead(){
   if(blogRead||active!=='blog') return;
-  const doc=document.documentElement;
-  const bottom=Math.max(document.body.scrollHeight,doc.scrollHeight);
-  if(window.innerHeight+(window.scrollY||doc.scrollTop) < bottom-60) return;
+  const v=document.getElementById('viewport'); if(!v) return;
+  /* 捲的是 .viewport，不是 window：短到不用捲的版面 scrollHeight≒clientHeight，一樣算看完 */
+  if(v.scrollTop+v.clientHeight < v.scrollHeight-60) return;
   blogRead=true; chatCheck();
 }
-window.addEventListener('scroll',markBlogRead,{passive:true});
+document.getElementById('viewport').addEventListener('scroll',markBlogRead,{passive:true});
 setInterval(markBlogRead,1200);   // 保險：有些情況收不到 scroll 事件，別讓玩家卡在這裡
 
 /* ---------- 閘 ---------- */
@@ -1832,7 +1946,7 @@ function renderSaid(vp){
   vp.innerHTML=`<div class="said"><p>${esc(saidNow)}</p>
     <button class="btn" id="saidGo">繼續</button></div>`;
   const b=document.getElementById('saidGo');
-  if(b) b.onclick=()=>{ saidNow=''; render(); window.scrollTo(0,0); };
+  if(b) b.onclick=()=>{ saidNow=''; render(); toTop(); };
 }
 
 /* ---------- 我的最愛 ---------- */
@@ -1932,7 +2046,7 @@ function devApply(st){
   loggedIn=true;
   chatOpen=!!st.chat;                 // 茶水間是另一支 App：這一段要不要開著它
   document.getElementById('login').style.display='none';
-  document.getElementById('browser').style.display='block';
+  document.getElementById('browser').style.display='flex';
 
   prog=st.prog;
   (st.done||[]).forEach(g=>gateDone[g]=true);
@@ -1953,7 +2067,7 @@ function devApply(st){
   boardTab=st.at==='board_index'?'board_index':boardTab;
   syncTabs();
   if(st.at&&st.at!=='end'){ if(!tabs.some(t=>t.id===st.at)) tabs.push({id:st.at,kind:'doc'}); active=st.at; }
-  render(); chatPaint(); window.scrollTo(0,0); devPaint();
+  render(); chatPaint(); toTop(); devPaint();
 }
 
 function devPaint(){
