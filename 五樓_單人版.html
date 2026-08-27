@@ -146,9 +146,12 @@ button{font-family:inherit;cursor:pointer}
 .footnote{text-align:center;color:#4A5560;font-size:11px;margin-top:20px;line-height:2}
 
 /* ===== 瀏覽器外殼 ===== */
-#browser{display:none;max-width:980px;margin:0 auto;min-height:100vh;
+/* 分頁列與網址列是「瀏覽器外框」，捲的是框裡的網頁：外殼吃滿一個螢幕高，
+   tabstrip／omni 固定不動，只有 .viewport 自己捲。 */
+#browser{display:none;flex-direction:column;max-width:980px;margin:0 auto;
+  height:100vh;height:100dvh;
   background:var(--chrome);box-shadow:0 0 0 1px #8A9299}
-.tabstrip{display:flex;align-items:flex-end;gap:1px;padding:6px 8px 0;
+.tabstrip{flex:none;display:flex;align-items:flex-end;gap:1px;padding:6px 8px 0;
   background:#B9BEC4;overflow-x:auto}
 .tab{display:flex;align-items:center;gap:6px;padding:6px 10px 7px;min-width:104px;max-width:220px;
   background:#C6CBD0;border:1px solid #A6ADB4;border-bottom:0;border-radius:5px 5px 0 0;
@@ -158,7 +161,7 @@ button{font-family:inherit;cursor:pointer}
 .tab .fav{width:11px;height:11px;flex:none;border-radius:2px}
 .tab .tt{overflow:hidden;text-overflow:ellipsis}
 .tab .cl{margin-left:auto;background:none;border:0;color:#6E7A85;font-size:12px;padding:0 2px;line-height:1}
-.omni{display:flex;align-items:center;gap:8px;padding:7px 10px;
+.omni{flex:none;display:flex;align-items:center;gap:8px;padding:7px 10px;
   background:var(--chrome);border-bottom:1px solid #A6ADB4}
 .omni .navb button{background:none;border:0;color:#6E7A85;font-size:14px;padding:1px 5px}
 .omni .navb button:disabled{color:#B0B7BE;cursor:default}
@@ -166,7 +169,8 @@ button{font-family:inherit;cursor:pointer}
   padding:4px 9px;font-family:"Courier New",monospace;font-size:12px;color:#3A424A;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .omni .url .sec{color:#8A9299}
-.viewport{min-height:78vh;padding:14px 12px 40px}
+.viewport{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;padding:14px 12px 40px}
 
 /* ===== 五樓 ===== */
 .vp-wulou{background:var(--page);
@@ -420,6 +424,25 @@ button{font-family:inherit;cursor:pointer}
   letter-spacing:.14em;margin-top:40px;animation-delay:7.4s}
 @keyframes fin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.end p{opacity:1;animation:none}}
+
+/* ===== 除錯面板：只在網址帶 #dev 時才存在，正常玩的人看不到也碰不到 ===== */
+#dev{position:fixed;left:0;bottom:0;z-index:60;font-size:12px}
+#devTab{background:#1C1F23;color:#7FD4A8;border:0;border-radius:0 6px 0 0;
+  padding:8px 12px;font:600 11px/1 ui-monospace,monospace;letter-spacing:.1em;opacity:.55}
+#devTab:hover,#devTab.on{opacity:1}
+#devPanel{background:#12151A;color:#D7DEE5;border-radius:0 8px 0 0;padding:12px;
+  max-width:min(94vw,380px);max-height:76vh;overflow-y:auto;
+  box-shadow:0 -2px 18px rgba(0,0,0,.5)}
+#devPanel h4{margin:0 0 6px;font-size:11px;color:#7FD4A8;letter-spacing:.12em;font-weight:600}
+#devPanel .st{color:#8A949E;font:11px/1.7 ui-monospace,monospace;margin-bottom:10px;
+  word-break:break-all}
+#devPanel .grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+#devPanel button.j{background:#232932;color:#D7DEE5;border:1px solid #2F3742;
+  border-radius:6px;padding:9px 11px;font-size:12px;min-height:38px}
+#devPanel button.j:hover{background:#2E3742}
+#devPanel button.j.doc{font-size:11px;padding:7px 9px;min-height:32px;color:#A8B3BE}
+#devPanel label.sw{display:flex;align-items:center;gap:7px;color:#A8B3BE;margin-bottom:10px}
+
 /* ===== 手機／窄螢幕 =====
    固定寬的樓層欄（52px）＋暱稱欄（100px）＋時間欄（78px）在手機上會把內文擠成
    一行三、四個字。窄螢幕改成上下兩段：樓層／暱稱／時間縮成一條標頭，內文自己佔一整行。 */
@@ -456,24 +479,6 @@ button{font-family:inherit;cursor:pointer}
   .rp .c{grid-area:c;font-size:15px;line-height:1.95;margin-top:4px}
   .rp.del .c{font-size:13px}
   .rp.restored .u::after{content:'已還原'}
-
-  /* ===== 除錯面板：只在網址帶 #dev 時才存在，正常玩的人看不到也碰不到 ===== */
-  #dev{position:fixed;left:0;bottom:0;z-index:60;font-size:12px}
-  #devTab{background:#1C1F23;color:#7FD4A8;border:0;border-radius:0 6px 0 0;
-    padding:8px 12px;font:600 11px/1 ui-monospace,monospace;letter-spacing:.1em;opacity:.55}
-  #devTab:hover,#devTab.on{opacity:1}
-  #devPanel{background:#12151A;color:#D7DEE5;border-radius:0 8px 0 0;padding:12px;
-    max-width:min(94vw,380px);max-height:76vh;overflow-y:auto;
-    box-shadow:0 -2px 18px rgba(0,0,0,.5)}
-  #devPanel h4{margin:0 0 6px;font-size:11px;color:#7FD4A8;letter-spacing:.12em;font-weight:600}
-  #devPanel .st{color:#8A949E;font:11px/1.7 ui-monospace,monospace;margin-bottom:10px;
-    word-break:break-all}
-  #devPanel .grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
-  #devPanel button.j{background:#232932;color:#D7DEE5;border:1px solid #2F3742;
-    border-radius:6px;padding:9px 11px;font-size:12px;min-height:38px}
-  #devPanel button.j:hover{background:#2E3742}
-  #devPanel button.j.doc{font-size:11px;padding:7px 9px;min-height:32px;color:#A8B3BE}
-  #devPanel label.sw{display:flex;align-items:center;gap:7px;color:#A8B3BE;margin-bottom:10px}
 
   /* 板首頁那行「最後回覆…」是等寬對齊排的，窄螢幕讓它折行而不是撐破版面 */
   .idx-row .m{white-space:pre-wrap;word-break:break-word}
@@ -1288,11 +1293,15 @@ function openDoc(id){
 }
 function goHome(){ boardTab='board_index'; go('board_index'); }
 function closeTab(id){ tabs=tabs.filter(t=>t.id!==id); if(active===id) goHome(); else render(); }
+/* 換頁要捲回頂端的是「網頁」，也就是 .viewport 這個捲動容器，不是整個 window
+   ——分頁列跟網址列現在是固定的外框，window 根本不會捲。 */
+function toTop(){ const v=document.getElementById('viewport'); if(v) v.scrollTop=0;
+  window.scrollTo(0,0); }
 function go(id){ if(active!==id) hist.push(active); active=id;
-  render(); window.scrollTo(0,0); }
+  render(); toTop(); }
 function back(){ if(!hist.length)return; const p=hist.pop();
   if(isBoardDoc(p)) boardTab=p;
-  active=tabs.some(t=>t.id===p)||isBoardDoc(p)?p:tabs[0].id; render(); window.scrollTo(0,0); }
+  active=tabs.some(t=>t.id===p)||isBoardDoc(p)?p:tabs[0].id; render(); toTop(); }
 
 /* ================= 茶水間：播放器 =================
    從頭到尾都是同一支 App、同一個訊息列（#chatapp／#plMsgs）：登入前佔滿畫面，
@@ -1359,7 +1368,7 @@ function chatNext(){
 function chatSend(){
   const st=chatDraft; if(!st) return;
   chatDraft=null; chatShown.push({u:ME.uid,c:st.me}); chatPaint();
-  if(st.end){ prog=6; setTimeout(()=>{ closeChat(); render(); window.scrollTo(0,0); },1100); return; }
+  if(st.end){ prog=6; setTimeout(()=>{ closeChat(); render(); toTop(); },1100); return; }
   chatBusy=true; setTimeout(chatNext,500);
 }
 
@@ -1463,13 +1472,13 @@ document.getElementById('go').onclick=()=>{
   const e=document.getElementById('lerr');
   if(u!==ME.uid||p!==ME.pw){ e.textContent='帳號或密碼錯誤。'; return; }
   document.getElementById('login').style.display='none';
-  document.getElementById('browser').style.display='block';
+  document.getElementById('browser').style.display='flex';
   loggedIn=true;                       // 從這裡開始，手上同時有兩支 App：瀏覽器跟茶水間
   /* 她剛剛人就在茶水間裡，登入完不該被丟在一個十一年沒動的板首頁上：
      聊天室浮回最上層，開場最後那句「謝謝！」和整段序章就地接著演完。
      瀏覽器停在板首頁等她——她自己把茶水間收起來，才會看到那個板。 */
   active='board_index'; boardTab='board_index';
-  syncTabs(); render(); openChat(); window.scrollTo(0,0);
+  syncTabs(); render(); openChat(); toTop();
 };
 document.getElementById('p').addEventListener('keydown',e=>{
   if(e.key==='Enter')document.getElementById('go').click();});
@@ -1664,12 +1673,12 @@ function renderBlog(vp,d){
    得先讓玩家真的把十一年的日常一篇一篇看到底。 */
 function markBlogRead(){
   if(blogRead||active!=='blog') return;
-  const doc=document.documentElement;
-  const bottom=Math.max(document.body.scrollHeight,doc.scrollHeight);
-  if(window.innerHeight+(window.scrollY||doc.scrollTop) < bottom-60) return;
+  const v=document.getElementById('viewport'); if(!v) return;
+  /* 捲的是 .viewport，不是 window：短到不用捲的版面 scrollHeight≒clientHeight，一樣算看完 */
+  if(v.scrollTop+v.clientHeight < v.scrollHeight-60) return;
   blogRead=true; chatCheck();
 }
-window.addEventListener('scroll',markBlogRead,{passive:true});
+document.getElementById('viewport').addEventListener('scroll',markBlogRead,{passive:true});
 setInterval(markBlogRead,1200);   // 保險：有些情況收不到 scroll 事件，別讓玩家卡在這裡
 
 /* ---------- 閘 ---------- */
@@ -1809,7 +1818,7 @@ function renderSaid(vp){
   vp.innerHTML=`<div class="said"><p>${esc(saidNow)}</p>
     <button class="btn" id="saidGo">繼續</button></div>`;
   const b=document.getElementById('saidGo');
-  if(b) b.onclick=()=>{ saidNow=''; render(); window.scrollTo(0,0); };
+  if(b) b.onclick=()=>{ saidNow=''; render(); toTop(); };
 }
 
 /* ---------- 我的最愛 ---------- */
@@ -1909,7 +1918,7 @@ function devApply(st){
   loggedIn=true;
   chatOpen=!!st.chat;                 // 茶水間是另一支 App：這一段要不要開著它
   document.getElementById('login').style.display='none';
-  document.getElementById('browser').style.display='block';
+  document.getElementById('browser').style.display='flex';
 
   prog=st.prog;
   (st.done||[]).forEach(g=>gateDone[g]=true);
@@ -1930,7 +1939,7 @@ function devApply(st){
   boardTab=st.at==='board_index'?'board_index':boardTab;
   syncTabs();
   if(st.at&&st.at!=='end'){ if(!tabs.some(t=>t.id===st.at)) tabs.push({id:st.at,kind:'doc'}); active=st.at; }
-  render(); chatPaint(); window.scrollTo(0,0); devPaint();
+  render(); chatPaint(); toTop(); devPaint();
 }
 
 function devPaint(){

@@ -23,7 +23,7 @@ start "" "五樓_單人版.html"
 
 ## Architecture (五樓_單人版.html)
 
-The file simulates a **tabbed browser inside the page** — a fake browser chrome (`#browser`, tabstrip, omnibox) rendered around an inner `#viewport` that swaps between different "site" skins. Everything is driven by one global progress counter and a handful of data tables at the top of the `<script>` block; there is no framework, no router, no external state.
+The file simulates a **tabbed browser inside the page** — a fake browser chrome (`#browser`, tabstrip, omnibox) rendered around an inner `#viewport` that swaps between different "site" skins. The shell is a full-height (`100dvh`) flex column: `.tabstrip` and `.omni` are `flex:none` and never move, and `.viewport` is the only scroll container (`flex:1;overflow-y:auto`) — so scrolling a page leaves the browser chrome in place, exactly like a real browser. Consequences for JS: `#browser` is shown with `display:flex` (not `block`), "scroll back to the top on navigation" is `toTop()` (which resets `viewport.scrollTop`, not `window`), and anything measuring scroll position — `markBlogRead()`'s scrolled-to-the-bottom check, and its `scroll` listener — reads `#viewport`, not `window`. Everything is driven by one global progress counter and a handful of data tables at the top of the `<script>` block; there is no framework, no router, no external state.
 
 **Core data model, all declared as plain JS arrays/objects near the top of the script:**
 
