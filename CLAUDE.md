@@ -52,6 +52,8 @@ The file simulates a **tabbed browser inside the page** — a fake browser chrom
 **Authoring tooling:** writing story text is the most frequent kind of change here, so it has its own support in `.claude/`:
 
 - `skills/add-story/` — the procedure for adding or rewriting any story text. `SKILL.md` is the workflow (which layer the content belongs to, the six landing checks, the hard rules); `references/skins.md` is the copy-paste field reference for all five data shapes plus `GATES`/`AFTER`.
+- `skills/text-review/` — proofreading the finished text, in two blocks: **UI strings** (tab titles and fake URLs, buttons, gate copy, system messages, the ad banner and footer, narration beats, the ending) and **document bodies** (chat, posts, mail, the IM archive, the blog). It checks the *characters* — typos, simplified-Chinese slips, punctuation form, `
+` that lands in an element without `pre-wrap`, unreplaced `__TODAY__`, proper nouns, period-appropriate wording — never the voice, which stays with `voice-check`.
 - `agents/voice-check.md` — per-character voice proofing. Carries the measured punctuation fingerprints (宗翰 ~69% full stops, 文豪 ~73%, 冠廷/雅琳/思妤 0%) and, most importantly, the 阿哲≡2015-思妤 typing match that the whole reveal rests on. Run it after touching any dialogue.
 - `agents/narrative-continuity.md` — dates, floor numbers, time-span arithmetic, and disclosure order. Explicitly *not* voice — that belongs to `voice-check`.
 - `agents/design-doc-sync.md` — drift between the design doc and the implementation, plus §八 items that are actually settled in code by now.
