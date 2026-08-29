@@ -532,6 +532,15 @@ button{font-family:inherit;cursor:pointer}
   .end{padding:12vh 18px 16vh}
   .ad .in{padding:14px 12px}
 }
+
+/* ===== 手機上點輸入框不要把整頁放大 =====
+   iOS Safari 只要輸入框的字級小於 16px，一點進去就自動把頁面放大，而且打完字
+   離開輸入框也不會縮回來——版面的左右邊緣就這樣被切掉。所有打得了字的欄位
+   （登入頁的帳號密碼、信箱／板務後台的表單、搜尋列）在觸控裝置上一律補到
+   16px，放大就不會被觸發；桌機維持原本的字級。 */
+@media(pointer:coarse){
+  .loginbox input,.form input,.se input{font-size:16px}
+}
 </style>
 </head>
 <body>
