@@ -38,7 +38,9 @@ button{font-family:inherit;cursor:pointer}
 .ca-back{flex:none;background:none;border:0;color:#fff;font-size:21px;line-height:1;
   padding:1px 6px 3px;opacity:.85}
 .ca-back:hover{opacity:1}
-#chatapp.solo .ca-back{display:none}      /* 登入之前沒有「上一個畫面」可以回去 */
+/* 登入之前本來沒有「上一個畫面」可以回去；等冠廷那個連結把登入頁叫出來之後就有了
+   （.hasback），因為問密碼那段要能在登入頁和茶水間之間來回走。 */
+#chatapp.solo:not(.hasback) .ca-back{display:none}
 .ca-av{flex:none;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.16);
   display:flex;align-items:center;justify-content:center;font-size:13px;
   font-family:"MingLiU","SimSun",serif}
@@ -137,6 +139,7 @@ button{font-family:inherit;cursor:pointer}
 .loginbox input{width:100%;padding:7px 8px;margin-bottom:13px;border:1px solid var(--line);
   background:#FCFDFD;font-family:"Courier New",monospace;font-size:14px;color:var(--ink)}
 .loginbox input:focus{outline:2px solid var(--board);outline-offset:-1px}
+.loginbox input[readonly]{color:var(--ink-soft);background:#EEF1F3;cursor:default}
 .btn{padding:8px 18px;background:var(--board);color:#fff;border:1px solid var(--board-dark);
   font-size:13px;letter-spacing:.08em}
 .btn:hover{background:var(--board-dark)}
@@ -373,14 +376,17 @@ button{font-family:inherit;cursor:pointer}
   font-family:"Courier New",monospace;font-size:15px;color:var(--ink)}
 .form input:focus{outline:2px solid #2F6FB0;outline-offset:-1px}
 .form input[readonly]{color:var(--ink-soft);background:#F1F3F5;cursor:default}
-.form .remember{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-soft);
-  margin:-6px 0 13px}
-.form .remember input{width:auto;margin:0;padding:0}
-.form .linklike{background:none;border:0;color:var(--link);font-size:12px;text-decoration:underline;
-  padding:0;margin:-4px 0 14px;display:inline-block;cursor:pointer}
-.form .hintq{background:#F7F9FA;border:1px solid var(--line);padding:10px 12px;margin:-4px 0 14px}
-.form .hintq-t{font-size:11px;color:var(--ink-soft);margin-bottom:4px}
-.form .hintq-q{font-size:13px;color:var(--ink);font-weight:600}
+.form .remember,.loginbox .remember{display:flex;align-items:center;gap:6px;font-size:11px;
+  color:var(--ink-soft);margin:-6px 0 13px}
+.form .remember input,.loginbox .remember input{width:auto;margin:0;padding:0}
+.form .linklike,.loginbox .linklike{background:none;border:0;color:var(--link);font-size:12px;
+  text-decoration:underline;padding:0;margin:-4px 0 14px;display:inline-block;cursor:pointer}
+/* display:inline-block 會蓋掉 hidden 的預設值——按下去之後那顆連結要真的消失 */
+.form .linklike[hidden],.loginbox .linklike[hidden]{display:none}
+.form .hintq,.loginbox .hintq{background:#F7F9FA;border:1px solid var(--line);
+  padding:10px 12px;margin:-4px 0 14px}
+.form .hintq-t,.loginbox .hintq-t{font-size:11px;color:var(--ink-soft);margin-bottom:4px}
+.form .hintq-q,.loginbox .hintq-q{font-size:13px;color:var(--ink);font-weight:600}
 .form .msg{font-size:12px;color:#8C3A3A;min-height:19px;margin-top:9px}
 .sysbox{max-width:390px;margin:6vh auto 0}
 .sysbox .brandline{font-size:23px;font-weight:700;margin-bottom:2px}
@@ -548,8 +554,15 @@ button{font-family:inherit;cursor:pointer}
   <div class="brand">五樓</div>
   <div class="brand-sub">EST. 2015</div>
   <div class="loginbox">
-    <label for="u">帳號</label><input id="u" autocomplete="off" spellcheck="false" value="siyu_1120">
-    <label for="p">密碼</label><input id="p" type="password" autocomplete="off" value="1120">
+    <!-- 帳號是這台機器十一年前就記住的，密碼沒有：她得自己想起來，
+         想不起來就只剩「忘記密碼」那個她自己當年寫的提示。 -->
+    <label for="u">帳號</label><input id="u" autocomplete="off" spellcheck="false"
+      value="siyu_1120" readonly>
+    <label class="remember"><input type="checkbox" checked disabled>記住我的帳號</label>
+    <label for="p">密碼</label><input id="p" type="password" autocomplete="off" spellcheck="false">
+    <button type="button" class="linklike" id="lforgot">忘記密碼？</button>
+    <div class="hintq" id="lhint" hidden><div class="hintq-t">密碼提示問題</div>
+      <div class="hintq-q">我的生日</div></div>
     <button class="btn wide" id="go">登入</button>
     <div class="loginerr" id="lerr"></div>
   </div>
@@ -587,7 +600,12 @@ const match=(v,l)=>{const n=norm(v);return n.length>0&&l.some(a=>norm(a)===n);};
 const TS=(y,m,d)=>(((y*100+m)*100+d)*10000);
 
 /* ================= 你 ================= */
-const ME={uid:'siyu_1120',name:'陳思妤',pw:'1120'};
+/* 生日 1120 就掛在她自己的帳號後面；密碼是把它倒過來打——
+   二十三歲的她以為這樣就不會被盜帳號（見 CHAT 的 `c_pw`）。
+   `bd` 是「照提示問題乖乖打生日」的那幾種寫法，打中就代表她試過了。 */
+const ME={uid:'siyu_1120',name:'陳思妤',pw:'0211',
+          pwOk:['0211','02/11','2/11'],
+          bd:['1120','11/20','1120sy','20151120','112015']};
 /* 板上是用帳號發話的，但六個人彼此叫的是名字。兩個都顯示，玩家才不用自己記對照表 */
 const USERS={siyu_1120:'思妤',yalin_w:'雅琳',kt0904:'冠廷',
              tsonghan:'宗翰',haoge:'文豪',ytl_lin:'昱庭'};
@@ -645,6 +663,29 @@ const CHAT=[
  {u:'kt0904',  c:'書籤還在 我東西都不刪的'},
  {u:'kt0904',  url:'http://wulou.5gbfree.com/',lbl:'五樓'},
  {u:'siyu_1120',c:'謝謝！'}
+]},
+
+/* ---------- 開場：生日打進去卻不對（玩家照提示打了 1120 才會有） ----------
+   登入頁記得的只有帳號。提示問題是她二十三歲自己設的「我的生日」——
+   生日 1120 就掛在帳號後面，玩家一定打得出來，然後被擋下來。
+   那一下才是這段的引信：照提示做卻進不去，只好回茶水間問人。
+   答案不是一組數字，是一條規則——她當年把生日倒過來打，還跑去跟人炫耀。
+   冠廷記得她得意的樣子，宗翰記得自己當時怎麼回她（那句話今天讀起來
+   還是同一種冷）。密碼本身沒有人講出來：0211 要玩家自己倒。
+   刻意不讓任何人講「加名字縮寫」——那是 g_mail 的謎面。 */
+{id:'c_pw',when:()=>pwFail,steps:[
+ {me:'提示問題寫的是我的生日'},
+ {u:'siyu_1120',c:'可是打進去說密碼錯誤'},
+ {u:'kt0904',  c:'哈哈哈哈'},
+ {u:'kt0904',  c:'我知道我知道'},
+ {u:'kt0904',  c:'妳那時候超得意的欸 說妳的密碼都是倒著打的'},
+ {u:'kt0904',  c:'還特地跑來跟我講 說這樣就不會被盜帳號'},
+ {u:'tsonghan',c:'我當時就問過妳了。誰會想盜一個六個人的留言板。'},
+ {u:'kt0904',  c:'對啦 然後妳就不理他了'},
+ {u:'yalin_w', c:'妳氣了一整天'},
+ {u:'siyu_1120',c:'……'},
+ {u:'siyu_1120',c:'我真的講過這種話'},
+ {u:'kt0904',  c:'倒過來啦 快'}
 ]},
 
 /* ---------- 序章：冠廷翻到那個箱子（prog 0） ----------
@@ -1232,7 +1273,9 @@ const GATES=[
             'sy1120','siyu1120','cs1120','csy1120','chensiyu1120']}
   ],
   forgot:{hint:'生日加上名字縮寫'},
-  nudge:{'1120':'密碼不正確。這個信箱的密碼不只四碼。'},
+  nudge:{'1120':'密碼不正確。這個信箱的密碼不只四碼。',
+         '0211':'密碼不正確。倒過來打是那個板才有的事。',
+         '0211sy':'密碼不正確。倒過來打是那個板才有的事。'},
   err:'密碼不正確，請再試一次。'},
 
  {id:'g_ytl',ch:'第一章',label:'登入板務後台',
@@ -1305,6 +1348,9 @@ let gateDone={};
 let mailFolder='in', mailOpen=null;      // 信箱內部狀態
 const mailRead=new Set();                // 已經點開過的信（茶水間有幾段靠它觸發）
 let loggedIn=false;                      // 開場聊天室 → 登入頁 → 瀏覽器
+let loginSeen=false;                     // 登入頁被叫出來過：茶水間收起來之後有東西可以回去
+let pwAsked=false;                       // 登入頁的密碼提示已經掀開（點了「忘記密碼」，或打錯生日之後自動掀）
+let pwFail=false;                        // 照提示乖乖打了生日，被擋下來——c_pw 那段等的就是這一下
 let chatOpen=true;                       // 茶水間 App 現在是不是開著（登入前一定開著）
 let blogRead=false;                      // 部落格真的捲到底了才算讀完，終章那段才會排進來
 let saidNow='';                          // 過閘之後要先播的那句旁白
@@ -1395,6 +1441,11 @@ let toastT=null;
 const chatFired=new Set(); // 已經排進佇列的段落
 const chatDone=new Set();  // 已經播完的段落
 
+/* 聊天室的播放速度：下面所有等待的毫秒數寫的都是原本 1x 的節奏，
+   實際等待一律除以這個數。要整體加速或放慢就只動這一個值。 */
+const CHAT_SPEED=3;
+const dly=ms=>devFast?0:Math.round(ms/CHAT_SPEED);   // 秒播模式把所有等待壓成 0
+
 const chatHere=()=>chatOpen&&!saidNow&&prog<6;
 /* 浮球上要跳的未讀數：只算「輪到玩家講話之前」的那幾則，不預告後面還有多少。
    已經輪到她講話（草稿泡泡還在等人點）的時候算 1：後面那些話根本還沒送出來，
@@ -1429,7 +1480,6 @@ function chatNext(){
     if(loggedIn) render(); else chatCheck(); return; }
   if(st.me!==undefined){ chatQueue.shift(); chatBusy=false; chatDraft=st; chatPaint(); return; }
   chatQueue.shift();
-  const dly=ms=>devFast?0:ms;                        // 秒播模式把所有等待壓成 0
   const reveal=()=>{ chatShown.push(st); chatPaint();
     if(st.now) chatNext(); else setTimeout(chatNext,dly(st.sys?320:450)); };
   if(st.now) return reveal();                        // 開場墊場：整段直接出現
@@ -1447,7 +1497,16 @@ function chatSend(){
   const st=chatDraft; if(!st) return;
   chatDraft=null; chatShown.push({u:ME.uid,c:st.me}); chatPaint();
   if(st.end){ prog=6; setTimeout(()=>{ closeChat(); render(); toTop(); },1100); return; }
-  chatBusy=true; setTimeout(chatNext,500);
+  chatBusy=true; setTimeout(chatNext,dly(500));
+}
+
+/* 某一段的條件成立了，但玩家用別的方式把它跳過去了（例如自己看出密碼，
+   根本沒回茶水間問）：把還沒播的部分丟掉，免得等一下在錯的地方冒出來。 */
+function chatDrop(id){
+  const sc=CHAT.find(x=>x.id===id); if(!sc||chatDone.has(id)) return;
+  chatFired.add(id); chatDone.add(id);
+  chatQueue=chatQueue.filter(st=>!sc.steps.includes(st)&&st._done!==id);
+  if(chatDraft&&sc.steps.includes(chatDraft)) chatDraft=null;
 }
 
 /* ---------- 畫面 ---------- */
@@ -1492,9 +1551,11 @@ function chatBind(){
   const d=document.getElementById('plDraft'); if(d) d.onclick=chatSend;
   /* 點冠廷傳來的網址＝切去瀏覽器把它打開：茶水間收起來，後面是五樓的登入頁 */
   document.querySelectorAll('[data-login]').forEach(b=>{ b.onclick=()=>{
+    loginSeen=true;                       // 從這裡開始，茶水間後面有一頁可以回去
     closeChat();
     document.getElementById('login').style.display='block';
-    if(window.matchMedia('(min-width:601px)').matches) document.getElementById('u').focus();
+    /* 帳號是站台記住的，游標直接落在她想不起來的那一欄 */
+    if(window.matchMedia('(min-width:601px)').matches) document.getElementById('p').focus();
   };});
   /* 群組裡貼出來的連結也一樣：開在瀏覽器那邊，茶水間讓位 */
   document.querySelectorAll('[data-share]').forEach(b=>{
@@ -1526,10 +1587,14 @@ function syncApp(){
   const live=prog<6;                        // 終幕之後整支 App 收掉
   app.classList.toggle('on',chatOpen&&live);
   app.classList.toggle('solo',!loggedIn);   // 還沒登入：後面沒有瀏覽器，置中成一支手機
+  app.classList.toggle('hasback',loggedIn||loginSeen);
   const n=chatPending();
-  dock.hidden=!(loggedIn&&live&&!chatOpen);
+  /* 登入之前也要有浮球：登入頁上點了「忘記密碼」之後，玩家得走得回茶水間問人 */
+  dock.hidden=!((loggedIn||loginSeen)&&live&&!chatOpen);
   dock.innerHTML='茶'+(n?`<span class="bd">${n}</span>`:'');
-  dock.classList.toggle('un',n>0);
+  /* 佇列裡第一步就是她自己的草稿泡泡時未讀數是 0（那還不是別人講的話），
+     但浮球不能完全不動——沒有數字，至少讓它跳 */
+  dock.classList.toggle('un',n>0||chatQueue.length>0);
 }
 /* App 收起來的時候，用一則推播把人叫回去 */
 function showToast(){
@@ -1543,12 +1608,39 @@ function showToast(){
 function hideToast(){ const el=document.getElementById('toast');
   if(el) el.hidden=true; clearTimeout(toastT); }
 
-/* ================= 登入 ================= */
+/* ================= 登入 =================
+   帳號是站台記住的（欄位鎖死），密碼沒有：她十一年沒登入，得自己想起來。
+   「忘記密碼」掀出來的提示問題是她二十三歲自己設的——「我的生日」。
+   生日 1120 就掛在她自己的帳號後面，玩家一定打得出來，然後被擋下來：
+   照著提示做卻進不去，這一下才是把人趕回茶水間的引信（`c_pw`）。
+   群組裡給的是一條規則（她當年把生日倒過來打），不是一組數字——
+   0211 要玩家自己倒出來。 */
+function showPwHint(){                  // 掀開提示問題：玩家自己點，或打錯生日之後自動掀
+  const hb=document.getElementById('lhint'); if(hb) hb.hidden=false;
+  document.getElementById('lforgot').hidden=true;
+  pwAsked=true;
+}
+document.getElementById('lforgot').onclick=()=>{
+  showPwHint(); document.getElementById('p').focus();
+};
 document.getElementById('go').onclick=()=>{
   const u=document.getElementById('u').value.trim().toLowerCase();
   const p=document.getElementById('p').value.trim();
   const e=document.getElementById('lerr');
-  if(u!==ME.uid||p!==ME.pw){ e.textContent='帳號或密碼錯誤。'; return; }
+  if(u!==ME.uid){ e.textContent='帳號或密碼錯誤。'; return; }
+  if(!match(p,ME.pwOk)){
+    /* 照提示打了生日還是進不去——她會回群組問，這段對話從這裡開始 */
+    if(match(p,ME.bd)){
+      showPwHint();                     // 提示還沒掀開的話，這時候她自己去看了一次
+      e.textContent='密碼不正確。';
+      if(!pwFail){ pwFail=true; chatCheck(); }
+    } else {
+      e.textContent=p?'密碼不正確，請再試一次。':'請輸入密碼。';
+    }
+    return;
+  }
+  /* 她自己想起來、沒回去問人的話，那段就不要了——不然會在登入之後才冒出來 */
+  chatDrop('c_pw');
   document.getElementById('login').style.display='none';
   document.getElementById('browser').style.display='flex';
   loggedIn=true;                       // 從這裡開始，手上同時有兩支 App：瀏覽器跟茶水間
@@ -2009,7 +2101,7 @@ document.getElementById('caTtl').innerHTML=
 document.getElementById('caBack').onclick=()=>closeChat();
 document.getElementById('chatdock').onclick=()=>openChat();
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'&&chatOpen&&loggedIn) closeChat(); });
+  if(e.key==='Escape'&&chatOpen&&(loggedIn||loginSeen)) closeChat(); });
 
 /* ================= 除錯面板 =================
    只有網址後面帶 #dev 才會存在（例如 …/五樓_單人版.html#dev）。hash 重整不會掉，
@@ -2043,7 +2135,7 @@ function devApply(st){
   seen.clear(); mailRead.clear(); restored.clear(); gateDone={};
   restoreMsg=''; saidNow=''; hist=[]; blogRead=false;
 
-  loggedIn=true;
+  loggedIn=true; loginSeen=true; pwAsked=true; pwFail=true;
   chatOpen=!!st.chat;                 // 茶水間是另一支 App：這一段要不要開著它
   document.getElementById('login').style.display='none';
   document.getElementById('browser').style.display='flex';
