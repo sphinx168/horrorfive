@@ -561,8 +561,8 @@ button{font-family:inherit;cursor:pointer}
     <label class="remember"><input type="checkbox" checked disabled>記住我的帳號</label>
     <label for="p">密碼</label><input id="p" type="password" autocomplete="off" spellcheck="false">
     <button type="button" class="linklike" id="lforgot">忘記密碼？</button>
-    <div class="hintq" id="lhint" hidden><div class="hintq-t">密碼提示</div>
-      <div class="hintq-q">大家都知道</div></div>
+    <div class="hintq" id="lhint" hidden><div class="hintq-t">密碼提示問題</div>
+      <div class="hintq-q">我的生日</div></div>
     <button class="btn wide" id="go">登入</button>
     <div class="loginerr" id="lerr"></div>
   </div>
@@ -600,7 +600,12 @@ const match=(v,l)=>{const n=norm(v);return n.length>0&&l.some(a=>norm(a)===n);};
 const TS=(y,m,d)=>(((y*100+m)*100+d)*10000);
 
 /* ================= 你 ================= */
-const ME={uid:'siyu_1120',name:'陳思妤',pw:'1120'};
+/* 生日 1120 就掛在她自己的帳號後面；密碼是把它倒過來打——
+   二十三歲的她以為這樣就不會被盜帳號（見 CHAT 的 `c_pw`）。
+   `bd` 是「照提示問題乖乖打生日」的那幾種寫法，打中就代表她試過了。 */
+const ME={uid:'siyu_1120',name:'陳思妤',pw:'0211',
+          pwOk:['0211','02/11','2/11'],
+          bd:['1120','11/20','1120sy','20151120','112015']};
 /* 板上是用帳號發話的，但六個人彼此叫的是名字。兩個都顯示，玩家才不用自己記對照表 */
 const USERS={siyu_1120:'思妤',yalin_w:'雅琳',kt0904:'冠廷',
              tsonghan:'宗翰',haoge:'文豪',ytl_lin:'昱庭'};
@@ -660,32 +665,27 @@ const CHAT=[
  {u:'siyu_1120',c:'謝謝！'}
 ]},
 
-/* ---------- 開場：密碼想不起來（玩家在登入頁點過「忘記密碼」才會有） ----------
-   登入頁記得的只有帳號。密碼提示是她二十三歲自己寫的那五個字——
-   放在今天讀，那句話已經不是提示了。
-   這段的功能是把玩家從登入頁趕回茶水間問人，順便讓冠廷指出「四個數字就掛在帳號後面」：
-   密碼本身要玩家自己從 siyu_1120 讀出來，沒有人把它打出來。
-   刻意不讓任何人講「生日」——那是 g_mail 的謎面（提示問題是「生日加上名字縮寫」，
-   依據留在〈新來的那個〉那句「我密碼都設一樣的啦」），這裡只能給到「同一組數字」為止。
-   雅琳那句「那時候真的大家都知道」是留給第二輪的：那年這間辦公室裡，
-   別人的密碼也是大家都知道的東西。 */
-{id:'c_pw',when:()=>pwAsked,steps:[
- {me:'那個板的密碼 我想不起來'},
- {u:'kt0904',  c:'蛤'},
- {u:'kt0904',  c:'那是妳自己的帳號欸'},
- {u:'siyu_1120',c:'我連上次登入是什麼時候都不記得'},
- {u:'siyu_1120',c:'我點了忘記密碼'},
- {u:'kt0904',  c:'提示寫什麼'},
- {u:'siyu_1120',c:'「大家都知道」'},
+/* ---------- 開場：生日打進去卻不對（玩家照提示打了 1120 才會有） ----------
+   登入頁記得的只有帳號。提示問題是她二十三歲自己設的「我的生日」——
+   生日 1120 就掛在帳號後面，玩家一定打得出來，然後被擋下來。
+   那一下才是這段的引信：照提示做卻進不去，只好回茶水間問人。
+   答案不是一組數字，是一條規則——她當年把生日倒過來打，還跑去跟人炫耀。
+   冠廷記得她得意的樣子，宗翰記得自己當時怎麼回她（那句話今天讀起來
+   還是同一種冷）。密碼本身沒有人講出來：0211 要玩家自己倒。
+   刻意不讓任何人講「加名字縮寫」——那是 g_mail 的謎面。 */
+{id:'c_pw',when:()=>pwFail,steps:[
+ {me:'提示問題寫的是我的生日'},
+ {u:'siyu_1120',c:'可是打進去說密碼錯誤'},
  {u:'kt0904',  c:'哈哈哈哈'},
- {u:'kt0904',  c:'幹 這超像妳會寫的'},
- {u:'yalin_w', c:'那時候真的大家都知道'},
- {u:'tsonghan',c:'那時候有什麼是不知道的。'},
- {u:'kt0904',  c:'欸 妳那時候不是每個東西都設同一組'},
- {u:'kt0904',  c:'那幾個數字就掛在妳帳號後面啊'},
- {u:'kt0904',  c:'妳自己看妳的帳號'},
+ {u:'kt0904',  c:'我知道我知道'},
+ {u:'kt0904',  c:'妳那時候超得意的欸 說妳的密碼都是倒著打的'},
+ {u:'kt0904',  c:'還特地跑來跟我講 說這樣就不會被盜帳號'},
+ {u:'tsonghan',c:'我當時就問過妳了。誰會想盜一個六個人的留言板。'},
+ {u:'kt0904',  c:'對啦 然後妳就不理他了'},
+ {u:'yalin_w', c:'妳氣了一整天'},
  {u:'siyu_1120',c:'……'},
- {u:'yalin_w', c:'先進去'}
+ {u:'siyu_1120',c:'我真的講過這種話'},
+ {u:'kt0904',  c:'倒過來啦 快'}
 ]},
 
 /* ---------- 序章：冠廷翻到那個箱子（prog 0） ----------
@@ -1273,7 +1273,9 @@ const GATES=[
             'sy1120','siyu1120','cs1120','csy1120','chensiyu1120']}
   ],
   forgot:{hint:'生日加上名字縮寫'},
-  nudge:{'1120':'密碼不正確。這個信箱的密碼不只四碼。'},
+  nudge:{'1120':'密碼不正確。這個信箱的密碼不只四碼。',
+         '0211':'密碼不正確。倒過來打是那個板才有的事。',
+         '0211sy':'密碼不正確。倒過來打是那個板才有的事。'},
   err:'密碼不正確，請再試一次。'},
 
  {id:'g_ytl',ch:'第一章',label:'登入板務後台',
@@ -1347,7 +1349,8 @@ let mailFolder='in', mailOpen=null;      // 信箱內部狀態
 const mailRead=new Set();                // 已經點開過的信（茶水間有幾段靠它觸發）
 let loggedIn=false;                      // 開場聊天室 → 登入頁 → 瀏覽器
 let loginSeen=false;                     // 登入頁被叫出來過：茶水間收起來之後有東西可以回去
-let pwAsked=false;                       // 在登入頁點過「忘記密碼」——c_pw 那段等的就是它
+let pwAsked=false;                       // 登入頁的密碼提示已經掀開（點了「忘記密碼」，或打錯生日之後自動掀）
+let pwFail=false;                        // 照提示乖乖打了生日，被擋下來——c_pw 那段等的就是這一下
 let chatOpen=true;                       // 茶水間 App 現在是不是開著（登入前一定開著）
 let blogRead=false;                      // 部落格真的捲到底了才算讀完，終章那段才會排進來
 let saidNow='';                          // 過閘之後要先播的那句旁白
@@ -1603,22 +1606,36 @@ function hideToast(){ const el=document.getElementById('toast');
 
 /* ================= 登入 =================
    帳號是站台記住的（欄位鎖死），密碼沒有：她十一年沒登入，得自己想起來。
-   想不起來就點「忘記密碼」——提示是她二十三歲自己寫的「大家都知道」，
-   等於沒說，只好回茶水間問（`c_pw`）。冠廷會指到帳號後面那幾個數字，
-   但沒有人會把密碼打出來：那四碼要玩家自己從 siyu_1120 讀出來。 */
-document.getElementById('lforgot').onclick=()=>{
+   「忘記密碼」掀出來的提示問題是她二十三歲自己設的——「我的生日」。
+   生日 1120 就掛在她自己的帳號後面，玩家一定打得出來，然後被擋下來：
+   照著提示做卻進不去，這一下才是把人趕回茶水間的引信（`c_pw`）。
+   群組裡給的是一條規則（她當年把生日倒過來打），不是一組數字——
+   0211 要玩家自己倒出來。 */
+function showPwHint(){                  // 掀開提示問題：玩家自己點，或打錯生日之後自動掀
   const hb=document.getElementById('lhint'); if(hb) hb.hidden=false;
   document.getElementById('lforgot').hidden=true;
-  document.getElementById('p').focus();
-  if(!pwAsked){ pwAsked=true; chatCheck(); }   // 群組裡那段「密碼我想不起來」排進佇列
+  pwAsked=true;
+}
+document.getElementById('lforgot').onclick=()=>{
+  showPwHint(); document.getElementById('p').focus();
 };
 document.getElementById('go').onclick=()=>{
   const u=document.getElementById('u').value.trim().toLowerCase();
   const p=document.getElementById('p').value.trim();
   const e=document.getElementById('lerr');
   if(u!==ME.uid){ e.textContent='帳號或密碼錯誤。'; return; }
-  if(p!==ME.pw){ e.textContent=p?'密碼不正確，請再試一次。':'請輸入密碼。'; return; }
-  /* 她自己想出密碼、沒回去問人的話，那段就不要了——不然會在登入之後才冒出來 */
+  if(!match(p,ME.pwOk)){
+    /* 照提示打了生日還是進不去——她會回群組問，這段對話從這裡開始 */
+    if(match(p,ME.bd)){
+      showPwHint();                     // 提示還沒掀開的話，這時候她自己去看了一次
+      e.textContent='密碼不正確。';
+      if(!pwFail){ pwFail=true; chatCheck(); }
+    } else {
+      e.textContent=p?'密碼不正確，請再試一次。':'請輸入密碼。';
+    }
+    return;
+  }
+  /* 她自己想起來、沒回去問人的話，那段就不要了——不然會在登入之後才冒出來 */
   chatDrop('c_pw');
   document.getElementById('login').style.display='none';
   document.getElementById('browser').style.display='flex';
@@ -2114,7 +2131,7 @@ function devApply(st){
   seen.clear(); mailRead.clear(); restored.clear(); gateDone={};
   restoreMsg=''; saidNow=''; hist=[]; blogRead=false;
 
-  loggedIn=true; loginSeen=true; pwAsked=true;
+  loggedIn=true; loginSeen=true; pwAsked=true; pwFail=true;
   chatOpen=!!st.chat;                 // 茶水間是另一支 App：這一段要不要開著它
   document.getElementById('login').style.display='none';
   document.getElementById('browser').style.display='flex';
