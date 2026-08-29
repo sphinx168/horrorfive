@@ -1441,6 +1441,11 @@ let toastT=null;
 const chatFired=new Set(); // 已經排進佇列的段落
 const chatDone=new Set();  // 已經播完的段落
 
+/* 聊天室的播放速度：下面所有等待的毫秒數寫的都是原本 1x 的節奏，
+   實際等待一律除以這個數。要整體加速或放慢就只動這一個值。 */
+const CHAT_SPEED=3;
+const dly=ms=>devFast?0:Math.round(ms/CHAT_SPEED);   // 秒播模式把所有等待壓成 0
+
 const chatHere=()=>chatOpen&&!saidNow&&prog<6;
 /* 浮球上要跳的未讀數：只算「輪到玩家講話之前」的那幾則，不預告後面還有多少。
    已經輪到她講話（草稿泡泡還在等人點）的時候算 1：後面那些話根本還沒送出來，
@@ -1475,7 +1480,6 @@ function chatNext(){
     if(loggedIn) render(); else chatCheck(); return; }
   if(st.me!==undefined){ chatQueue.shift(); chatBusy=false; chatDraft=st; chatPaint(); return; }
   chatQueue.shift();
-  const dly=ms=>devFast?0:ms;                        // 秒播模式把所有等待壓成 0
   const reveal=()=>{ chatShown.push(st); chatPaint();
     if(st.now) chatNext(); else setTimeout(chatNext,dly(st.sys?320:450)); };
   if(st.now) return reveal();                        // 開場墊場：整段直接出現
@@ -1493,7 +1497,7 @@ function chatSend(){
   const st=chatDraft; if(!st) return;
   chatDraft=null; chatShown.push({u:ME.uid,c:st.me}); chatPaint();
   if(st.end){ prog=6; setTimeout(()=>{ closeChat(); render(); toTop(); },1100); return; }
-  chatBusy=true; setTimeout(chatNext,500);
+  chatBusy=true; setTimeout(chatNext,dly(500));
 }
 
 /* 某一段的條件成立了，但玩家用別的方式把它跳過去了（例如自己看出密碼，
