@@ -108,7 +108,22 @@ for (const sc of CHAT ?? []) {
   sceneIds.add(sc.id);
   if (typeof sc.when !== 'function') errs.push(`CHAT「${sc.id}」沒有 when()，永遠不會被排進佇列。`);
   if (!sc.steps?.length) errs.push(`CHAT「${sc.id}」沒有任何 steps。`);
+  /* 選擇泡泡（{ask,opts}）把後續台詞收在 opts[].then 裡，一起攤平檢查 */
+  const flat = [];
   for (const st of sc.steps ?? []) {
+    flat.push(st);
+    for (const o of st.opts ?? []) {
+      if (!o.c) errs.push(`CHAT「${sc.id}」的選擇「${st.ask}」有一個選項沒有文字。`);
+      if (o.v === undefined) errs.push(`CHAT「${sc.id}」的選擇「${st.ask}」有一個選項沒有 v，picks 會記成 undefined。`);
+      if (o.end) hasEnd = true;
+      flat.push(...(o.then ?? []));
+    }
+    if (st.opts && !st.ask)
+      errs.push(`CHAT「${sc.id}」有一組選項卻沒有 ask，選完不知道要記到 picks 的哪一格。`);
+    if (st.opts && !st.opts.length)
+      errs.push(`CHAT「${sc.id}」的選擇「${st.ask}」沒有任何選項，播到這裡會卡死。`);
+  }
+  for (const st of flat) {
     if (st.share && !docIds.has(st.share))
       errs.push(`CHAT「${sc.id}」貼出的連結「${st.share}」不在 DOCS 裡，點下去會是空白頁。`);
     if (st.u && !known.has(st.u))
@@ -120,6 +135,22 @@ for (const sc of CHAT ?? []) {
 }
 if (!hasEnd)
   errs.push('CHAT 裡沒有任何一步標了 end:1，玩家走完全部流程也進不了終幕。');
+/* 每一份文件都要有人在某一段把它貼出來，或是它自己是玩家找得到的入口。
+   `share` 是現在唯一的「交到玩家手上」的方式（我的最愛分頁已停用）。 */
+{
+  const shared = new Set();
+  for (const sc of CHAT ?? [])
+    for (const st of sc.steps ?? []) {
+      if (st.share) shared.add(st.share);
+      for (const o of st.opts ?? [])
+        for (const t of o.then ?? []) if (t.share) shared.add(t.share);
+    }
+  for (const d of DOCS) {
+    if (d.filler || d.skin === 'wulou' || d.skin === 'inbox') continue;  // 板上翻得到／信箱本身是關卡
+    if (!shared.has(d.id) && d.id !== 'blog')
+      errs.push(`DOCS「${d.id}」不在板上、也沒有任何一段 CHAT 把它貼出來，玩家沒有路可以走到它。`);
+  }
+}
 /* 每一次推進 prog 都該有人在群組裡反應，不然玩家會不知道發生了什麼 */
 for (const id in AFTER) {
   const at = AFTER[id].unlockAt;

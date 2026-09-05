@@ -83,6 +83,13 @@ button{font-family:inherit;cursor:pointer}
 .pl-row.me .pl-draft{cursor:pointer;border:1px dashed rgba(255,255,255,.7);
   background:var(--board);opacity:.55;font-family:inherit;text-align:left}
 .pl-row.me .pl-draft:hover{opacity:.8}
+.pl-pick{align-self:flex-end;max-width:92%;display:flex;flex-direction:column;
+  align-items:flex-end;gap:6px;margin-top:2px}
+.pl-pick .pk-t{font-size:11px;color:var(--ink-soft);margin-right:3px}
+.pl-pick .pk-o{padding:8px 12px;border-radius:15px;border:1px dashed var(--board);
+  background:#fff;color:var(--board-dark);font-size:13px;line-height:1.6;
+  text-align:right;cursor:pointer;font-family:inherit;max-width:100%}
+.pl-pick .pk-o:hover{background:var(--board);color:#fff;border-style:solid}
 .pl-sys{align-self:center;max-width:92%;text-align:center;padding:3px 10px;
   font-size:11px;color:#98A3AD;letter-spacing:.06em;line-height:1.7}
 .pl-row.other .pl-link{border-bottom-left-radius:4px;border-bottom-right-radius:13px}
@@ -207,6 +214,12 @@ button{font-family:inherit;cursor:pointer}
 .rp.mine .u .me{font-weight:400;font-size:9px;color:var(--board-dark);margin-left:2px}
 .rp.restored{background:#FBF7EF;box-shadow:inset 3px 0 0 var(--warm)}
 .rp.restored .u::after{content:'　已還原';font-size:9px;color:var(--warm);font-weight:400}
+.wl-lock{padding:34px 10px;text-align:center;font-size:12.5px;color:var(--ink-soft);
+  line-height:2.1;white-space:pre-wrap;border:1px dashed #C8D0D7;margin:10px 0;
+  background:#F7F9FA}
+.idx-row .lk{margin-right:5px;font-size:11px;opacity:.7}
+.rp .rlog{margin-top:5px;font-size:10.5px;color:var(--warm);
+  font-family:"Courier New",monospace;letter-spacing:.02em}
 .rp .t{width:78px;flex:none;text-align:right;font-size:10px;color:#98A3AD;
   font-family:"Courier New",monospace;padding-top:3px;white-space:nowrap}
 .silence{text-align:center;font-size:11px;color:#A2A9AF;padding:10px 0;letter-spacing:.12em;
@@ -333,6 +346,8 @@ button{font-family:inherit;cursor:pointer}
 .ad .rst tr[data-rid]{cursor:pointer}
 .ad .rst .w{font-family:"Courier New",monospace;color:var(--ink-soft);white-space:nowrap}
 .ad .rst-none{font-size:12px;color:var(--ink-soft);padding:14px 0}
+.ad .ttl .whoami{float:right;font-size:10.5px;font-weight:400;opacity:.8;
+  font-family:"Courier New",monospace}
 .ad .ok{font-size:12px;color:#3A6B3A;min-height:19px;margin-top:9px;white-space:pre-wrap}
 
 /* ===== 搜尋 ===== */
@@ -351,7 +366,27 @@ button{font-family:inherit;cursor:pointer}
 .se .res .r .u{color:#3A7A3A;font-size:11px;font-family:"Courier New",monospace}
 .se .res .r .d{font-size:12px;color:var(--ink-soft);margin-top:2px}
 
-/* ===== 部落格 ===== */
+/* ===== 相簿：手機拍的紙 ===== */
+.vp-scan{background:#26282B;padding:0}
+.sc{max-width:620px;margin:0 auto;padding:20px 16px 50px}
+.sc-hd{color:#D6D9DC;margin-bottom:16px}
+.sc-hd h1{margin:0;font-size:16px;font-weight:600}
+.sc-hd .m{font-size:11px;color:#8E959B;margin-top:4px;font-family:"Courier New",monospace}
+.sc .shot{margin-bottom:22px}
+.sc .cap{font-size:11px;color:#8E959B;margin-bottom:6px;font-family:"Courier New",monospace}
+.sc .ph{background:#EFE9DA;color:#3A352C;padding:20px 20px 26px;border-radius:2px;
+  box-shadow:0 2px 10px rgba(0,0,0,.45);font-family:"Courier New",monospace;
+  font-size:12.5px;line-height:2}
+.sc .ph.hand{background:#EDE7D6;color:#2E3A52;font-family:"KaiTi","DFKai-SB","STKaiti",serif;
+  font-size:15px;line-height:2.15;transform:rotate(-.4deg)}
+.sc .ph .ln{white-space:pre-wrap;word-break:break-word}
+.sc .ph .ln.sp{height:.7em}
+.sc .ph .ln.cross{text-decoration:line-through;
+  text-decoration-thickness:1.5px;opacity:.55}
+.sc-foot{font-size:11px;color:#7A8288;text-align:center;margin-top:8px;
+  font-family:"Courier New",monospace}
+
+.vp-blog{background:#F3F1EC;padding:0}
 .vp-blog{background:#F3F1EC;padding:0}
 .bl{max-width:620px;margin:0 auto;padding:26px 22px 60px}
 .bl-hd{border-bottom:2px solid #C4BCA8;padding-bottom:14px;margin-bottom:26px}
@@ -526,6 +561,10 @@ button{font-family:inherit;cursor:pointer}
   .yh-list .fr{width:74px}
   .yh-list .dt{width:66px}
   .mhead b{width:44px}
+  .sc{padding:16px 10px 40px}
+  .sc .ph{padding:16px 14px 20px;font-size:12px}
+  .sc .ph.hand{font-size:15.5px}
+  .pl-pick .pk-o{font-size:14px}
   .bl{padding:20px 14px 44px}
   .nt{padding:20px 14px 44px}
   .said{padding:16vh 18px 22vh}
@@ -646,22 +685,48 @@ const AVATARS={
   haoge:{ch:'豪',bg:'#4A5560'}
 };
 const CHAT_TITLE='茶水間', CHAT_SUB='冠廷、宗翰、雅琳、你';
+/* 終幕的門檻：走完流程不等於看懂了。以前只要「部落格捲到底」就能進終幕，
+   所以玩家可以完全沒讀過十月存檔、〈收手〉、垃圾桶那封信就送出最後一句——
+   那句話因此沒有重量。現在五份關鍵證據都要真的點開過：
+     a_im    十月存檔——10/14 那天換了人
+     t_stop  〈收手〉——文豪要拿她傳的照片去用，他擋下來
+     d_box   那三張照片——他前一晚寫的草稿，「我也想過要這樣做」的出處
+     ytl     垃圾桶那封他寄給她的信——他求救過
+     yr      映柔自己寫的那封——她的話唯一一次不是別人轉述的
+   沒讀完的人不會被卡死：`c_push` 會讓冠廷把漏掉的再貼一次、雅琳再指一次信箱。 */
+const endReady=()=>seen.has('a_im')&&seen.has('t_stop')&&seen.has('d_box')
+  &&mailRead.has('ytl')&&mailRead.has('yr');
+
 const CHAT=[
 
 /* ---------- 開場：登入之前 ----------
-   引信是日期，不是閒聊：今天是 11/27。四個人裡有三個立刻知道那是什麼日子，
-   三個都選擇不講——冠廷問完就說「沒事」，宗翰直接把門關上，雅琳只回一個刪節號。
-   沒有人需要解釋自己為什麼傳訊息，也沒有人在講小事，所以不用再墊一段假閒聊。
-   思妤問的是板不是日子，因為她也不敢直接問；玩家要到很後面點開〈又到了〉、
-   看見冠廷 2016 年同一天開的那串，才會回頭知道這四句是什麼意思。
+   引信是日期，但真正的鉤子是箱子：有人翻出舊東西、有人過度緊張、有人急著
+   控制資訊——三件事在前三十秒同時發生，玩家還沒登入就已經有問題想問。
+   文豪那三句（「丟掉。」「我還沒問欸」「我說丟掉。不要拍照，不要貼上來。」）
+   原本埋在登入後那段五十步的序章中段，等玩家走到已經太晚了，所以整組前移。
    宗翰那句「那種免費空間早就收掉了吧。」是他今天第二次叫她不要去看。
-   冠廷「我東西都不刪的」是 c_dig 那句自白（「我根本沒刪過 全部都在」）的第一顆種子。
-   這段墊場整段直接顯示，不跑「輸入中」。 */
+   冠廷「我東西都不刪的」是 c_gap 那句自白（「我根本沒刪過 全部都在」）的第一顆種子。
+   最前面四句直接顯示，不跑「輸入中」。 */
 {id:'c_open',when:()=>true,steps:[
  {u:'kt0904',  c:'欸 今天幾號',now:1},
  {u:'yalin_w', c:'27 啊 怎麼了',now:1},
  {u:'kt0904',  c:'沒事',now:1},
  {u:'tsonghan',c:'那就不要問。',now:1},
+ {u:'kt0904',  c:'我昨天整理櫃子 翻到一個箱子'},
+ {u:'kt0904',  c:'裡面有一疊印出來的東西 有夠厚\n是那時候的'},
+ {u:'tsonghan',c:'什麼那時候的。'},
+ {u:'kt0904',  c:'就那時候啊'},
+ {u:'yalin_w', c:'丟掉比較好'},
+ {u:'kt0904',  c:'我把文豪拉進來'},
+ {sys:'冠廷 邀請 文豪 加入了聊天'},
+ {u:'haoge',   c:'丟掉。'},
+ {u:'kt0904',  c:'我還沒問欸'},
+ {u:'haoge',   c:'我說丟掉。不要拍照，不要貼上來。'},
+ {u:'kt0904',  c:'我知道啦 我又不是白痴'},
+ {u:'haoge',   c:'這件事沒有什麼好討論的。都過去了。'},
+ {sys:'文豪 已退出聊天'},
+ {u:'kt0904',  c:'…他幹嘛啊'},
+ {u:'tsonghan',c:'不用問了啦。'},
  {me:'……那個板還在嗎'},
  {u:'kt0904',  c:'五樓喔'},
  {u:'kt0904',  c:'幹 我好久沒聽到這兩個字'},
@@ -678,17 +743,17 @@ const CHAT=[
    登入頁記得的只有帳號。提示問題是她二十三歲自己設的「我的生日」——
    生日 1120 就掛在帳號後面，玩家一定打得出來，然後被擋下來。
    那一下才是這段的引信：照提示做卻進不去，只好回茶水間問人。
-   答案不是一組數字，是一條規則——她當年把生日倒過來打，還跑去跟人炫耀。
-   冠廷記得她得意的樣子，宗翰記得自己當時怎麼回她（那句話今天讀起來
-   還是同一種冷）。密碼本身沒有人講出來：0211 要玩家自己倒。
-   刻意不讓任何人講「加名字縮寫」——那是 g_mail 的謎面。 */
+   答案不是一組數字，是一條規則——而且那條規則只在那個板上成立：
+   冠廷講的是「五樓那個密碼妳是倒著打的」，不是「妳的密碼都倒著打」，
+   否則等一下 g_mail 的 1120sy 會跟這句直接打架。密碼本身沒有人講出來：
+   0211 要玩家自己倒。 */
 {id:'c_pw',when:()=>pwFail,steps:[
  {me:'提示問題寫的是我的生日'},
  {u:'siyu_1120',c:'可是打進去說密碼錯誤'},
  {u:'kt0904',  c:'哈哈哈哈'},
  {u:'kt0904',  c:'我知道我知道'},
- {u:'kt0904',  c:'妳那時候超得意的欸 說妳的密碼都是倒著打的'},
- {u:'kt0904',  c:'還特地跑來跟我講 說這樣就不會被盜帳號'},
+ {u:'kt0904',  c:'五樓那個妳是倒著打的啦'},
+ {u:'kt0904',  c:'妳那時候超得意的欸 還特地跑來跟我講 說這樣就不會被盜帳號'},
  {u:'tsonghan',c:'我當時就問過妳了。誰會想盜一個六個人的留言板。'},
  {u:'kt0904',  c:'對啦 然後妳就不理他了'},
  {u:'yalin_w', c:'妳氣了一整天'},
@@ -697,151 +762,238 @@ const CHAT=[
  {u:'kt0904',  c:'倒過來啦 快'}
 ]},
 
-/* ---------- 序章：冠廷翻到那個箱子（prog 0） ----------
-   接手原本板上那串「今天」的討論串：箱子、戴文豪拒答離線、宗翰對林昱庭的鄙視。
-   開頭那句「我剛剛不是問今天幾號」把箱子接回 c_open——他一開場問日期不是隨口問，
-   是箱子在他手上放了一天。思妤那兩句「不屑」刻意做成草稿泡泡——
-   讓玩家自己把那個錯誤的印象打出去，終章才有得還。 */
+/* ---------- 序章：缺口（prog 0） ----------
+   登入後只做一件事：把玩家推去看一份跟她自己有關、而且當場查得證的東西。
+   〈整理〉那串現在 at:0（板上一直都在，不是解完信箱才長出來的），冠廷直接
+   把連結貼進群組，並指出「妳說發燒那天 下面那一樓被刪了」——玩家點開就會
+   看到自己 2015/10/14 21:33 的求救，緊接著一行「此文已由板主刪除」。
+   目標從這裡就很清楚：那天是誰接手？為什麼這一樓需要被刪掉？
+   六個人的關係、欣怡生日那件事、大家對昱庭的評價，全部往後挪，
+   沿著調查一段一段補進來。 */
 {id:'c_intro',when:()=>loggedIn,steps:[
  {u:'kt0904',  c:'進去了嗎'},
  {u:'siyu_1120',c:'進去了 板居然還在'},
  {u:'kt0904',  c:'宗翰你看 還在'},
- {u:'kt0904',  c:'欸 我剛剛不是問今天幾號'},
- {u:'kt0904',  c:'我昨天整理櫃子 翻到一個箱子'},
- {u:'kt0904',  c:'裡面有一疊印出來的東西 有夠厚\n是那時候的'},
- {u:'tsonghan',c:'什麼那時候的。'},
- {u:'kt0904',  c:'就那時候啊'},
- {u:'kt0904',  c:'我以為早就沒了 怎麼會還在我這'},
- {u:'yalin_w', c:'丟掉比較好'},
- {u:'kt0904',  c:'欸不是 我看了一下\n最後面那幾張不是我印的'},
+ {u:'kt0904',  c:'欸 那個箱子我昨天翻了一下'},
+ {u:'kt0904',  c:'最後面那幾張不是我印的'},
  {u:'tsonghan',c:'那不然是誰印的。'},
  {u:'kt0904',  c:'不知道啊 所以我才問'},
- {u:'kt0904',  c:'我把文豪拉進來'},
- {sys:'冠廷 邀請 文豪 加入了聊天'},
- {u:'haoge',   c:'丟掉。'},
- {u:'kt0904',  c:'我還沒問欸'},
- {u:'haoge',   c:'我說丟掉。不要拍照，不要貼上來。'},
- {u:'kt0904',  c:'我知道啦 我又不是白痴'},
- {me:'欸 文豪好久沒出現了！！'},
- {u:'haoge',   c:'這件事沒有什麼好討論的。都過去了。'},
- {sys:'文豪 已退出聊天'},
- {u:'kt0904',  c:'…他幹嘛啊'},
- {u:'tsonghan',c:'不用問了啦。那時候誰在亂搞，你們又不是不知道。'},
+ {u:'kt0904',  c:'我對了一下 那幾張是板上這串印出來的'},
+ {u:'kt0904',  share:'t_sort'},
+ {u:'kt0904',  c:'妳自己看 妳說發燒那天'},
+ {u:'kt0904',  c:'妳那樓下面 有一樓被刪掉了'},
+ {me:'等一下 我看一下'}
+]},
+
+/* ---------- 序章：三個人對缺口的反應（看過〈整理〉之後） ----------
+   宗翰的鄙視、那兩顆「替他說話」的草稿泡泡，都搬到這裡——玩家先看見缺口、
+   先有疑問，才輪到別人把答案塞給他。收尾在冠廷把十月的即時通存檔交出來：
+   資料不是解完關卡長出來的，是他昨天把舊硬碟接起來翻出來的。 */
+{id:'c_gap',when:()=>seen.has('t_sort'),steps:[
+ {u:'siyu_1120',c:'真的不見了'},
+ {u:'siyu_1120',c:'那是我求救的下一樓'},
+ {u:'yalin_w', c:'我看一下……欸真的欸'},
+ {u:'yalin_w', c:'板主權限才刪得動吧'},
+ {u:'yalin_w', c:'板主到現在都還掛著昱庭的名字欸'},
+ {u:'kt0904',  c:'沒人改啊 誰要去改'},
+ {u:'tsonghan',c:'那時候誰在亂搞，你們又不是不知道。'},
  {u:'kt0904',  c:'你是說昱庭喔'},
  {u:'tsonghan',c:'不然還有誰。他自己都承認了不是嗎。'},
  {me:'可是他也沒有那麼糟吧……'},
  {u:'tsonghan',c:'妳跟他很熟？'},
  {u:'tsonghan',c:'我們認識他幾個月而已。三月進來，十一月就走了。\n八個月妳能認識一個人多少。'},
  {u:'kt0904',  c:'欸 宗翰你講話幹嘛這麼衝'},
- {u:'tsonghan',c:'我只是在講事實。'},
  {u:'yalin_w', c:'不要吵'},
  {me:'……也是啦'},
- {u:'kt0904',  c:'不知道昱庭現在在幹嘛'},
- {sys:'—— 沒有人接話 ——'},
- {me:'他那時候也是　突然說不玩就不玩'},
- {u:'tsonghan',c:'對啊。就是那樣的人。'},
- {u:'yalin_w', c:'嗯'},
- {u:'kt0904',  c:'…你們不覺得那年很怪嗎'},
- {u:'kt0904',  c:'欸 不然我們把那時候的東西找出來看看好了'},
- {u:'kt0904',  c:'板上以前的串都還在欸 我隨便翻兩串'},
- {u:'kt0904',  share:'t_new'},
- {u:'kt0904',  share:'t_prank'},
- {me:'等一下 我看一下'},
- {u:'yalin_w', c:'欣怡那次我還記得'},
- {u:'kt0904',  c:'哈哈哈她嚇到把杯子打翻'},
- {u:'tsonghan',c:'你們要弄就弄。'},
- {me:'那時候的信 我信箱應該還留著'},
- {u:'kt0904',  c:'妳那個 yahoo 還開得起來喔'},
- {u:'siyu_1120',c:'不知道 我試試看'}
+ {u:'kt0904',  c:'欸 先不要吵這個'},
+ {u:'kt0904',  c:'妳那天在發燒 那樓是妳貼的'},
+ {u:'kt0904',  c:'那天晚上後來是誰在打字'},
+ {me:'我不記得'},
+ {u:'kt0904',  c:'我昨天把舊硬碟接起來了'},
+ {u:'kt0904',  c:'那時候的紀錄我每天存一份 我根本沒刪過 全部都在'},
+ {u:'tsonghan',c:'你要給就給。我不想看。'},
+ {u:'kt0904',  c:'十月那份給妳'},
+ {u:'kt0904',  share:'a_im'}
 ]},
 
-/* ---------- 第一章：一起翻，指出〈整理〉那樓不見了（prog 1） ----------
-   接手原本的 t_dig。三件事要在這裡交代完：板主欄十一年沒改還掛著昱庭、
-   後台帳密當年共用、開站那封信在信箱裡——g_ytl 的推論鏈才閉合。
-   冠廷那段自白也在這裡，指的是〈整理〉後段他自己刪掉的那一樓（可以還原）。 */
-{id:'c_dig',when:()=>prog>=1,steps:[
- {u:'kt0904',  c:'信箱進得去嗎'},
- {me:'進去了'},
- {me:'……那時候的東西都還在'},
- {u:'kt0904',  c:'那個存檔是我存的啦'},
- {u:'kt0904',  c:'我剛剛把舊硬碟接起來翻了一下'},
- {u:'kt0904',  c:'我根本沒刪過 全部都在'},
- {u:'yalin_w', c:'我那份名單也還在 存在隨身碟裡'},
- {u:'tsonghan',c:'你們兩個要真的想查，就不要只挖自己那份。比對一下。'},
- {u:'kt0904',  c:'欸 我剛翻回板上那串'},
- {u:'kt0904',  share:'t_sort'},
- {u:'kt0904',  c:'思妤發燒那樓 底下也有一樓不見了'},
- {u:'yalin_w', c:'我看一下……欸真的欸'},
- {u:'tsonghan',c:'板主權限才刪得動吧'},
- {u:'yalin_w', c:'板主到現在都還掛著昱庭的名字欸'},
- {u:'kt0904',  c:'沒人改啊 誰要去改'},
- {u:'kt0904',  c:'…那串後面還有一樓也不見了'},
- {u:'kt0904',  c:'那個是我自己刪的 打到一半刪了'},
- {u:'tsonghan',c:'刪了就不用再講。'},
- {u:'kt0904',  c:'我只是說 我那時候真的差點打完'},
- {u:'yalin_w', c:'誰都差點過吧'},
- {u:'kt0904',  c:'這個破站好像還留著板務後台 帳密當年是共用的'},
- {u:'kt0904',  c:'密碼我早忘了 但一定沒改過啦 他那種人不會改'},
- {u:'yalin_w', c:'當初開站他不是有寄信跟大家講嗎 你信箱翻一下'},
- {u:'tsonghan',c:'你們要弄就弄。我不想知道是誰。'},
- {me:'……我去試試看'}
-]},
-
-/* ---------- 翻開即時通存檔：那三個月的字是誰打的 ---------- */
+/* ---------- 序章：比對語氣，玩家自己提出猜想（看過十月存檔之後） ----------
+   整個遊戲真正的謎題在這裡，不在密碼欄：思妤平常滿篇「！！」「XD」「^^」，
+   10/14 那天的回覆突然變短、變乾，而且冒出一句沒頭沒尾的「對不起」。
+   線索全部已經在畫面上，所以這裡不給答案，給的是一顆選擇泡泡——
+   玩家得自己把猜想講出來，後面的還原才是「確認」而不是「公布」。
+   收尾才把玩家推去信箱（`g_mail` 的 needChat 掛在這一段）。 */
 {id:'c_im',when:()=>seen.has('a_im'),steps:[
  {u:'kt0904',  c:'那份存檔妳點開了？'},
  {me:'嗯'},
  {u:'kt0904',  c:'我沒有全部看過欸 我只是每天存'},
  {u:'tsonghan',c:'看不看有差嗎。'},
  {u:'kt0904',  c:'……'},
- {me:'那三個月的字 都是我打的'},
+ {u:'siyu_1120',c:'那兩個月的字 都是我打的'},
  {u:'yalin_w', c:'那時候大家都有做啊'},
+ {sys:'—— 沒有人接話 ——'},
+ {u:'kt0904',  c:'欸 妳自己再看一次 10/14 那天'},
+ {u:'kt0904',  c:'前面每一天都是驚嘆號 那天突然變得好短'},
+ {u:'kt0904',  c:'而且中間還冒出一句對不起 妳打錯字會這樣道歉喔'},
+ {ask:'who1014',prompt:'那天打字的人',opts:[
+  {c:'那天打字的不是我',v:'other',then:[
+   {u:'kt0904',  c:'我就說吧'},
+   {u:'tsonghan',c:'妳說不是妳，那是誰。'}
+  ]},
+  {c:'我在發燒 我那天沒有上線',v:'sick',then:[
+   {u:'kt0904',  c:'對啊 妳那樓就是在求救'},
+   {u:'kt0904',  c:'所以那天晚上是別人在打'},
+   {u:'tsonghan',c:'那是誰。'}
+  ]},
+  {c:'我不記得了',v:'dunno',then:[
+   {u:'kt0904',  c:'妳再看一次'},
+   {u:'kt0904',  c:'那不是妳的打字方式'},
+   {u:'tsonghan',c:'那就是有人替她打完了。'}
+  ]}
+ ]},
+ {u:'yalin_w', c:'……'},
+ {u:'kt0904',  c:'板上那一樓被刪掉 就是這個原因吧'},
+ {u:'kt0904',  c:'誰接的手 誰就把自己那一樓刪了'},
+ {u:'yalin_w', c:'那要怎麼確認'},
+ {u:'kt0904',  c:'這個破站好像還留著板務後台'},
+ {u:'kt0904',  c:'帳密當年是共用的 我早忘了 但一定沒改過啦 他那種人不會改'},
+ {u:'yalin_w', c:'當初開站他不是有寄信跟大家講嗎 你信箱翻一下'},
+ {u:'kt0904',  c:'欸還有這串 妳先看一下'},
+ {u:'kt0904',  share:'t_new'},
+ {u:'kt0904',  c:'妳那時候講話真的都這樣'},
+ {u:'tsonghan',c:'你們要弄就弄。我不想知道是誰。'},
+ {me:'……我去試試看'}
+]},
+
+/* ---------- 第一章：信箱進去了（prog 1） ----------
+   冠廷那段自白也在這裡，指的是〈整理〉後段他自己刪掉的那一樓（可以還原）。 */
+{id:'c_dig',when:()=>prog>=1,steps:[
+ {u:'kt0904',  c:'信箱進得去嗎'},
+ {me:'進去了'},
+ {u:'siyu_1120',c:'……那時候的東西都還在'},
+ {u:'yalin_w', c:'我那份名單也還在 存在隨身碟裡'},
+ {u:'tsonghan',c:'你們兩個要真的想查，就不要只挖自己那份。比對一下。'},
+ {u:'kt0904',  c:'開站那封信有嗎'},
+ {me:'有'},
+ {u:'kt0904',  c:'…那串後面還有一樓也不見了 妳有看到嗎'},
+ {u:'kt0904',  c:'那個是我自己刪的 打到一半刪了'},
+ {u:'tsonghan',c:'刪了就不用再講。'},
+ {u:'kt0904',  c:'我只是說 我那時候真的差點打完'},
+ {u:'yalin_w', c:'誰都差點過吧'}
+]},
+
+/* ---------- 第一章：她用他的帳號登進板務後台 ----------
+   「你現在是他」在這裡從旁白變成一條規則：紀錄上寫的是帳號，不是人。
+   後面所有的刪除紀錄、所有的「誰做的」都得照這條規則讀，包括 20F。 */
+{id:'c_admin',when:()=>adminIn,steps:[
+ {u:'kt0904',  c:'進得去嗎'},
+ {me:'進去了'},
+ {u:'siyu_1120',c:'右上角寫著 ytl_lin'},
+ {u:'yalin_w', c:'……'},
+ {u:'tsonghan',c:'那不就等於是他在操作。'},
+ {me:'是我在操作'},
+ {u:'tsonghan',c:'紀錄上不會這樣寫。'},
+ {u:'kt0904',  c:'欸 你不要這樣講'},
  {sys:'—— 沒有人接話 ——'}
 ]},
 
-/* ---------- 她用他的帳號登進板務後台（prog 2） ---------- */
-{id:'c_admin',when:()=>prog>=2,steps:[
- {u:'kt0904',  c:'進得去嗎'},
- {me:'進去了'},
- {me:'右上角寫著 ytl_lin'},
- {u:'yalin_w', c:'……'},
- {u:'tsonghan',c:'那不就等於是他在操作。'},
- {u:'kt0904',  c:'欸 你不要這樣講'}
-]},
-
-/* ---------- 還原出來了：是昱庭（prog 3） ----------
-   接手原本的 t_who：三人對 11/27 那晚的記憶明顯兜不攏，帶出「查他現在在哪」。
-   刻意不覆述 t_stop／t_after 裡已經寫死的具體字句，避免跟正典台詞打架。 */
+/* ---------- 第一章：還原出來了（prog 3） ----------
+   結論由玩家自己送出（第一顆草稿泡泡就是那句「是他」），旁白不再代講。
+   三人對 11/27 那晚的記憶明顯兜不攏，帶出〈收手〉〈那天之後〉兩串；
+   〈欣怡生日〉也在這裡才貼出來——他六月就退出過一次，這件事現在才有意義。 */
 {id:'c_who',when:()=>prog>=3,steps:[
- {me:'……是昱庭。是他幫我頂的。'},
+ {u:'kt0904',  c:'還原出來了嗎'},
+ {me:'……是他'},
  {u:'kt0904',  c:'蛤 真的假的'},
  {u:'yalin_w', c:'我一直以為是宗翰'},
  {u:'tsonghan',c:'我沒有。我那天根本不在線上。'},
- {u:'kt0904',  c:'我記得他那天講了很多 但想不起來完整的'},
- {u:'yalin_w', c:'我記得的跟你們兩個都不太一樣'},
- {u:'tsonghan',c:'那不重要，反正沒人抄下來。'},
- {me:'你們記的都不一樣……'},
- {u:'tsonghan',c:'十一年了，誰記得住整段。'},
- {u:'kt0904',  c:'那兩串我剛剛也翻出來了 板上都還在'},
+ {u:'siyu_1120',c:'那天晚上是他替我打完的'},
+ {u:'kt0904',  c:'那他為什麼要把自己那一樓刪掉'},
+ {u:'yalin_w', c:'而且隔了一個多月才刪'},
+ {u:'kt0904',  c:'…他六月就擋過一次了欸'},
+ {u:'kt0904',  share:'t_prank'},
+ {u:'yalin_w', c:'欣怡那次我還記得'},
+ {u:'kt0904',  c:'哈哈哈她嚇到把杯子打翻'},
+ {sys:'—— 沒有人接話 ——'},
+ {u:'kt0904',  c:'那兩串我也翻出來了 板上都還在'},
  {u:'kt0904',  share:'t_stop'},
  {u:'kt0904',  share:'t_after'},
  {u:'yalin_w', c:'我不想看'},
- {u:'kt0904',  c:'要不要查一下他現在在哪'},
+ {u:'kt0904',  c:'要不要順便查一下他現在在哪'},
  {u:'yalin_w', c:'嗯'}
 ]},
 
-/* ---------- 她打開垃圾桶裡那封十一年沒看的信之後 ----------
-   她沒有把信貼出來。這是她用沉默懲罰他的延續，不用旁白解釋，讓玩家自己看見。 */
+/* ---------- 第二章：看見事情有多嚴重（讀過〈收手〉之後） ----------
+   前半是傷害本身：文豪要拿她傳的照片去用，昱庭擋下來。
+   後半故意接一段沒有人道歉的日常——聚餐、停車——同一件事對某個人影響到今天，
+   對其他人只是生活裡一段不想提的插曲。這一刀比再寫一段嚇人的文字有用。 */
+{id:'c_stop',when:()=>seen.has('t_stop')&&prog>=3,steps:[
+ {me:'文豪那時候是要把她傳的照片放出去'},
+ {u:'yalin_w', c:'我不記得有這件事'},
+ {u:'tsonghan',c:'有。他講過。'},
+ {u:'tsonghan',c:'我當時也附和了一句。大意是那樣比較乾脆。'},
+ {u:'kt0904',  c:'……'},
+ {me:'昱庭不准'},
+ {me:'他講了不只一次 講得很硬'},
+ {u:'kt0904',  c:'那我們為什麼會覺得有問題的是他'},
+ {sys:'—— 沒有人接話 ——'},
+ {u:'kt0904',  c:'對了 下禮拜五那個聚餐妳要來嗎'},
+ {u:'yalin_w', c:'我還沒回'},
+ {u:'kt0904',  c:'那間停車超難停 要開車的先講一下'},
+ {u:'tsonghan',c:'訂了再說。'},
+ {sys:'—— 你看著那幾行字看了很久 ——'}
+]},
+
+/* ---------- 第二章：映柔自己寫的那封信（點開之後） ----------
+   她的話在這個遊戲裡第一次不是透過別人轉述。而它會出現在思妤的收件匣，
+   是因為文豪把它當成證據轉寄給所有人。 */
+{id:'c_yr',when:()=>mailRead.has('yr'),steps:[
+ {u:'kt0904',  c:'妳又在看什麼'},
+ {me:'文豪那時候轉寄給大家一封信'},
+ {me:'是映柔自己寫的'},
+ {u:'yalin_w', c:'我沒有印象'},
+ {u:'tsonghan',c:'我有。那封我看過。'},
+ {u:'tsonghan',c:'她叫我們不要再用那個帳號找她。就這樣。'},
+ {u:'kt0904',  c:'那後來呢'},
+ {u:'tsonghan',c:'沒有後來。沒有人回她。'},
+ {sys:'—— 沒有人接話 ——'}
+]},
+
+/* ---------- 第二章：她打開垃圾桶裡那封十一年沒看的信 ----------
+   那封信一直都在垃圾桶（`at:1`），不是解完關卡才長出來的。
+   這裡給玩家第一個真正屬於自己的決定：說出來，還是不說。
+   兩條路主線都收得回來，但群組後面的反應不一樣，終幕也不一樣。 */
 {id:'c_letter',when:()=>mailRead.has('ytl'),steps:[
  {u:'kt0904',  c:'妳還在嗎'},
  {me:'在'},
  {u:'kt0904',  c:'有找到什麼嗎'},
- {me:'沒有'},
- {sys:'—— 你沒有把那封信貼出來 ——'}
+ {ask:'letter',prompt:'那封信要不要講',opts:[
+  {c:'沒有',v:'hide',then:[
+   {u:'kt0904',  c:'喔'},
+   {u:'kt0904',  c:'那妳先休息一下 我再翻翻看'},
+   {sys:'—— 你沒有把那封信貼出來 ——'}
+  ]},
+  {c:'他有寄過一封信給我',v:'tell',then:[
+   {u:'kt0904',  c:'什麼信'},
+   {me:'2015 年 11 月 20 號'},
+   {u:'siyu_1120',c:'我那時候沒有打開'},
+   {u:'yalin_w', c:'……'},
+   {u:'tsonghan',c:'那妳現在打開了。'},
+   {me:'嗯'},
+   {u:'tsonghan',c:'他寫了什麼。'},
+   {sys:'—— 你把那封信讀了第三遍 ——'},
+   {u:'siyu_1120',c:'他說他遲早要把整件事講清楚'},
+   {u:'siyu_1120',c:'他說如果沒有人肯聽 他就自己去講'},
+   {u:'kt0904',  c:'……'},
+   {u:'tsonghan',c:'他沒有跟我講過。'},
+   {u:'tsonghan',c:'我也沒有問過。'}
+  ]}
+ ]}
 ]},
 
-/* ---------- 找到部落格（prog 5） ----------
-   接手原本的 t_found，宗翰那句透露自己也心虛的話原樣保留。 */
+/* ---------- 第二章：找到部落格（prog 5） ----------
+   箱子那句「最後面那幾張不是我印的」在這裡回收：頁首的列印時間是
+   2015/11/26 23:41，最後一張背面是他隔天要講的話的草稿。
+   冠廷最後還是拍了——文豪開場第一句就是「不要拍照」。 */
 {id:'c_found',when:()=>prog>=5,steps:[
  {u:'kt0904',  c:'找到了？'},
  {me:'嗯 部落格'},
@@ -850,25 +1002,67 @@ const CHAT=[
  {me:'我還沒看完'},
  {u:'tsonghan',c:'不用都貼出來。'},
  {u:'yalin_w', c:'嗯'},
+ {u:'kt0904',  c:'欸 那疊紙我剛剛又翻了一次'},
+ {u:'kt0904',  c:'最後那幾張的頁首有列印時間'},
+ {u:'kt0904',  c:'2015/11/26 23:41'},
+ {u:'kt0904',  c:'那不是我印的 我那天六點就走了'},
+ {u:'kt0904',  c:'而且最後一張背面有字'},
+ {u:'kt0904',  c:'我知道文豪叫我不要拍'},
+ {u:'kt0904',  c:'我拍了'},
+ {u:'kt0904',  share:'d_box'}
+]},
+
+/* ---------- 第二章：群組開始對這場調查有反應（看過那三張照片之後） ----------
+   反應都要有來源——他們是看到玩家剛剛拿出來的東西才改口的，不是會讀心。
+   文豪這次沒有退出聊天。雅琳收回她剛剛講過的一句話。宗翰那句自陳留在原位。 */
+{id:'c_react',when:()=>seen.has('d_box'),steps:[
+ {me:'那是他的字'},
+ {u:'kt0904',  c:'我把文豪拉進來'},
+ {sys:'冠廷 邀請 文豪 加入了聊天'},
+ {u:'haoge',   c:'我說過不要拍。'},
+ {u:'kt0904',  c:'你先看背面'},
+ {sys:'—— 文豪正在輸入 ——'},
+ {sys:'—— 文豪停止輸入 ——'},
+ {u:'haoge',   c:'那疊東西那天在他手上。'},
+ {u:'kt0904',  c:'你知道？'},
+ {u:'haoge',   c:'我看到了。我沒有講。'},
+ {u:'yalin_w', c:'我剛剛說我不記得照片那件事'},
+ {u:'yalin_w', c:'我記得'},
  {u:'tsonghan',c:'我那時候如果先開口的人是我，應該也會是同一個提案。'},
  {u:'kt0904',  c:'啊？'},
  {u:'tsonghan',c:'沒事。'},
  {sys:'—— 沒有人接話 ——'}
 ]},
 
-/* ---------- 終章：讀完部落格之後 ----------
-   要等 c_found 播完、而且玩家真的把部落格捲到底（blogRead）才會排進來。
-   最後一句送出即 prog=6 進終幕——十一年來第一次有人把他的名字，
-   跟那年真正發生的事放在同一句話裡。 */
-{id:'c_end',when:()=>chatDone.has('c_found')&&blogRead,steps:[
+/* ---------- 終章之前：還有東西沒看過 ----------
+   玩家把部落格讀完了，但三份關鍵證據沒有集齊——不擋路，讓冠廷把漏掉的
+   再貼一次。集齊之後 `c_end` 自己會接上來。 */
+{id:'c_push',when:()=>chatDone.has('c_found')&&blogRead&&!endReady(),steps:[
+ {u:'kt0904',  c:'欸 妳先不要關'},
+ {u:'kt0904',  c:'有些東西妳好像還沒點開'},
+ {u:'kt0904',  c:'我再貼一次'},
+ {u:'kt0904',  share:'a_im'},
+ {u:'kt0904',  share:'t_stop'},
+ {u:'kt0904',  share:'d_box'},
+ {u:'yalin_w', c:'信箱也再翻一次吧'},
+ {u:'yalin_w', c:'收件匣跟垃圾桶都要 那種地方最容易漏'},
+ {me:'……好'}
+]},
+
+/* ---------- 終章：讀完部落格、也讀完該讀的東西之後 ----------
+   最後那句話由玩家自己挑。三個選項都收得回同一個結局，
+   但送出去的是哪一句，決定了終幕第一段怎麼寫。 */
+{id:'c_end',when:()=>chatDone.has('c_found')&&blogRead&&endReady(),steps:[
  {u:'kt0904',  c:'欸 妳還在嗎'},
  {me:'在'},
  {u:'kt0904',  c:'他還好嗎'},
  {sys:'—— 你看著那個問題很久 ——'},
- {me:'他那年不是不玩了'},
- {u:'kt0904',  c:'？'},
  {u:'tsonghan',c:'妳想說什麼。'},
- {me:'林昱庭那年攔下來的 是我們',end:1}
+ {ask:'final',prompt:'你要送出哪一句',opts:[
+  {c:'林昱庭那年攔下來的 是我們',v:'accuse',end:1},
+  {c:'他十一年前跟我求救過 我沒有回',v:'confess',end:1},
+  {c:'沒事 我只是隨便查一查',v:'silent',end:1}
+ ]}
 ]}
 ];
 
@@ -901,7 +1095,7 @@ const DOCS=[
   {f:'30F',u:'kt0904',    c:'欸 那個共用帳號密碼多少啦',t:'09/28 20:15'},
   {f:'31F',u:'haoge',     c:'在信箱裡。不要貼在板上。',t:'09/28 20:22'},
   {f:'32F',u:'kt0904',    c:'齁 好啦',t:'09/28 20:25'},
-  {f:'33F',u:'siyu_1120', c:'我密碼都設一樣的啦！！好記XD',t:'09/28 20:31'},
+  {f:'33F',u:'siyu_1120', c:'我密碼都嘛跟生日有關啦！！好記XD',t:'09/28 20:31'},
   {f:'50F',u:'tsonghan',  c:'11/20 思妤生日…有人要一起吃飯嗎',t:'11/20 12:18'},
   {f:'51F',u:'siyu_1120', c:'好啊！！^^',t:'11/20 12:25'},
   {f:'52F',u:'ytl_lin',   c:'生日快樂',t:'11/20 22:39'}
@@ -937,7 +1131,7 @@ const DOCS=[
  ]},
 
 /* ---------- 第一章 ---------- */
-{id:'t_sort',at:1,peek:'五樓　找不到這個頁面',skin:'wulou',site:'五樓',
+{id:'t_sort',at:0,skin:'wulou',site:'五樓',
  title:'[整理] 她',
  idx:{f:'19F',by:'haoge',when:'2015/10/26',ts:TS(2015,10,26),hits:507},
  meta:'五樓 › 整理　│　發文者 haoge　│　2015/09/28 – 2015/10/26　│　板主已編輯',
@@ -968,7 +1162,7 @@ const DOCS=[
   {f:'31F',u:'haoge',     c:'不要再貼了。到此為止。',t:'10/26 18:55'}
  ]},
 
-{id:'a_im',at:1,peek:'本機檔案　路徑不存在',skin:'archive',site:'本機檔案',
+{id:'a_im',at:0,skin:'archive',site:'本機檔案',
  title:'2015-10.htm',
  meta:'Yahoo! Messenger Archive　tsche0710　2015/10',
  days:[
@@ -1036,6 +1230,12 @@ const DOCS=[
  ]},
 
 /* ---------- 第二章 ---------- */
+/* 垃圾桶裡的東西從第一章就全部在了（`at:1`），包括林昱庭 2015/11/20 那封。
+   它不是解完關卡才長出來的，它只是被埋在十一年份的廣告信中間沒有人點開——
+   這比「還原文章之後信箱才多出一封舊信」誠實得多，也是這個故事本來的形狀：
+   證據一直都在，沒有人去看而已。
+   那封信裡刻意不寫「10/14 那天是我」——那個答案要留給板務後台還原出來的
+   20F，玩家提早翻到這封信只會多一堆問題，不會提前拿到答案。 */
 {id:'m_box',at:1,peek:'Yahoo!奇摩　需要登入',skin:'inbox',site:'Yahoo!奇摩',
  title:'Yahoo!奇摩電子信箱',
  acct:'chen.siyu@yahoo.com.tw',
@@ -1043,8 +1243,7 @@ const DOCS=[
   {id:'haoge',box:'in',at:1,
    from:'haoge',fromFull:'tai.wenhao@shengyue.com.tw',
    date:'2015/09/28 19:44',subj:'帳號',
-   body:'密碼寫在這裡，不要貼在板上。\n\ntsche0710\n密碼：她的員編後四碼\n\n用完登出。\n每天的紀錄冠廷會存一份，連結在附件。\n\n不要私下傳。',
-   att:'2015-10.htm　（38 KB）',attDoc:'a_im'},
+   body:'密碼寫在這裡，不要貼在板上。\n\ntsche0710\n密碼：她的員編後四碼\n\n用完登出。\n每天的紀錄冠廷會存一份，存在他自己的電腦，要看跟他拿。\n\n不要私下傳。'},
   {id:'ytl_setup',box:'in',at:1,
    from:'ytl_lin',fromFull:'ytl@shengyue.com.tw',
    date:'2015/04/13 12:48',subj:'五樓開好了',
@@ -1054,10 +1253,20 @@ const DOCS=[
    date:'2015/10/05 14:47',subj:'張副理',
    body:'妳要的資料我查到了。\n\n張O瑋，副理，管理部\n2015/08/17 到職那批的直屬主管\n\n附件是名冊，不要外流喔哈哈。\n\n有需要再跟我說，我這邊調資料很快。',
    att:'人事名冊_9月.xlsx　（12 KB）'},
+  /* 草稿匣那封原本寫「昨天妳說我是唯一會聽妳說話的人」，但日期落在 10/15，
+     等於指到 10/14——那天打字的是林昱庭，她根本不在線上。日期往前挪到 10/10，
+     指的是 10/09「......你是唯一會聽的人」那一句，那句才是她自己聽到的。
+     順帶把「那三個月」改掉：共用帳號 9/28 才開，到這裡只有兩個禮拜。 */
   {id:'siyu_draft1',box:'draft',at:1,
-   date:'2015/10/15 01:32',subj:'（無主旨）',
+   date:'2015/10/10 01:32',subj:'（無主旨）',
    to:'周映柔',toFull:'yr.chou@shengyue.com.tw',
-   body:'映柔\n\n我知道妳現在應該不會想理我，但我想跟妳說一件事，跟阿哲沒關係，是我自己想講的。\n\n昨天妳說我是唯一會聽妳說話的人的時候，我在螢幕前面愣了滿久的。\n不是因為妳講得多重，是因為我發現我聽到那句話的時候，是真的開心。\n不是那種「任務完成」的開心，是真的、很單純地覺得——有人這麼需要我講的話。\n\n我後來想了很久，那種開心到底哪裡不對勁。\n我想通了，但想通之後更難受。\n\n我從國中就是那種在班上不太有人記得名字的人。\n出社會之後也是，開會沒人會第一個問我意見，聚餐我坐哪都可以。\n我沒有不快樂，我只是習慣了自己對誰都不是最重要的那個。\n\n然後妳出現了，妳把最累、最說不出口的事情都講給「阿哲」聽，\n妳說沒有人像他這樣聽妳說話——\n我知道那個人不是真的，可是打字的手是我的，聽的也是我。\n那三個月，我第一次覺得自己對某個人來說，是重要的。\n\n我一直在想要不要跟妳說，其實'},
+   body:'映柔\n\n我知道妳現在應該不會想理我，但我想跟妳說一件事，跟阿哲沒關係，是我自己想講的。\n\n昨天妳說我是唯一會聽妳說話的人的時候，我在螢幕前面愣了滿久的。\n不是因為妳講得多重，是因為我發現我聽到那句話的時候，是真的開心。\n不是那種「任務完成」的開心，是真的、很單純地覺得——有人這麼需要我講的話。\n\n我後來想了很久，那種開心到底哪裡不對勁。\n我想通了，但想通之後更難受。\n\n我從國中就是那種在班上不太有人記得名字的人。\n出社會之後也是，開會沒人會第一個問我意見，聚餐我坐哪都可以。\n我沒有不快樂，我只是習慣了自己對誰都不是最重要的那個。\n\n然後妳出現了，妳把最累、最說不出口的事情都講給「阿哲」聽，\n妳說沒有人像他這樣聽妳說話——\n我知道那個人不是真的，可是打字的手是我的，聽的也是我。\n這兩個禮拜，我第一次覺得自己對某個人來說，是重要的。\n\n我一直在想要不要跟妳說，其實'},
+  /* 周映柔唯一一次自己開口。而它會躺在思妤的收件匣，是因為戴文豪把它
+     當成一份要歸檔的證據轉寄給所有人——他連這封信都要管理。 */
+  {id:'yr',box:'in',at:3,
+   from:'haoge',fromFull:'tai.wenhao@shengyue.com.tw',
+   date:'2015/11/24 09:12',subj:'轉寄：不要再用那個帳號',
+   body:'她昨天半夜寄到共用信箱。轉給你們看一下。\n\n不要回。不要私下聯絡她。看完就算了。\n\n---------- 轉寄的郵件 ----------\n寄件人：周映柔 <yr.chou@shengyue.com.tw>\n日期：2015/11/23 23:41\n收件人：tsche0710@yahoo.com.tw\n\n我知道那個帳號不是一個人在用。有人跟我講了。\n\n我本來想問你們哪一句是真的。後來想想，這個問題沒有意義。\n如果是輪流的，那我要問誰。\n\n我只想講三件事。\n\n那些話是我自己說的，我不會說我沒有說過。\n請不要再用這個帳號跟我說話。\n請不要把我講過的東西拿給任何人看。\n\n不用解釋。我不想聽解釋。\n\n周映柔'},
   {id:'siyu_sent1',box:'sent',at:3,
    date:'2015/12/02 21:05',subj:'保重',
    to:'林昱庭',toFull:'ytl@shengyue.com.tw',
@@ -1067,15 +1276,46 @@ const DOCS=[
    date:'2015/11/30 23:58',subj:'11月存檔',
    body:'這個月的也存好了。\n\n昱庭那件事之後大家都沒再貼，不過紀錄我還是照存，習慣了。\n\n之後如果不用存了，跟我說一聲，不然我會一直做下去。',
    att:'2015-11.htm　（6 KB）'},
-  {id:'ytl',box:'trash',at:3,
+
+  /* ── 垃圾桶：十一年沒有清過的一桶廣告信，那封信就夾在中間 ── */
+  {id:'sp_1',box:'trash',at:1,fromName:'Yahoo!奇摩',
+   fromFull:'no-reply@member.yahoo.com.tw',
+   date:'2015/12/01 06:03',subj:'【Yahoo!奇摩】您的信箱容量即將用完',
+   body:'親愛的會員您好：\n\n您的信箱使用量已達 92%，請儘快刪除不需要的郵件，以免影響收信。\n\n升級 Yahoo! 信箱 Plus，享有 10GB 大容量與無廣告介面。\n\n本信件為系統自動發送，請勿直接回覆。'},
+  {id:'sp_2',box:'trash',at:1,fromName:'東森購物',
+   fromFull:'edm@shopping-mail.com.tw',
+   date:'2015/11/26 03:12',subj:'【最後三天】週年慶全館五折起，滿千再折百！',
+   body:'★ 冬季外套下殺 3 折\n★ 保養品買一送一\n★ 家電滿萬折千\n\n活動至 11/30 止，數量有限售完為止。\n\n若您不想再收到本電子報，請點選信末連結取消訂閱。'},
+  {id:'ytl',box:'trash',at:1,
    from:'ytl_lin',fromFull:'ytl@shengyue.com.tw',
    date:'2015/11/20 22:47',subj:'（無主旨）',
    unread:1,
-   body:'思妤\n\n生日快樂。板上那句我打得太短了。\n\n10/14 那天是我。\n\n她跟我講了一件事，我聽完之後在座位上坐了很久。\n我本來以為我們只是在鬧她。\n\n那個帳號我沒有真的停用。我跟大家說停了，其實我只是改了密碼。\n我不知道要怎麼解釋，我只是覺得不能就這樣放著不管。\n\n她後來傳了一些照片給阿哲。\n我去找過她了。\n\n禮拜一我在板上說要收，我沒辦法在那裡講為什麼。\n禮拜二晚上文豪講的那個，我擋下來了。\n可是這樣下去不行，我遲早要把整件事講清楚。\n\n如果到時候他們還是不肯聽，我就自己去講。\n\n妳幫我一次好嗎'}
+   body:'思妤\n\n生日快樂。板上那句我打得太短了。\n\n有一件事我沒有跟妳講過，以後大概也不會講。\n\n她跟我講了一件事，我聽完之後在座位上坐了很久。\n我本來以為我們只是在鬧她。\n\n那個帳號我沒有真的停用。我跟大家說停了，其實我只是改了密碼。\n我不知道要怎麼解釋，我只是覺得不能就這樣放著不管。\n\n她後來傳了一些照片給阿哲。\n我去找過她了。\n\n禮拜一我在板上說要收，我沒辦法在那裡講為什麼。\n禮拜二晚上文豪講的那個，我擋下來了。\n可是這樣下去不行，我遲早要把整件事講清楚。\n\n如果到時候他們還是不肯聽，我就自己去講。\n\n妳幫我一次好嗎'},
+  {id:'sp_3',box:'trash',at:1,fromName:'旅遊快報',
+   fromFull:'news@travel-daily.com.tw',
+   date:'2015/11/19 11:40',subj:'東京自由行三天兩夜 9,900 起（含稅）',
+   body:'早鳥優惠開跑！\n\n・東京三天兩夜　9,900 起\n・首爾四天三夜　7,900 起\n・沖繩五天四夜　13,900 起\n\n名額有限，欲購從速。'},
+  {id:'sp_4',box:'trash',at:1,fromName:'中華電信',
+   fromFull:'ebill@service.hinet.net',
+   date:'2015/11/11 09:00',subj:'電子帳單通知（11月）',
+   body:'您好，您的 11 月份電子帳單已產生。\n\n應繳金額：NT$ 799\n繳費期限：2015/11/25\n\n請至客戶服務網站查詢明細。'},
+  {id:'sp_5',box:'trash',at:1,fromName:'無糖生活',
+   fromFull:'edm@sugarfree-life.com.tw',
+   date:'2015/10/29 20:15',subj:'萬聖節限定！買咖啡送南瓜杯',
+   body:'10/29 – 11/01 限定活動\n\n凡購買任一中杯以上飲品，即贈南瓜造型隨行杯乙個。\n\n數量有限，送完為止。'},
+  {id:'sp_6',box:'trash',at:1,fromName:'求職快訊',
+   fromFull:'job@career-notify.com.tw',
+   date:'2015/10/02 08:31',subj:'有 12 個新職缺符合您的條件',
+   body:'管理部／行政專員　台北市\n人資助理　新北市\n專案助理　台北市\n\n（其餘 9 筆請登入查看）\n\n若不想再收到職缺通知，請至會員設定關閉。'}
  ]},
 
 /* ---------- 第二章 ---------- */
-{id:'t_stop',at:3,peek:'五樓　權限不足',skin:'wulou',site:'五樓',
+/* 這兩串跟〈整理〉一樣，板上一直都在（`at:0`）——差別是它們被板主鎖起來了。
+   板首頁列得出來、標題看得到、樓數看得到，就是點進去只有一行「本文已鎖定」。
+   鑰匙不是章節進度，是**他的板務帳號**：`adminIn` 之後才讀得到。
+   這比「還原完之後板上多出兩串」誠實，也讓「你現在是他」多一層代價——
+   要讀當年他被大家圍著吵的那兩串，得先變成他。 */
+{id:'t_stop',at:0,lock:'本文已由板主鎖定。\n僅限板務人員閱讀。',skin:'wulou',site:'五樓',
  title:'[閒聊] 收手',
  idx:{f:'23F',by:'haoge',when:'2015/11/21',ts:TS(2015,11,21),hits:361},
  meta:'五樓 › 閒聊　│　2015/11/16 – 2015/11/21　│　板主已編輯',
@@ -1105,7 +1345,7 @@ const DOCS=[
   {f:'28F',u:'haoge',     c:'隨便你。',t:'11/21 10:33'}
  ]},
 
-{id:'t_after',at:3,peek:'五樓　板主已鎖定',skin:'wulou',site:'五樓',
+{id:'t_after',at:0,lock:'本文已由板主鎖定。\n僅限板務人員閱讀。',skin:'wulou',site:'五樓',
  title:'[閒聊] 那天之後',
  idx:{f:'11F',by:'haoge',when:'2015/12/03',ts:TS(2015,12,3),hits:194},
  meta:'五樓 › 閒聊　│　2015/11/28 – 2015/12/03　│　板主已編輯',
@@ -1227,6 +1467,53 @@ const DOCS=[
   {f:'9F',u:'yalin_w', c:'好啊 下次約',t:'01/09 12:20'}
  ]},
 
+/* ---------- 箱子最後那幾張 ----------
+   序章第一句話就丟出來的伏筆（「最後面那幾張不是我印的」）在這裡回收。
+   頁首的列印時間 2015/11/26 23:41 說明那幾張是誰在坦白前一晚印的；
+   最後一張的背面是他隔天要講的話的草稿，寫壞了三次。
+   終幕那句「我也想過要這樣做」的來源與指涉，全部在這張紙上——
+   結局因此不再需要在最後一頁補一個玩家沒看過的關鍵事實。
+   `~` 開頭的行＝他自己劃掉的那幾行（見 renderScan）。 */
+{id:'d_box',at:5,skin:'scan',site:'本機檔案',
+ title:'冠廷傳來的三張照片',
+ meta:'2026/11/27 22:14　│　黃冠廷　│　3 張　│　未壓縮原檔',
+ shots:[
+  {cap:'第一張　那幾張紙的頁首',hand:0,
+   lines:['五樓 › 整理 › [整理] 她',
+          '',
+          '列印時間　2015/11/26  23:41',
+          '列印帳號　ytl_lin',
+          '第 1 頁／共 9 頁']},
+  {cap:'第二張　最後一張紙的正面',hand:0,
+   lines:['（整串的最後一頁。右下角摺過，紙已經黃了。',
+          '最後一行是文豪那句「不要再貼了。到此為止。」）']},
+  {cap:'第三張　同一張紙的背面',hand:1,
+   lines:['明天早上開會之前要講的',
+          '',
+          '~我不是要指責任何人~',
+          '~我要說的不是誰對誰錯~',
+          '',
+          '九月底開始的那件事，是我讓它繼續下去的。',
+          '板是我開的。他們是在我的地方做這件事。',
+          '我說那個帳號停了。我沒有停。我只是換了密碼，自己留著。',
+          '',
+          '~十月十四號那天晚上是我替她打完的~',
+          '~這件事我不會講~',
+          '',
+          '我要說的是這個：',
+          '那天晚上我坐在那裡，看著她跟我說謝謝你，',
+          '我第一個想到的是——',
+          '她這樣講話，如果拿去給大家看，一定很好笑。',
+          '',
+          '我也想過要這樣做。',
+          '我只是沒有做。',
+          '這不是比較好，這只是比較慢。',
+          '',
+          '所以我不能站在旁邊叫你們停。',
+          '我要講的是我自己。',
+          '',
+          '~對不起~']}
+ ]},
 /* ---------- 部落格 ---------- */
 {id:'blog',at:5,skin:'blog',site:'部落格',
  title:'一個人的公休日',
@@ -1262,7 +1549,8 @@ const BOARD_DECO=[];
    其餘依最後回覆時間排序 */
 function boardRows(){
   return DOCS.filter(d=>d.skin==='wulou'&&prog>=d.at&&d.idx)
-    .map(d=>({doc:d.id,label:d.title,x:d.idx,filler:d.filler,top:d.top}))
+    .map(d=>({doc:d.id,label:d.title,x:d.idx,filler:d.filler,top:d.top,
+              lock:d.lock&&!adminIn}))
     .concat(BOARD_DECO.map(x=>({deco:1,label:x.label,x})))
     .sort((a,b)=>(b.top?1:0)-(a.top?1:0)||b.x.ts-a.x.ts);
 }
@@ -1274,7 +1562,7 @@ const GATES=[
   brand:['Yahoo! 奇摩','電子信箱'],
   note:'本帳號已超過 4000 天未登入。',
   need:'你當年設密碼的習慣',
-  needChat:'c_intro',          // 序章那段演完，她開口提到信箱，這個分頁才出現
+  needChat:'c_im',            // 等她自己把 10/14 的猜想講出來，才輪到去信箱找證據
   fields:[
    {label:'帳號',prefill:'chen.siyu',locked:true,remember:true},
    {label:'密碼',type:'password',
@@ -1287,20 +1575,8 @@ const GATES=[
          '0211sy':'密碼不正確。倒過來打是那個板才有的事。'},
   err:'密碼不正確，請再試一次。'},
 
- {id:'g_ytl',ch:'第一章',label:'登入板務後台',
-  site:'五樓',skin:'admin',url:'http://wulou.5gbfree.com/admin.php',
-  brand:['五樓　板務後台','LOGIN'],
-  note:'本區僅限板務人員使用。\n本帳號上次登入：4017 天前。',
-  need:'板主帳號的密碼——當年他寄過給大家',
-  fields:[
-   {label:'帳號',prefill:'ytl_lin',locked:true},
-   {label:'密碼',type:'password',answer:['5f2015']}
-  ],
-  forgot:{hint:'本站不提供密碼查詢，請洽站長。'},
-  err:'密碼不正確。'},
-
- {id:'g_admin',ch:'第一章',label:'還原被刪掉的那一樓',
-  site:'五樓',skin:'restore',url:'http://wulou.5gbfree.com/admin.php?act=restore',
+ {id:'g_admin',ch:'第一章',label:'進板務後台，還原被刪掉的那一樓',
+  site:'五樓',skin:'restore',url:'http://wulou.5gbfree.com/admin.php',
   brand:['五樓　板務後台','RESTORE'],
   note:'以下為本板尚可還原之已刪除文章。備份僅保留文章本體，刪除者身分依板務紀錄顯示。',
   need:'思妤發燒那天，14F 底下的那一樓',
@@ -1313,11 +1589,27 @@ const GATES=[
   err:'找不到符合的結果。'}
 ];
 
+/* 板務後台的登入：以前是一道獨立的閘（g_ytl），玩起來就是「開一個空的登入頁、
+   回信箱抄一組密碼、再回來貼上」——多一個分頁、多一次跳轉，卻沒有多一分推理。
+   現在它是 g_admin 這一頁的前半段：填完密碼，同一個分頁就地換成還原清單。
+   密碼仍然要玩家自己從 2015/04 那封〈五樓開好了〉裡找出來，
+   「你現在是他」那句旁白也仍然停在按下登入的那一刻——它是全遊戲最重要的呼應。 */
+const ADMIN_LOGIN={id:'g_admin_login',skin:'admin',
+  brand:['五樓　板務後台','LOGIN'],
+  note:'本區僅限板務人員使用。\n本帳號上次登入：4017 天前。',
+  fields:[
+   {label:'帳號',prefill:'ytl_lin',locked:true},
+   {label:'密碼',type:'password',answer:['5f2015']}
+  ],
+  forgot:{hint:'本站不提供密碼查詢，請洽站長。'},
+  err:'密碼不正確。'};
+
 /* 過閘之後多出來的東西 */
 const AFTER={
  g_mail:{unlockAt:1, said:''},
- g_ytl:{unlockAt:2, said:'密碼十一年沒有改過，一次就進去了。\n畫面右上角寫著「ytl_lin」。\n\n你現在是他。'},
- g_admin:{unlockAt:3, said:'那樓還原出來了。發文者是 ytl_lin。\n那天幫你頂的人，是他。'},
+ /* 還原完不再由旁白宣布「那天幫你頂的人是他」——那句話等於把玩家自己想通的
+    那一秒拿走。畫面只說發生了什麼事，名字讓還原出來的那一樓自己長出來。 */
+ g_admin:{unlockAt:3, said:'還原完成。\n\n頁面跳回那一串。\n14F 底下，多出了一行十一年沒有人看過的字。'},
  g_search:{unlockAt:5, said:''}
 };
 
@@ -1340,9 +1632,9 @@ const SITE={
  a_im    :{tab:'2015-10.htm',         url:'file:///C:/Program Files/Yahoo!/Messenger/Profiles/tsche0710/Archive/2015-10.htm', fav:'#9A9A9A'},
  m_box   :{tab:'Yahoo!奇摩電子信箱',  url:'https://tw.mail.yahoo.com/mail/', fav:'#7B0099'},
  blog    :{tab:'一個人的公休日',      url:'http://ytl-holiday.blogspot.com/', fav:'#8A8272'},
+ d_box   :{tab:'IMG_2211.jpg',        url:'file:///C:/Users/siyu/Downloads/IMG_2211.jpg', fav:'#8C6A3A'},
  g_mail  :{tab:'Yahoo!奇摩 － 登入',  url:'https://login.yahoo.com.tw/config/login', fav:'#7B0099'},
- g_ytl   :{tab:'五樓 － 板務後台',    url:'http://wulou.5gbfree.com/admin.php', fav:'#6E7A85'},
- g_admin :{tab:'五樓 － 板務後台',    url:'http://wulou.5gbfree.com/admin.php?act=restore', fav:'#6E7A85'},
+ g_admin :{tab:'五樓 － 板務後台',    url:'http://wulou.5gbfree.com/admin.php', fav:'#6E7A85'},
  g_search:{tab:'搜尋',                url:'https://www.google.com.tw/', fav:'#4A6D8C'},
  end     :{tab:'',                    url:'', fav:'#1C1F23'}
 };
@@ -1363,6 +1655,8 @@ let pwFail=false;                        // 照提示乖乖打了生日，被擋
 let chatOpen=true;                       // 茶水間 App 現在是不是開著（登入前一定開著）
 let blogRead=false;                      // 部落格真的捲到底了才算讀完，終章那段才會排進來
 let saidNow='';                          // 過閘之後要先播的那句旁白
+let adminIn=false;                       // 板務後台已經登入（g_admin 這一頁的前半段）
+const picks={};                          // 玩家在聊天室做過的選擇：who1014／letter／final
 const restored=new Set();                // 已經在板務後台還原出來的樓層
 let restoreMsg='';
 const MAX_DOC_TABS=3;                    // 文件分頁上限，超過自動關掉最舊的
@@ -1370,10 +1664,9 @@ const NOTES_TAB_ENABLED=false;           // 「我的最愛」分頁先隱藏：
                                           // 程式碼保留，之後想要重新設計或恢復再打開這個開關即可
 
 function curGate(){
-  if(prog===0) return GATES[0];          // g_mail
-  if(prog===1) return GATES[1];          // g_ytl（登入板務後台）
-  if(prog===2) return GATES[2];          // g_admin（還原）
-  if(prog===3||prog===4) return GATES[3];// g_search
+  if(prog===0) return GATES[0];              // g_mail
+  if(prog===1||prog===2) return GATES[1];    // g_admin（登入後台 → 還原，同一頁兩步）
+  if(prog===3||prog===4) return GATES[2];    // g_search
   return null;
 }
 /* 板務後台可以還原的東西：已解鎖的串裡，還沒被還原的刪除樓層 */
@@ -1445,10 +1738,15 @@ let chatShown=[];          // 已經出現在畫面上的訊息
 let chatQueue=[];          // 還沒播的步驟
 let chatTyping=null;       // 正在「輸入中」的人
 let chatDraft=null;        // 等玩家點下去的草稿泡泡
+let chatPick=null;         // 等玩家挑一句的選擇泡泡（{ask,opts}）
 let chatBusy=false;        // 有 timer 在跑
 let toastT=null;
 const chatFired=new Set(); // 已經排進佇列的段落
 const chatDone=new Set();  // 已經播完的段落
+/* 世代計數器：除錯面板跳段的時候，上一段還在飛的 setTimeout 會把舊訊息
+   插進新的對話裡（正常玩不會遇到，因為沒有人會在播到一半重建整個聊天室）。
+   每次重建就 +1，過期的 timer 自己失效。 */
+let chatGen=0;
 
 /* 聊天室的播放速度：下面所有等待的毫秒數寫的都是原本 1x 的節奏，
    實際等待一律除以這個數。要整體加速或放慢就只動這一個值。 */
@@ -1460,7 +1758,7 @@ const chatHere=()=>chatOpen&&!saidNow&&prog<6;
    已經輪到她講話（草稿泡泡還在等人點）的時候算 1：後面那些話根本還沒送出來，
    算進去等於預告接下來會有幾句，但浮球又不能完全不叫——不然玩家把 App 收起來
    之後，那顆等著被點的草稿泡泡就沒有任何東西提醒他了。 */
-function chatPending(){ if(chatDraft) return 1;
+function chatPending(){ if(chatDraft||chatPick) return 1;
   let n=0;
   for(const st of chatQueue){ if(st._done) continue; if(st.me!==undefined) break; n++; }
   return n; }
@@ -1477,7 +1775,7 @@ function chatCheck(){
   if(added&&!chatHere()){ showToast(); syncApp(); }   // 浮球上的未讀數也要立刻跳出來
   chatPump();
 }
-function chatPump(){ if(chatBusy||chatDraft||!chatQueue.length||!chatHere()) return;
+function chatPump(){ if(chatBusy||chatDraft||chatPick||!chatQueue.length||!chatHere()) return;
   chatBusy=true; chatNext(); }
 function chatNext(){
   if(!chatQueue.length){ chatBusy=false; chatCheck(); return; }
@@ -1488,8 +1786,12 @@ function chatNext(){
   if(st._done){ chatQueue.shift(); chatBusy=false; chatDone.add(st._done);
     if(loggedIn) render(); else chatCheck(); return; }
   if(st.me!==undefined){ chatQueue.shift(); chatBusy=false; chatDraft=st; chatPaint(); return; }
+  /* 選擇泡泡：跟草稿泡泡一樣把播放停下來，差別是攤開好幾句讓玩家自己挑一句送出 */
+  if(st.opts){ chatQueue.shift(); chatBusy=false; chatPick=st; chatPaint(); return; }
   chatQueue.shift();
-  const reveal=()=>{ chatShown.push(st); chatPaint();
+  const gen=chatGen;
+  const reveal=()=>{ if(gen!==chatGen) return;       // 跳過段了，這一則已經不屬於現在這場對話
+    chatShown.push(st); chatPaint();
     if(st.now) chatNext(); else setTimeout(chatNext,dly(st.sys?320:450)); };
   if(st.now) return reveal();                        // 開場墊場：整段直接出現
   if(st.sys||st.u===ME.uid) return void setTimeout(reveal,dly(600));
@@ -1498,16 +1800,29 @@ function chatNext(){
      是最容易讓人看出這是排好的稿子的地方。短句放快也順便把序章開頭
      那段只能看不能動的空檔壓短一點。 */
   const len=(st.c||'').length;
-  setTimeout(()=>{ chatTyping=null; reveal(); },
+  setTimeout(()=>{ if(gen!==chatGen) return; chatTyping=null; reveal(); },
              dly(360+Math.min(len,30)*32+Math.random()*260));
 }
 /* 玩家點下草稿泡泡＝思妤把那句話送出去 */
 function chatSend(){
   const st=chatDraft; if(!st) return;
   chatDraft=null; chatShown.push({u:ME.uid,c:st.me}); chatPaint();
-  if(st.end){ prog=6; setTimeout(()=>{ closeChat(); render(); toTop(); },1100); return; }
+  if(st.end) return void goEnd();
   chatBusy=true; setTimeout(chatNext,dly(500));
 }
+/* 玩家從選擇泡泡裡挑了一句：記在 picks，該選項自己帶的後續（then）
+   插到佇列最前面，同一段接下來的共同台詞照舊排在它後面。 */
+function chatChoose(i){
+  const st=chatPick; if(!st) return;
+  const o=st.opts[i]; if(!o) return;
+  chatPick=null; picks[st.ask]=o.v;
+  chatShown.push({u:ME.uid,c:o.c}); chatPaint();
+  if(o.end) return void goEnd();
+  if(o.then&&o.then.length) chatQueue=o.then.concat(chatQueue);
+  chatBusy=true; setTimeout(chatNext,dly(500));
+}
+/* 送出最後一句＝進終幕 */
+function goEnd(){ prog=6; setTimeout(()=>{ closeChat(); render(); toTop(); },1100); }
 
 /* 某一段的條件成立了，但玩家用別的方式把它跳過去了（例如自己看出密碼，
    根本沒回茶水間問）：把還沒播的部分丟掉，免得等一下在錯的地方冒出來。 */
@@ -1516,6 +1831,7 @@ function chatDrop(id){
   chatFired.add(id); chatDone.add(id);
   chatQueue=chatQueue.filter(st=>!sc.steps.includes(st)&&st._done!==id);
   if(chatDraft&&sc.steps.includes(chatDraft)) chatDraft=null;
+  if(chatPick&&sc.steps.includes(chatPick)) chatPick=null;
 }
 
 /* ---------- 畫面 ---------- */
@@ -1554,10 +1870,17 @@ function chatRows(){
   if(chatDraft) rows.push(plRow(ME.uid,
     `<button class="pl-bub pl-draft" id="plDraft">${esc(chatDraft.me)}</button>`,
     prev===ME.uid?'cont':''));
+  if(chatPick) rows.push(`<div class="pl-pick">
+    ${chatPick.prompt?`<div class="pk-t">${esc(chatPick.prompt)}</div>`:''}
+    ${chatPick.opts.map((o,i)=>
+      `<button class="pk-o" data-pick="${i}">${esc(o.c)}</button>`).join('')}
+  </div>`);
   return `<div class="pl-stack">${rows.join('')}</div>`;
 }
 function chatBind(){
   const d=document.getElementById('plDraft'); if(d) d.onclick=chatSend;
+  document.querySelectorAll('[data-pick]').forEach(b=>{
+    b.onclick=()=>chatChoose(+b.dataset.pick);});
   /* 點冠廷傳來的網址＝切去瀏覽器把它打開：茶水間收起來，後面是五樓的登入頁 */
   document.querySelectorAll('[data-login]').forEach(b=>{ b.onclick=()=>{
     loginSeen=true;                       // 從這裡開始，茶水間後面有一頁可以回去
@@ -1577,8 +1900,9 @@ function chatBind(){
    那個提示在登入之前就得在。 */
 function chatInBar(){
   const el=document.getElementById('plIn'); if(!el) return;
-  el.className='pl-in'+(chatDraft?' act':'');
+  el.className='pl-in'+(chatDraft||chatPick?' act':'');
   el.innerHTML=chatDraft?'↑ 點上面那句話送出'
+    :chatPick?'↑ 選一句送出'
     :'<span class="fld">輸入訊息…</span><span class="snd">送出</span>';
 }
 function chatPaint(){
@@ -1698,7 +2022,9 @@ function renderPage(){
   const g=curGate();
   if(g&&active===g.id){
     vp.className='viewport vp-'+(g.skin==='restore'?'admin':g.skin);
-    return g.skin==='restore'?renderRestore(vp,g):renderGate(vp,g);
+    /* 板務後台是同一個分頁的兩步：還沒登入先畫登入框，登入之後就地換成還原清單 */
+    if(g.skin==='restore') return adminIn?renderRestore(vp,g):renderGate(vp,ADMIN_LOGIN);
+    return renderGate(vp,g);
   }
   if(active==='board_index'){ vp.className='viewport vp-wulou'; return renderBoardIndex(vp); }
   if(active==='notes'){ vp.className='viewport vp-notes'; return renderNotes(vp); }
@@ -1709,6 +2035,7 @@ function renderPage(){
   if(d.skin==='archive') return renderArchive(vp,d);
   if(d.skin==='inbox')   return renderInbox(vp,d);
   if(d.skin==='blog')    return renderBlog(vp,d);
+  if(d.skin==='scan')    return renderScan(vp,d);
 }
 
 /* ---------- 五樓的頁首廣告與站尾 ---------- */
@@ -1743,8 +2070,9 @@ function renderBoardIndex(vp){
   const row=r=>r.deco
     ?`<div class="idx-row deco"><div class="t">${esc(r.label)}</div>
       <div class="m">${esc(line(r.x))}</div></div>`
-    :`<button class="idx-row${r.top?' top':''}${r.filler?' filler':seen.has(r.doc)?'':' new'}" data-idx="${r.doc}">
-      <div class="t">${esc(r.label)}</div><div class="m">${esc(line(r.x))}</div></button>`;
+    :`<button class="idx-row${r.top?' top':''}${r.lock?' locked':''}${r.filler?' filler':seen.has(r.doc)?'':' new'}" data-idx="${r.doc}">
+      <div class="t">${r.lock?'<span class="lk">🔒</span>':''}${esc(r.label)}</div>
+      <div class="m">${esc(line(r.x))}</div></button>`;
 
   const all=boardRows(), tops=all.filter(r=>r.top), rest=all.filter(r=>!r.top);
   const pages=Math.max(1,Math.ceil(rest.length/PER_PAGE));
@@ -1781,6 +2109,23 @@ function renderBoardIndex(vp){
 
 /* ---------- 板 ---------- */
 function renderThread(vp,d){
+  /* 鎖住的串：內容一直都在資料裡，但沒有板務權限就讀不到——
+     這一頁是板主鎖定的公開訊息，不是「這份文件還沒解鎖」的介面文字。 */
+  if(d.lock&&!adminIn){
+    vp.innerHTML=`<div class="cols"><div class="main">
+      ${wlAd()}
+      <div class="wl-hd"><span class="lg">五樓</span>
+        <span class="nv"><button data-home>主板</button>　│　精華區　│　<button data-rules>板規</button></span>
+        <span class="me">${esc(ME.name)}（${esc(ME.uid)}）</span></div>
+      <div class="wl-sub">${esc(T(d.meta))}</div>
+      <div class="wl-body">
+        <div class="wl-title">${esc(d.title)}</div>
+        <div class="wl-lock">${esc(d.lock)}</div>
+      </div>
+      ${wlFoot()}
+    </div></div>`;
+    return;
+  }
   let floorNo=0;
   const body=d.posts.filter(p=>{
     if(p.at!==undefined&&prog<p.at) return false;
@@ -1794,7 +2139,8 @@ function renderThread(vp,d){
       <div class="f">${esc(label)}</div>
       <div class="u">${p.u?`<span class="nm">${esc(who(p.u))}${p.u===ME.uid?'<span class="me">（你）</span>':''}</span>
         <span class="uid">${esc(p.u)}</span>`:''}</div>
-      <div class="c">${esc(p.c)}</div>
+      <div class="c">${esc(p.c)}${p.rid&&!p.del&&restored.has(p.rid)
+        ?`<div class="rlog">本文於 ${esc(fmt(TODAY))} 由 ytl_lin 自板務後台還原</div>`:''}</div>
       <div class="t">${esc(p.t||'')}</div></div>`;
   }).join('');
 
@@ -1858,7 +2204,7 @@ function renderInbox(vp,d){
       <div class="yh-listhd">${mailFolder==='in'?'收件匣':mailFolder==='trash'?'垃圾桶':mailFolder==='sent'?'寄件備份':'草稿匣'}</div>
       ${list.length?`<table class="yh-list">
         ${list.map(x=>`<tr data-mail="${x.id}" class="${x.unread?'ur':''}">
-          <td class="fr">${esc(isOut(x.box)?(x.to||''):who(x.from))}</td>
+          <td class="fr">${esc(isOut(x.box)?(x.to||''):(x.fromName||who(x.from)))}</td>
           <td class="sb">${esc(x.subj)}${x.att?' <span class="clip">📎</span>':''}</td>
           <td class="dt">${esc(x.date.slice(0,10))}</td></tr>`).join('')}
       </table>`:'<div class="yh-empty">這個資料夾是空的。</div>'}
@@ -1881,6 +2227,22 @@ function renderInbox(vp,d){
     const b=document.getElementById('mBack');
     if(b) b.onclick=()=>{ mailOpen=null; render(); };
   },0);
+}
+
+/* ---------- 相簿：冠廷傳來的照片 ----------
+   `~` 開頭的行是他自己劃掉的——寫壞了三次才寫到那句「我也想過要這樣做」。 */
+function renderScan(vp,d){
+  const line=t=>t.startsWith('~')&&t.endsWith('~')
+    ? `<div class="ln cross">${esc(t.slice(1,-1))}</div>`
+    : t===''?'<div class="ln sp"></div>':`<div class="ln">${esc(t)}</div>`;
+  vp.innerHTML=`<div class="sc">
+    <div class="sc-hd"><h1>${esc(d.title)}</h1><div class="m">${esc(d.meta)}</div></div>
+    ${d.shots.map((sh,i)=>`<div class="shot">
+      <div class="cap">${esc(sh.cap)}</div>
+      <div class="ph${sh.hand?' hand':''}">${sh.lines.map(line).join('')}</div>
+    </div>`).join('')}
+    <div class="sc-foot">C:\\Users\\siyu\\Downloads\\IMG_2211.jpg　│　IMG_2212.jpg　│　IMG_2213.jpg</div>
+  </div>`;
 }
 
 /* ---------- 部落格 ---------- */
@@ -1958,14 +2320,19 @@ function renderGate(vp,g){
       }
 
       if(g.id==='g_search'){ showSearchResult(); return; }
+      /* 板務後台的登入：不是一道閘，不推進度，只是把這一頁換成還原清單。
+         「你現在是他」停在這一刻——她剛剛用他的帳號進來了。 */
+      if(g.id==='g_admin_login'){
+        adminIn=true;
+        saidNow='密碼十一年沒有改過，一次就進去了。\n畫面右上角寫著「ytl_lin」。\n\n你現在是他。';
+        render(); toTop(); return;
+      }
       gateDone[g.id]=true;
       prog=AFTER[g.id].unlockAt;
       saidNow=AFTER[g.id].said||'';
       if(g.id==='g_mail'){                 // 登入成功 → 留在信箱
         mailFolder='in'; mailOpen=null;
         seen.add('m_box'); openTab('m_box');
-      } else if(g.id==='g_ytl'){           // 登入板務後台 → 人就留在後台，接著還原
-        go('g_admin');
       } else {
         goHome();
       }
@@ -1997,7 +2364,8 @@ function renderRestore(vp,g){
       <td class="w">${esc(r.by)}</td></tr>`).join('')}
   </table>`:'<div class="rst-none">目前沒有可以還原的文章。</div>';
 
-  vp.innerHTML=`<div class="ad wide"><div class="ttl">${esc(g.brand[0])}</div>
+  vp.innerHTML=`<div class="ad wide"><div class="ttl">${esc(g.brand[0])}
+      <span class="whoami">登入中：ytl_lin　│　登出</span></div>
     <div class="in"><h2>還原已刪除文章</h2><div class="sub">${esc(g.brand[1])}</div>
     <div class="form"><div class="note">${esc(g.note)}</div></div>
     ${body}
@@ -2021,7 +2389,7 @@ function renderRestore(vp,g){
       saidNow=AFTER[g.id].said||'';
       openDoc('t_sort');
     } else {                             // 其他的還原了也沒關係，是額外的東西
-      restoreMsg='已還原。〈'+row.title+'〉那一樓現在看得到了。';
+      restoreMsg='已還原。〈'+row.title+'〉那一樓現在看得到了。（操作者 ytl_lin）';
       render();
     }
   };
@@ -2086,14 +2454,26 @@ function renderNotes(vp){
   if(gg){ const g=curGate(); if(g) gg.onclick=()=>go(g.id); }
 }
 
-/* ---------- 終幕 ---------- */
+/* ---------- 終幕 ----------
+   最後一句是玩家自己挑的，所以第一段跟著那個選擇走。
+   那句「我也想過要這樣做」不再是最後一頁才空降的關鍵事實——
+   玩家在 `d_box` 那張手寫稿上已經讀過它，也讀過他劃掉的那幾行；
+   這裡只負責讓它沉下來。 */
 function renderEnd(vp){
   vp.className='viewport vp-end';
+  const head={
+    accuse:`<p>你送出了。</p>
+      <p>十一年來，這是第一次有人把他的名字，<br>跟那年真正發生的事，放進同一句話裡。</p>`,
+    confess:`<p>你送出了。</p>
+      <p>那封信在垃圾桶裡躺了十一年。<br>這是第一次有人承認它被讀過。</p>`,
+    silent:`<p>你把打好的那句刪掉，換成了這一句，才送出。</p>
+      <p>群組很快就跳出下一則訊息。<br>沒有人追問。這一次也一樣。</p>`
+  }[picks.final]||`<p>你送出了。</p>`;
   vp.innerHTML=`<div class="end">
-    <p>你送出了。</p>
-    <p>十一年來，這是第一次有人把他的名字，<br>跟那年真正發生的事，放進同一句話裡。</p>
+    ${head}
     <p class="q">他那天最後說的那句，聲音很輕，快得像是說給自己聽的——<br><br>
       「我也想過要這樣做。」</p>
+    <p>那句話他前一天晚上就寫在紙背上了，寫在劃掉的三行下面。</p>
     <p>沒有人記得這句。因為沒有人在聽。</p>
     <p class="sig">－ 五樓 －</p>
   </div>`;
@@ -2127,22 +2507,26 @@ const DEV=location.hash.toLowerCase().includes('dev');
 const DEV_STAGES=[
  {k:'開場',      note:'重新載入，從頭演',reload:1},
  {k:'序章',      prog:0, chat:1},
- {k:'序章·板首頁',prog:0, at:'board_index'},
+ {k:'序章·整理', prog:0, at:'t_sort'},
+ {k:'序章·存檔', prog:0, sawSort:1, at:'a_im'},
  {k:'①信箱',     prog:1, done:['g_mail'], at:'m_box'},
- {k:'①板務後台', prog:1, done:['g_mail'], at:'g_ytl'},
- {k:'①還原',     prog:2, done:['g_mail','g_ytl'], at:'g_admin'},
- {k:'②搜尋',     prog:3, done:['g_mail','g_ytl','g_admin'], rst:1, at:'g_search'},
- {k:'②部落格',   prog:5, done:['g_mail','g_ytl','g_admin','g_search'], rst:1, at:'blog'},
- {k:'終幕',      prog:6, done:['g_mail','g_ytl','g_admin','g_search'], rst:1, at:'end'}
+ {k:'①板務後台', prog:1, done:['g_mail'], at:'g_admin'},
+ {k:'①還原清單', prog:1, done:['g_mail'], adm:1, at:'g_admin'},
+ {k:'②搜尋',     prog:3, done:['g_mail','g_admin'], rst:1, at:'g_search'},
+ {k:'②部落格',   prog:5, done:['g_mail','g_admin','g_search'], rst:1, at:'blog'},
+ {k:'②那三張',   prog:5, done:['g_mail','g_admin','g_search'], rst:1, at:'d_box'},
+ {k:'終幕',      prog:6, done:['g_mail','g_admin','g_search'], rst:1, at:'end'}
 ];
 
 function devApply(st){
   if(st.reload) return location.reload();
   /* 先把聊天室清空重建，否則會疊在開場已經自己播出來的那幾則上面 */
+  chatGen++;                          // 上一段還在飛的 timer 從這一刻起全部失效
   chatShown=[]; chatQueue=[]; chatDraft=null; chatTyping=null; chatBusy=false;
-  chatFired.clear(); chatDone.clear();
+  chatFired.clear(); chatDone.clear(); chatPick=null;
   seen.clear(); mailRead.clear(); restored.clear(); gateDone={};
-  restoreMsg=''; saidNow=''; hist=[]; blogRead=false;
+  Object.keys(picks).forEach(k=>delete picks[k]);
+  restoreMsg=''; saidNow=''; hist=[]; blogRead=false; adminIn=false;
 
   loggedIn=true; loginSeen=true; pwAsked=true; pwFail=true;
   chatOpen=!!st.chat;                 // 茶水間是另一支 App：這一段要不要開著它
@@ -2151,9 +2535,14 @@ function devApply(st){
 
   prog=st.prog;
   (st.done||[]).forEach(g=>gateDone[g]=true);
-  if(st.prog>=1){ seen.add('m_box'); seen.add('t_new'); seen.add('t_prank'); }
-  if(st.rst){ restored.add('r_sort'); seen.add('a_im'); mailRead.add('ytl'); blogRead=st.prog>=5; }
-  if(st.prog>=5) seen.add('blog');
+  adminIn=!!st.adm||st.prog>=3;
+  if(st.sawSort||st.prog>=1) seen.add('t_sort');
+  if(st.prog>=1){ seen.add('m_box'); seen.add('t_new'); seen.add('a_im'); }
+  if(st.prog>=3) seen.add('t_prank');
+  /* 終幕的門檻要看得到的三份證據，跳段時一併補齊，不然 c_end 排不進來 */
+  if(st.rst){ restored.add('r_sort'); seen.add('a_im'); seen.add('t_stop'); seen.add('t_after');
+    mailRead.add('ytl'); mailRead.add('yr'); blogRead=st.prog>=5; }
+  if(st.prog>=5){ seen.add('blog'); seen.add('d_box'); }
 
   /* 條件已經成立的段落直接補完文字（c_end 例外：那顆草稿要留給人自己送出） */
   CHAT.forEach(sc=>{
@@ -2161,6 +2550,12 @@ function devApply(st){
     chatFired.add(sc.id); chatDone.add(sc.id);
     sc.steps.forEach(t=>{
       if(t._done||t.url) return;          // 開場那張網址卡片會把登入頁叫回來，補歷史時略過
+      if(t.opts){                         // 選擇泡泡：補歷史時一律當成她挑了第一句
+        picks[t.ask]=t.opts[0].v;
+        chatShown.push({u:ME.uid,c:t.opts[0].c});
+        (t.opts[0].then||[]).forEach(x=>chatShown.push(x.me!==undefined?{u:ME.uid,c:x.me}:x));
+        return;
+      }
       chatShown.push(t.me!==undefined?{u:ME.uid,c:t.me}:t);
     });
   });
