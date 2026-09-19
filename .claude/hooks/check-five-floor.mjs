@@ -95,7 +95,7 @@ for (const id in AFTER)
   if (!GATES.some(g => g.id === id))
     errs.push(`AFTER 有「${id}」，但 GATES 裡沒有這一關。`);
 for (const id in SITE)
-  if (!docIds.has(id) && !GATES.some(g => g.id === id) && !['board_index','notes','chat','end'].includes(id))
+  if (!docIds.has(id) && !GATES.some(g => g.id === id) && !['board_index','board_search','notes','chat','end'].includes(id))
     errs.push(`SITE 有「${id}」，但 DOCS／GATES 都沒有——是不是刪掉內容後忘了清？`);
 
 /* ---------- 三之二、茶水間 ---------- */

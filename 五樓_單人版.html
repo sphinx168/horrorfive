@@ -255,6 +255,47 @@ button{font-family:inherit;cursor:pointer}
 .wl-pager .p.on{background:#EEF3F8;color:var(--ink);font-weight:700;border-color:var(--line)}
 .wl-pager .tot{margin-left:4px}
 
+/* 站內搜尋：舊板的搜尋列就是一條擠在版面底下的小表單 */
+.wl-search{display:flex;align-items:center;gap:6px;margin-top:14px;padding:8px 9px;
+  border:1px solid var(--line-soft);background:#F7F9FA;font-size:11px;
+  color:var(--ink-soft);font-family:"Courier New",monospace}
+.wl-search .lb{flex:none;letter-spacing:.08em}
+.wl-search input{flex:1;min-width:0;border:1px solid var(--line);background:#fff;
+  padding:3px 6px;font-size:12px;font-family:inherit;color:var(--ink)}
+.wl-search button{flex:none;border:1px solid var(--line);background:#EEF3F8;
+  color:var(--link);padding:3px 10px;font-size:11px;font-family:inherit;cursor:pointer}
+.wl-search button:hover{background:#E3EBF3}
+
+/* 搜尋結果 */
+.sr-sum{margin:12px 0 4px;padding-bottom:7px;border-bottom:1px solid var(--line-soft);
+  font-size:11px;color:var(--ink-soft);font-family:"Courier New",monospace}
+.sr-row{display:block;width:100%;text-align:left;background:none;border:0;
+  border-bottom:1px solid var(--line-soft);padding:10px 4px;font-size:13px}
+.sr-row:last-child{border-bottom:0}
+.sr-row:hover{background:#F4F8FB}
+.sr-row .t{color:var(--link);text-decoration:underline}
+.sr-row .lk{margin-right:5px;font-size:11px;opacity:.7;text-decoration:none}
+.sr-row .m{font-size:10.5px;color:#98A3AD;font-family:"Courier New",monospace;margin-top:2px}
+/* 命中的那幾行：樓層、誰講的、一段上下文、時間——排得跟討論串裡同一個骨架 */
+.sr-row .q{display:flex;gap:8px;margin-top:5px;padding:3px 0 3px 9px;
+  border-left:2px solid #E3E8EC;font-size:11.5px;color:var(--ink-soft);line-height:1.75}
+.sr-row .q .f{flex:none;width:30px;font-family:"Courier New",monospace;font-size:10px;
+  color:#A2AAB2;padding-top:2px}
+.sr-row .q .u{flex:none;width:34px;font-size:10.5px;color:#A2AAB2;padding-top:2px}
+.sr-row .q .c{flex:1;min-width:0;font-family:"MingLiU","SimSun",serif;font-size:12.5px;
+  color:var(--ink);overflow:hidden;text-overflow:ellipsis}
+.sr-row .q .c b,.sr-row .q .u.by{background:#FBEFC9;padding:0 1px}
+.sr-row .q .u.by{color:var(--ink);font-weight:700}
+.sr-row .q .t{flex:none;font-size:9.5px;color:#B4BBC1;font-family:"Courier New",monospace;
+  padding-top:3px;white-space:nowrap;text-decoration:none}  /* .sr-row .t 是標題的底線，別漏到時間上 */
+.sr-row .q.more,.sr-row .q.lk{color:#A2AAB2;font-size:10.5px;font-style:italic}
+/* 0 筆：這個機制最重的一招，所以版面刻意留白，只印那一行跟一排建議詞 */
+.sr-nil{padding:26px 10px 30px;text-align:center;font-size:12.5px;color:var(--ink-soft);
+  line-height:2.1}
+.sr-nil .tip{margin-top:12px;font-size:11px;color:#98A3AD}
+.sr-nil .tip button{background:none;border:0;color:var(--link);font:inherit;
+  text-decoration:underline;cursor:pointer;padding:0 2px}
+
 /* 免費空間自動插在頁首的廣告條——2015 年的免費空間都會塞這個 */
 .wl-ad{display:flex;align-items:center;gap:8px;margin-bottom:6px;padding:5px 9px;
   border:1px solid #D9B84A;background:linear-gradient(#FFFBE6,#FFEFB0);
@@ -578,7 +619,7 @@ button{font-family:inherit;cursor:pointer}
    （登入頁的帳號密碼、信箱／板務後台的表單、搜尋列）在觸控裝置上一律補到
    16px，放大就不會被觸發；桌機維持原本的字級。 */
 @media(pointer:coarse){
-  .loginbox input,.form input,.se input{font-size:16px}
+  .loginbox input,.form input,.se input,.wl-search input{font-size:16px}
 }
 </style>
 </head>
@@ -1496,6 +1537,157 @@ const DOCS=[
   {f:'9F',u:'yalin_w', c:'好啊 下次約',t:'01/09 12:20'}
  ]},
 
+/* ---------- 2015 年的日常（filler：板還活著的那一年） ----------
+   上面那六串是 2016 年的衰減曲線；這八串是它衰減之前的樣子。
+   板首頁由新往舊捲下去，2016 一年只剩六串年度儀式，2015 卻從五月一路密到十一月——
+   「當年這個板每天都有人在講話」這句話要成立，得有人真的在上面講過那些話。
+
+   寫法上比 2016 那幾串更嚴格：這裡有四串（t_ot／t_boss／t_quit／t_yearend）的
+   日期就壓在〈整理〉她那兩個月裡面，玩家讀完主線之後一定會回頭看這一段時間的板。
+   所以這八串一個伏筆都不能有——沒有刪除樓、沒有分批貼文、不碰張副理／共用帳號／
+   員編／照片任何一個關鍵字，連「她」這個字都不出現。它們唯一的作用是：
+   那兩個月裡，這六個人也在報稅、也在等颱風假、也在抱怨影印機。
+
+   只有一個地方是刻意排的，而它不給任何資訊：尾牙報名名單那串，
+   林昱庭 11/16 早上填了名字，同一天晚上 20:14 在〈收手〉貼下第一句。
+   那場尾牙他沒有去成。這件事板上沒有人講，也不需要講。 */
+
+{id:'t_tax',at:0,filler:1,skin:'wulou',site:'五樓',
+ title:'[問題] 報稅是不是這個月',
+ idx:{f:'11F',by:'siyu_1120',when:'2015/05/08',ts:TS(2015,5,8),hits:148},
+ meta:'五樓 › 問題　│　2015/05/06 – 2015/05/08',
+ posts:[
+  {f:'1F', u:'kt0904',   c:'欸 報稅是不是這個月',t:'05/06 10:14'},
+  {f:'2F', u:'yalin_w',  c:'五月啊',t:'05/06 10:17'},
+  {f:'3F', u:'kt0904',   c:'我知道是五月 我是問幾號截止',t:'05/06 10:19'},
+  {f:'4F', u:'tsonghan', c:'月底。自己去查。',t:'05/06 10:31'},
+  {f:'5F', u:'siyu_1120',c:'我上次用網路報超快的！！十分鐘就好了XD',t:'05/06 12:02'},
+  {f:'6F', u:'kt0904',   c:'要讀卡機齁 我沒有欸',t:'05/06 12:08'},
+  {f:'7F', u:'ytl_lin',  c:'我有 明天帶來借你',t:'05/06 13:40'},
+  {f:'8F', u:'kt0904',   c:'愛你',t:'05/06 13:42'},
+  {f:'9F', u:'haoge',    c:'借完記得還。上次那條線就是這樣不見的。',t:'05/07 09:05'},
+  {f:'10F',u:'kt0904',   c:'那條線真的不是我拿的啦',t:'05/07 09:11'},
+  {f:'11F',u:'siyu_1120',c:'報完了～～好爽^^',t:'05/08 20:31'}
+ ]},
+
+{id:'t_copier',at:0,filler:1,skin:'wulou',site:'五樓',
+ title:'[問題] 三樓影印機又卡紙',
+ idx:{f:'8F',by:'kt0904',when:'2015/05/26',ts:TS(2015,5,26),hits:96},
+ meta:'五樓 › 問題　│　2015/05/26',
+ posts:[
+  {f:'1F',u:'yalin_w',  c:'三樓影印機又卡紙',t:'05/26 09:22'},
+  {f:'2F',u:'kt0904',   c:'又喔',t:'05/26 09:25'},
+  {f:'3F',u:'haoge',    c:'報修單填了沒。',t:'05/26 09:40'},
+  {f:'4F',u:'yalin_w',  c:'填了',t:'05/26 09:41'},
+  {f:'5F',u:'tsonghan', c:'那台從去年就這樣了。填也沒用。',t:'05/26 10:03'},
+  {f:'6F',u:'ytl_lin',  c:'我剛剛去弄了一下 好像可以了 你們再試試看',t:'05/26 11:18'},
+  {f:'7F',u:'yalin_w',  c:'好了 謝謝',t:'05/26 11:35'},
+  {f:'8F',u:'kt0904',   c:'昱庭工具人',t:'05/26 11:40'}
+ ]},
+
+{id:'t_heat',at:0,filler:1,skin:'wulou',site:'五樓',
+ title:'[閒聊] 熱到不想動',
+ idx:{f:'10F',by:'kt0904',when:'2015/07/13',ts:TS(2015,7,13),hits:121},
+ meta:'五樓 › 閒聊　│　2015/07/13',
+ posts:[
+  {f:'1F', u:'kt0904',   c:'今天走到捷運站整個濕掉',t:'07/13 09:02'},
+  {f:'2F', u:'siyu_1120',c:'我也是！！妝都花了QQ',t:'07/13 09:11'},
+  {f:'3F', u:'tsonghan', c:'三十六度。',t:'07/13 09:20'},
+  {f:'4F', u:'kt0904',   c:'謝謝你的播報',t:'07/13 09:23'},
+  {f:'5F', u:'yalin_w',  c:'冷氣開十六',t:'07/13 09:30'},
+  {f:'6F', u:'haoge',    c:'不要動冷氣。總務會唸。',t:'07/13 09:44'},
+  {f:'7F', u:'yalin_w',  c:'那我開電風扇',t:'07/13 09:46'},
+  {f:'8F', u:'ytl_lin',  c:'我位子這邊比較涼 要吹的過來',t:'07/13 10:05'},
+  {f:'9F', u:'siyu_1120',c:'去！！',t:'07/13 10:07'},
+  {f:'10F',u:'kt0904',   c:'一群人擠在昱庭旁邊 畫面有夠好笑',t:'07/13 14:22'}
+ ]},
+
+{id:'t_typhoon',at:0,filler:1,skin:'wulou',site:'五樓',
+ title:'[閒聊] 明天到底放不放',
+ idx:{f:'12F',by:'ytl_lin',when:'2015/08/08',ts:TS(2015,8,8),hits:174},
+ meta:'五樓 › 閒聊　│　2015/08/07 – 2015/08/08',
+ posts:[
+  {f:'1F', u:'kt0904',   c:'欸 明天放不放啦',t:'08/07 16:40'},
+  {f:'2F', u:'yalin_w',  c:'還沒宣布',t:'08/07 16:42'},
+  {f:'3F', u:'tsonghan', c:'看風速。現在這個強度不會放。',t:'08/07 16:55'},
+  {f:'4F', u:'siyu_1120',c:'拜託放拜託放拜託放！！',t:'08/07 17:02'},
+  {f:'5F', u:'kt0904',   c:'我已經在買泡麵了',t:'08/07 18:30'},
+  {f:'6F', u:'haoge',    c:'放假也要把手上的結掉。星期一不要跟我說沒做完。',t:'08/07 18:47'},
+  {f:'7F', u:'kt0904',   c:'哥 你這樣很掃興欸',t:'08/07 18:50'},
+  {f:'8F', u:'yalin_w',  c:'放了',t:'08/07 21:14'},
+  {f:'9F', u:'siyu_1120',c:'耶！！！！^^',t:'08/07 21:16'},
+  {f:'10F',u:'tsonghan', c:'我還是會進來。',t:'08/07 21:33'},
+  {f:'11F',u:'kt0904',   c:'你有病',t:'08/07 21:35'},
+  {f:'12F',u:'ytl_lin',  c:'颱風天不要騎車喔',t:'08/08 08:12'}
+ ]},
+
+{id:'t_quit',at:0,filler:1,skin:'wulou',site:'五樓',
+ title:'[閒聊] 聽說業務那邊有人要走',
+ idx:{f:'9F',by:'yalin_w',when:'2015/09/03',ts:TS(2015,9,3),hits:132},
+ meta:'五樓 › 閒聊　│　2015/09/03',
+ posts:[
+  {f:'1F',u:'kt0904',   c:'聽說業務那邊有人要走',t:'09/03 14:20'},
+  {f:'2F',u:'yalin_w',  c:'誰',t:'09/03 14:21'},
+  {f:'3F',u:'kt0904',   c:'不確定啦 聽說而已',t:'09/03 14:25'},
+  {f:'4F',u:'tsonghan', c:'那邊一年走三個。不意外。',t:'09/03 14:40'},
+  {f:'5F',u:'siyu_1120',c:'欸不要亂傳啦 被聽到很尷尬XD',t:'09/03 14:52'},
+  {f:'6F',u:'ytl_lin',  c:'欸 人家都還沒走 先不要傳啦',t:'09/03 15:31'},
+  {f:'7F',u:'kt0904',   c:'好啦好啦',t:'09/03 15:33'},
+  {f:'8F',u:'haoge',    c:'走了再補人就好。這種事不用討論。',t:'09/03 17:02'},
+  {f:'9F',u:'yalin_w',  c:'嗯',t:'09/03 17:05'}
+ ]},
+
+{id:'t_ot',at:0,filler:1,skin:'wulou',site:'五樓',
+ title:'[閒聊] 這個月是怎樣 每天都快十點',
+ idx:{f:'10F',by:'tsonghan',when:'2015/10/08',ts:TS(2015,10,8),hits:158},
+ meta:'五樓 › 閒聊　│　2015/10/07 – 2015/10/08',
+ posts:[
+  {f:'1F', u:'kt0904',   c:'這個月是怎樣 每天都快十點',t:'10/07 21:48'},
+  {f:'2F', u:'yalin_w',  c:'案子撞在一起',t:'10/07 21:52'},
+  {f:'3F', u:'tsonghan', c:'上個月就排錯了。現在才在補。',t:'10/07 22:10'},
+  {f:'4F', u:'siyu_1120',c:'我也還在公司QQ 好想睡',t:'10/07 22:15'},
+  {f:'5F', u:'kt0904',   c:'妳還在喔 一起下去買咖啡',t:'10/07 22:17'},
+  {f:'6F', u:'siyu_1120',c:'好！！',t:'10/07 22:18'},
+  {f:'7F', u:'ytl_lin',  c:'太晚了 你們早點回去',t:'10/07 23:20'},
+  {f:'8F', u:'haoge',    c:'加班費自己記。人資不會幫你記。',t:'10/08 09:14'},
+  {f:'9F', u:'kt0904',   c:'我記個屁 我都忘記',t:'10/08 09:20'},
+  {f:'10F',u:'tsonghan', c:'那就是你自己的問題。',t:'10/08 09:25'}
+ ]},
+
+{id:'t_boss',at:0,filler:1,skin:'wulou',site:'五樓',
+ title:'[閒聊] 老闆今天臉超臭',
+ idx:{f:'9F',by:'ytl_lin',when:'2015/10/29',ts:TS(2015,10,29),hits:117},
+ meta:'五樓 › 閒聊　│　2015/10/29',
+ posts:[
+  {f:'1F',u:'kt0904',   c:'老闆今天臉超臭 會議室門甩超大聲',t:'10/29 11:05'},
+  {f:'2F',u:'yalin_w',  c:'聽到了',t:'10/29 11:07'},
+  {f:'3F',u:'siyu_1120',c:'我剛剛經過都不敢看他QQ',t:'10/29 11:12'},
+  {f:'4F',u:'tsonghan', c:'季報不好看。上禮拜就知道了。',t:'10/29 11:30'},
+  {f:'5F',u:'kt0904',   c:'你怎麼什麼都知道',t:'10/29 11:33'},
+  {f:'6F',u:'tsonghan', c:'數字貼在茶水間。你沒看而已。',t:'10/29 11:36'},
+  {f:'7F',u:'haoge',    c:'下半年那個案子收掉就會好看了 我看過數字',t:'10/29 14:02'},
+  {f:'8F',u:'kt0904',   c:'哥你才是老闆吧',t:'10/29 14:08'},
+  {f:'9F',u:'ytl_lin',  c:'哈哈',t:'10/29 18:40'}
+ ]},
+
+{id:'t_yearend',at:0,filler:1,skin:'wulou',site:'五樓',
+ title:'[閒聊] 尾牙的表演每年都要嗎',
+ idx:{f:'11F',by:'yalin_w',when:'2015/11/16',ts:TS(2015,11,16),hits:104},
+ meta:'五樓 › 閒聊　│　2015/11/13 – 2015/11/16',
+ posts:[
+  {f:'1F', u:'yalin_w',  c:'尾牙的表演每年都要嗎',t:'11/13 13:20'},
+  {f:'2F', u:'kt0904',   c:'要啊 每年都抽到我們這層',t:'11/13 13:24'},
+  {f:'3F', u:'siyu_1120',c:'今年要跳什麼～我可以幫忙想！！',t:'11/13 13:31'},
+  {f:'4F', u:'tsonghan', c:'我不上台。',t:'11/13 13:40'},
+  {f:'5F', u:'kt0904',   c:'你每年都這樣講 每年都有上',t:'11/13 13:42'},
+  {f:'6F', u:'tsonghan', c:'那是被逼的',t:'11/13 13:44'},
+  {f:'7F', u:'haoge',    c:'報名名單這禮拜五要交。誰要上自己填。',t:'11/16 09:30'},
+  {f:'8F', u:'siyu_1120',c:'我填了！！',t:'11/16 09:41'},
+  {f:'9F', u:'ytl_lin',  c:'我也填了',t:'11/16 10:02'},
+  {f:'10F',u:'kt0904',   c:'好啊 那就我們幾個',t:'11/16 10:05'},
+  {f:'11F',u:'yalin_w',  c:'到時候再說',t:'11/16 10:11'}
+ ]},
+
 /* ---------- 箱子最後那幾張 ----------
    序章第一句話就丟出來的伏筆（「最後面那幾張不是我印的」）在這裡回收。
    頁首的列印時間 2015/11/26 23:41 說明那幾張是誰在坦白前一晚印的；
@@ -1584,6 +1776,21 @@ function boardRows(){
     .sort((a,b)=>(b.top?1:0)-(a.top?1:0)||b.x.ts-a.x.ts);
 }
 
+/* 一串討論裡，以現在的進度「看得到」的樓層，附上連續編號。
+   可見性規則只寫在這裡一份：討論串要畫、站內搜尋要抓摘要，兩邊都走這支函式——
+   否則搜尋很容易吐出一段玩家還沒解鎖的樓層，把第四章的線性揭露鏈整條打穿。
+   規則：p.at 還沒到的不算；掛 rid 的那一對（刪除樓／還原樓）依 restored 二選一；
+   silence 是版面上的沉默行，不佔樓層編號。 */
+function visPosts(d){
+  let n=0; const out=[];
+  for(const p of d.posts||[]){
+    if(p.at!==undefined&&prog<p.at) continue;
+    if(p.rid&&(p.del?restored.has(p.rid):!restored.has(p.rid))) continue;
+    out.push({p,no:p.silence?0:++n});
+  }
+  return out;
+}
+
 /* ================= 閘 ================= */
 const GATES=[
  {id:'g_mail',ch:'序章',label:'登入自己的舊信箱',
@@ -1645,6 +1852,11 @@ const AFTER={
 /* ================= 站台 ================= */
 const SITE={
  board_index:{tab:'五樓',             url:'http://wulou.5gbfree.com/board.php', fav:'#4A6D8C'},
+ /* 搜尋結果頁的分頁標題與網址跟著關鍵字走，所以這兩個欄位是 getter，
+    每次畫分頁列的時候才去讀 boardQuery（它比這張表晚宣告，但只在 render 時取值）。 */
+ board_search:{fav:'#4A6D8C',
+   get tab(){ return boardQuery?'五樓 － 搜尋：'+boardQuery:'五樓 － 搜尋'; },
+   get url(){ return 'http://wulou.5gbfree.com/search.php'+(boardQuery?'?q='+boardQuery:''); }},
  notes   :{tab:'我的最愛',            url:'about:favorites', fav:'#C9A227'},
  t_new   :{tab:'五樓 － 新來的那個',  url:'http://wulou.5gbfree.com/board.php?t=0918', fav:'#4A6D8C'},
  t_prank :{tab:'五樓 － 欣怡生日',    url:'http://wulou.5gbfree.com/board.php?t=0612', fav:'#4A6D8C'},
@@ -1658,6 +1870,14 @@ const SITE={
  t_ramen :{tab:'五樓 － 那間拉麵有夠雷',url:'http://wulou.5gbfree.com/board.php?t=0107', fav:'#4A6D8C'},
  t_parking:{tab:'五樓 － 附近停車怎麼那麼難停',url:'http://wulou.5gbfree.com/board.php?t=0516', fav:'#4A6D8C'},
  t_meeting:{tab:'五樓 － 這個月開會改到禮拜三',url:'http://wulou.5gbfree.com/board.php?t=0301', fav:'#4A6D8C'},
+ t_tax   :{tab:'五樓 － 報稅是不是這個月',url:'http://wulou.5gbfree.com/board.php?t=0506', fav:'#4A6D8C'},
+ t_copier:{tab:'五樓 － 三樓影印機又卡紙',url:'http://wulou.5gbfree.com/board.php?t=0526', fav:'#4A6D8C'},
+ t_heat  :{tab:'五樓 － 熱到不想動',  url:'http://wulou.5gbfree.com/board.php?t=0713', fav:'#4A6D8C'},
+ t_typhoon:{tab:'五樓 － 明天到底放不放',url:'http://wulou.5gbfree.com/board.php?t=0807', fav:'#4A6D8C'},
+ t_quit  :{tab:'五樓 － 聽說業務那邊有人要走',url:'http://wulou.5gbfree.com/board.php?t=0903', fav:'#4A6D8C'},
+ t_ot    :{tab:'五樓 － 每天都快十點',url:'http://wulou.5gbfree.com/board.php?t=1007', fav:'#4A6D8C'},
+ t_boss  :{tab:'五樓 － 老闆今天臉超臭',url:'http://wulou.5gbfree.com/board.php?t=1029', fav:'#4A6D8C'},
+ t_yearend:{tab:'五樓 － 尾牙的表演每年都要嗎',url:'http://wulou.5gbfree.com/board.php?t=1113', fav:'#4A6D8C'},
  a_im    :{tab:'2015-10.htm',         url:'file:///C:/Program Files/Yahoo!/Messenger/Profiles/tsche0710/Archive/2015-10.htm', fav:'#9A9A9A'},
  m_box   :{tab:'Yahoo!奇摩電子信箱',  url:'https://tw.mail.yahoo.com/mail/', fav:'#7B0099'},
  blog    :{tab:'一個人的公休日',      url:'http://ytl-holiday.blogspot.com/', fav:'#8A8272'},
@@ -1709,7 +1929,7 @@ function restorables(){
   return out.sort((a,b)=>b.ts-a.ts);
 }
 function availDocs(){ return DOCS.filter(d=>prog>=d.at); }
-function isBoardDoc(id){ if(id==='board_index') return true;
+function isBoardDoc(id){ if(id==='board_index'||id==='board_search') return true;
   const d=DOCS.find(x=>x.id===id); return !!d&&d.skin==='wulou'; }
 
 /* ================= 分頁 ================= */
@@ -1747,6 +1967,9 @@ function openDoc(id){
   else openTab(id);
 }
 function goHome(){ boardTab='board_index'; go('board_index'); }
+/* 板內搜尋：跟首頁、討論串一樣留在同一個分頁裡切換（都是 wulou.5gbfree.com 這個站） */
+function goSearch(q){ if(q!==undefined) boardQuery=q; boardPage=1;
+  boardTab='board_search'; go('board_search'); }
 function closeTab(id){ tabs=tabs.filter(t=>t.id!==id); if(active===id) goHome(); else render(); }
 /* 換頁要捲回頂端的是「網頁」，也就是 .viewport 這個捲動容器，不是整個 window
    ——分頁列跟網址列現在是固定的外框，window 根本不會捲。 */
@@ -2019,6 +2242,10 @@ document.getElementById('p').addEventListener('keydown',e=>{
 function render(){ syncTabs(); renderChrome(); renderPage();
   document.querySelectorAll('[data-home]').forEach(b=>{ b.onclick=goHome; });
   document.querySelectorAll('[data-rules]').forEach(b=>{ b.onclick=()=>openDoc('t_rules'); });
+  /* 導覽列的「搜尋」不帶關鍵字：留著上一次搜的那個字，跟舊板一樣 */
+  document.querySelectorAll('[data-search]').forEach(b=>{ b.onclick=()=>goSearch(); });
+  const sf=document.getElementById('wlSearch');
+  if(sf) sf.onsubmit=e=>{ e.preventDefault(); goSearch(document.getElementById('wlQ').value); };
   const adx=document.getElementById('adX');
   if(adx) adx.onclick=()=>{ adOpen=false; render(); };
   syncApp(); chatCheck(); }
@@ -2056,6 +2283,7 @@ function renderPage(){
     return renderGate(vp,g);
   }
   if(active==='board_index'){ vp.className='viewport vp-wulou'; return renderBoardIndex(vp); }
+  if(active==='board_search'){ vp.className='viewport vp-wulou'; return renderBoardSearch(vp); }
   if(active==='notes'){ vp.className='viewport vp-notes'; return renderNotes(vp); }
   const d=DOCS.find(x=>x.id===active);
   if(!d){ vp.className='viewport vp-wulou'; vp.innerHTML='<div class="pg">找不到網頁</div>'; return; }
@@ -2067,7 +2295,23 @@ function renderPage(){
   if(d.skin==='scan')    return renderScan(vp,d);
 }
 
-/* ---------- 五樓的頁首廣告與站尾 ---------- */
+/* ---------- 五樓的頁首、頁首廣告與站尾 ---------- */
+/* 板上每一頁（首頁／討論串／鎖定頁／搜尋結果）共用同一條頁首。
+   「精華區」十一年來一直是一個點不下去的字——那種免費空間的板大多沒人整理過精華區。 */
+function wlHead(){
+  return `<div class="wl-hd"><span class="lg">五樓</span>
+      <span class="nv"><button data-home>主板</button>　│　<button data-search>搜尋</button>　│　精華區　│　<button data-rules>板規</button></span>
+      <span class="me">${esc(ME.name)}（${esc(ME.uid)}）</span></div>`;
+}
+/* 板內搜尋框：只長在首頁與搜尋結果頁上。
+   刻意不放進討論串——讀〈整理〉她那幾頁的時候，畫面上不該多一個輸入框在閃。 */
+function wlSearchBox(){
+  return `<form class="wl-search" id="wlSearch">
+    <span class="lb">站內搜尋</span>
+    <input id="wlQ" type="text" value="${esc(boardQuery)}" maxlength="24" autocomplete="off">
+    <button type="submit">送出</button>
+  </form>`;
+}
 /* wulou.5gbfree.com 是免費空間，免費空間一定會在頁首插一條自己的廣告。
    關得掉，但只在這次開著的期間有效——重整就回來，這也是真的。 */
 let adOpen=true;
@@ -2090,9 +2334,131 @@ function wlFoot(){
   </div>`;
 }
 
+/* ---------- 板內搜尋 ---------- */
+/* 這個機制只負責深度層，不推進度：主線的四道閘一步都不靠玩家猜關鍵字，
+   搜得到的東西等同板務後台那兩篇——還原了也一樣不會多一格 prog。
+   它真正的用途有兩個：一是 2015 那十三串閒聊補起來之後，玩家不必一串一串點開；
+   二是「0 筆」——這個板上從頭到尾沒有人打過「霸凌」那兩個字。 */
+
+/* 正規化成可比對的樣子，同時記住每個字原本在哪裡。規則跟 norm() 一致
+   （全形轉半形、去空白與標點、轉小寫），差別只在多留一張位置對照表——
+   摘要要把命中的字標出來，光有正規化後的字串找不回原文的位置。 */
+function normMap(s){
+  s=s||''; let n=''; const idx=[];
+  for(let i=0;i<s.length;i++){
+    let c=s[i]; const code=c.charCodeAt(0);
+    if(code>=0xFF01&&code<=0xFF5E) c=String.fromCharCode(code-0xFEE0);
+    if(/[\s　:：\-—–_.,、。／/()（）]/.test(c)) continue;
+    const lc=c.toLowerCase();
+    for(let k=0;k<lc.length;k++) idx.push(i);
+    n+=lc;
+  }
+  return {n,idx};
+}
+const hasQ=(text,q)=>!!q&&normMap(text).n.indexOf(q)>=0;
+
+/* 命中的那一行摘要：前後各留一點上下文，命中的字用 <b> 標起來。
+   換行在這裡會被換成全形空白——摘要是一行的，不是 pre-wrap。 */
+function snip(text,q){
+  const h=normMap(text), at=h.n.indexOf(q);
+  if(at<0) return '';
+  const a=h.idx[at], b=h.idx[at+q.length-1]+1;
+  const s0=Math.max(0,a-14), s1=Math.min(text.length,b+26);
+  const one=x=>esc(x.replace(/\n/g,'　'));
+  return (s0>0?'…':'')+one(text.slice(s0,a))+'<b>'+one(text.slice(a,b))+'</b>'
+        +one(text.slice(b,s1))+(s1<text.length?'…':'');
+}
+
+/* 一次搜尋的結果。可見性完全交給 boardRows()（串）與 visPosts()（樓），
+   所以搜尋永遠吐不出玩家還沒解鎖的東西——這是這個功能最需要守住的一條。 */
+function boardSearch(){
+  const q=norm(boardQuery);
+  if(!q) return [];
+  return boardRows().filter(r=>!r.deco).map(r=>{
+    const d=DOCS.find(x=>x.id===r.doc);
+    if(!d) return null;
+    const titleHit=hasQ(d.title,q);
+    /* 板主鎖起來的串只搜得到標題：標題本來就印在板首頁上，
+       但內容要有板務權限才讀得到——搜尋不可以變成繞過那道鎖的後門。 */
+    if(r.lock) return titleHit?{r,d,locked:1,hits:[],n:0}:null;
+    const hits=[];
+    for(const {p,no} of visPosts(d)){
+      if(p.silence) continue;
+      const line=snip(p.c,q);
+      if(line){ hits.push({no,p,line}); continue; }
+      /* 打帳號或名字也要找得到人——板上只有帳號，名字是這支程式補上去的 */
+      if(p.u&&hasQ(p.u+who(p.u),q)){
+        const raw=p.c.replace(/\n/g,'　');
+        hits.push({no,p,by:1,line:esc(raw.slice(0,44))+(raw.length>44?'…':'')});
+      }
+    }
+    if(!titleHit&&!hits.length) return null;
+    return {r,d,locked:0,hits:hits.slice(0,3),n:hits.length};
+  }).filter(Boolean);
+}
+
+/* 搜不到的時候，舊板會給一排「您是不是要找」。
+   這幾組不是系統聰明，是這個板真的只有那些字：
+   板上從頭到尾沒有人打過「霸凌」，只有「整理」「資料」「回報」；
+   沒有人打過她的名字，十一年就只有一個「她」；而這六個人在板上全都只是帳號，
+   誰的全名都搜不到——他不是被特別抹掉的那一個，是從來沒有人被寫成一個名字。
+   建議詞按得下去，按下去就會看到板上真正用的是哪幾個字。 */
+const SEARCH_TIPS={
+  霸凌:['整理','資料','回報'], 欺負:['整理','資料'],
+  性騷擾:['整理','資料'], 騷擾:['整理','資料'],
+  周映柔:['她'], 映柔:['她'],
+  林昱庭:['ytl_lin'], 陳思妤:['siyu_1120'], 蔡宗翰:['tsonghan'],
+  黃冠廷:['kt0904'], 王雅琳:['yalin_w'], 戴文豪:['haoge']
+};
+
+function renderBoardSearch(vp){
+  const q=boardQuery.trim(), res=boardSearch();
+  const posts=res.reduce((m,x)=>m+x.n,0), total=boardRows().length;
+
+  const hitRow=h=>`<div class="q"><span class="f">${h.no}F</span>`
+    +`<span class="u${h.by?' by':''}">${esc(who(h.p.u))}</span><span class="c">${h.line}</span>`
+    +`<span class="t">${esc(h.p.t||'')}</span></div>`;
+  const row=x=>`<button class="sr-row" data-idx="${x.d.id}">
+    <div class="t">${x.r.lock?'<span class="lk">🔒</span>':''}${esc(x.d.title)}</div>
+    <div class="m">${esc(T(x.d.meta))}</div>
+    ${x.locked?'<div class="q lk">本文已由板主鎖定，無法預覽內容。</div>'
+              :x.hits.map(hitRow).join('')
+                +(x.n>x.hits.length?`<div class="q more">…此串另有 ${x.n-x.hits.length} 則符合</div>`:'')}
+  </button>`;
+
+  const tips=SEARCH_TIPS[q];
+  const nil=`<div class="sr-nil">找不到符合的文章。
+    ${tips?`<div class="tip">您是不是要找：${
+      tips.map(t=>`<button data-q="${esc(t)}">${esc(t)}</button>`).join('　')}</div>`
+      :'<div class="tip">請換一個關鍵字，或縮短關鍵字再試一次。</div>'}</div>`;
+
+  const sum=!q
+    ?`請輸入關鍵字。本板目前共 ${total} 篇文章。`
+    :`關鍵字「${esc(q)}」　符合 ${res.length} 篇文章`
+      +(posts?`、${posts} 則回應`:'')+`　（本板共 ${total} 篇）`;
+
+  vp.innerHTML=`<div class="cols"><div class="main">
+    ${wlAd()}
+    ${wlHead()}
+    <div class="wl-sub">主板　›　站內搜尋</div>
+    <div class="wl-body">
+      ${wlSearchBox()}
+      <div class="sr-sum">${sum}</div>
+      ${!q?'':res.length?res.map(row).join(''):nil}
+    </div>
+    ${wlFoot()}
+  </div></div>`;
+
+  vp.querySelectorAll('[data-idx]').forEach(b=>{ b.onclick=()=>openDoc(b.dataset.idx); });
+  vp.querySelectorAll('[data-q]').forEach(b=>{ b.onclick=()=>goSearch(b.dataset.q); });
+}
+
 /* ---------- 板首頁 ---------- */
-const PER_PAGE=8;        // 每頁篇數；置頂那串不算在內，每一頁都會出現
+const PER_PAGE=10;       // 每頁篇數；置頂那串不算在內，每一頁都會出現
+                         // （2015 補滿之後板上有 19 串非置頂，10 篇剛好切成兩頁：
+                         //   第一頁是板安靜下去的那一年，第二頁是它還活著的那一年）
 let boardPage=1;
+let boardQuery='';       // 站內搜尋現在的關鍵字（空字串＝還沒搜過）
 function renderBoardIndex(vp){
   /* 手機上這一行只差幾個字就會擠出去，所以補白抓得剛好夠對齊就好（名字都是兩個字） */
   const line=x=>`${x.f}　│　人氣 ${String(x.hits??0).padStart(4,' ')}　│　最後回覆 ${who(x.by).padEnd(4,'　')}│　${x.when}`;
@@ -2120,11 +2486,9 @@ function renderBoardIndex(vp){
 
   vp.innerHTML=`<div class="cols"><div class="main">
     ${wlAd()}
-    <div class="wl-hd"><span class="lg">五樓</span>
-      <span class="nv"><button data-home>主板</button>　│　精華區　│　<button data-rules>板規</button></span>
-      <span class="me">${esc(ME.name)}（${esc(ME.uid)}）</span></div>
+    ${wlHead()}
     <div class="wl-sub">主板　│　板主 ytl_lin　│　依最後回覆排序</div>
-    <div class="wl-body idx-list">${rows}${pager}</div>
+    <div class="wl-body idx-list">${rows}${pager}${wlSearchBox()}</div>
     ${wlFoot()}
   </div></div>`;
 
@@ -2143,9 +2507,7 @@ function renderThread(vp,d){
   if(d.lock&&!adminIn){
     vp.innerHTML=`<div class="cols"><div class="main">
       ${wlAd()}
-      <div class="wl-hd"><span class="lg">五樓</span>
-        <span class="nv"><button data-home>主板</button>　│　精華區　│　<button data-rules>板規</button></span>
-        <span class="me">${esc(ME.name)}（${esc(ME.uid)}）</span></div>
+      ${wlHead()}
       <div class="wl-sub">${esc(T(d.meta))}</div>
       <div class="wl-body">
         <div class="wl-title">${esc(d.title)}</div>
@@ -2155,15 +2517,9 @@ function renderThread(vp,d){
     </div></div>`;
     return;
   }
-  let floorNo=0;
-  const body=d.posts.filter(p=>{
-    if(p.at!==undefined&&prog<p.at) return false;
-    if(p.rid) return p.del?!restored.has(p.rid):restored.has(p.rid);
-    return true;
-  }).map(p=>{
+  const body=visPosts(d).map(({p,no})=>{
     if(p.silence) return `<div class="silence">${esc(p.silence)}</div>`;
-    floorNo++;                       // 樓層連續編號，不因隱藏樓層而跳號
-    const label=p.del?'':floorNo+'F';
+    const label=p.del?'':no+'F';     // 樓層連續編號，不因隱藏樓層而跳號
     return `<div class="rp${p.del?' del':''}${p.u===ME.uid?' mine':''}${p.today?' today':''}${p.rid&&!p.del?' restored':''}">
       <div class="f">${esc(label)}</div>
       <div class="u">${p.u?`<span class="nm">${esc(who(p.u))}${p.u===ME.uid?'<span class="me">（你）</span>':''}</span>
@@ -2175,9 +2531,7 @@ function renderThread(vp,d){
 
   vp.innerHTML=`<div class="cols"><div class="main">
     ${wlAd()}
-    <div class="wl-hd"><span class="lg">五樓</span>
-      <span class="nv"><button data-home>主板</button>　│　精華區　│　<button data-rules>板規</button></span>
-      <span class="me">${esc(ME.name)}（${esc(ME.uid)}）</span></div>
+    ${wlHead()}
     <div class="wl-sub">${esc(T(d.meta))}</div>
     <div class="wl-body">
       <div class="wl-title">${esc(d.title)}</div>
