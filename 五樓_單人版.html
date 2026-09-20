@@ -12,29 +12,54 @@
   --ink:#22282E; --ink-soft:#5C6873;
   --link:#16387C; --warm:#8C6A3A;
   --chrome:#D6D9DD;
+  /* 五樓那個板自己的配色：2005 年的論壇，藍色比別的頁面飽和、比別的頁面深。
+     刻意不共用 --board——那個顏色還在茶水間的泡泡、登入頁和信箱上，
+     那些畫面不該跟著一起退回十年前。 */
+  --wl-blue:#2E5F8F; --wl-blue-d:#1F4570; --wl-blue-l:#4A84BC;
+  --wl-hdr:#DCE9F5; --wl-hdr-ink:#1F4570;
+  --wl-grid:#AFC5D8;            /* 表格格線：舊表格每一格都有框 */
+  --wl-edge:#8FA9C0;            /* 面板外框 */
+  --wl-alt:#F1F6FA;             /* 隔行變色 */
+  --wl-cream:#F7F4E4; --wl-cream-line:#C9BF9C;
+  --wl-link:#14428C; --wl-link-h:#C02020;
+  /* Chrome 外框（她 2026 年的瀏覽器，這一層維持現代） */
+  --cr-strip:#DEE1E6; --cr-bar:#FFFFFF; --cr-line:#DADCE0;
+  --cr-ico:#5F6368; --cr-txt:#3C4043; --cr-omni:#F1F3F4;
+  color-scheme:light;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;height:100%}
-body{background:#9BA3AB;color:var(--ink);
+body{background:#6E757C;color:var(--ink);
   font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",sans-serif;
-  font-size:13px;line-height:1.75}
+  font-size:13px;line-height:1.75;
+  display:flex;align-items:center;justify-content:center}
 button{font-family:inherit;cursor:pointer}
+
+/* ===== 桌面：一整台舊螢幕 =====
+   這個遊戲只給電腦玩。整場戲鎖在一個 4:3 的方框裡，置中浮在桌面底色上——
+   16:9 是現在的比例，4:3 是那個年代的比例，光是把畫面框成這樣就已經在講時間。
+   #desk 是唯一的舞台：瀏覽器、登入頁、茶水間、推播橫幅全部定位在它裡面，
+   所以茶水間看起來會像是「同一張桌面上的另一支程式」，而不是飄在螢幕角落。 */
+#desk{position:relative;overflow:hidden;
+  aspect-ratio:4/3;height:min(calc(100vh - 26px),900px);max-width:calc(100vw - 26px);
+  border-radius:9px;background:var(--cr-bar);
+  box-shadow:0 10px 44px rgba(0,0,0,.42)}
 
 /* ===== 茶水間：一支獨立的聊天 App =====
    手機上沒有人會在瀏覽器的分頁裡聊天——聊天軟體本來就是另一支 App。
    #chatapp 因此不畫在假瀏覽器裡面，而是蓋在整個畫面上的一層：手機滿版，
    桌機停在右下角像一扇聊天視窗。收起來之後右下角留一顆 #chatdock 把它叫回來，
    新訊息則從畫面上緣以推播橫幅的樣子掉下來。 */
-#chatapp{position:fixed;z-index:60;display:none;flex-direction:column;overflow:hidden;
-  right:20px;bottom:0;width:352px;height:min(600px,84vh);background:#DFE3E7;
+#chatapp{position:absolute;z-index:60;display:none;flex-direction:column;overflow:hidden;
+  right:20px;bottom:0;width:352px;height:min(600px,84%);background:#DFE3E7;
   border:1px solid #78848E;border-bottom:0;border-radius:13px 13px 0 0;
   box-shadow:0 8px 30px rgba(0,0,0,.34)}
 #chatapp.on{display:flex}
 /* 登入之前後面是一片空的，靠在右下角看起來像壞掉：置中成一支手機的樣子 */
 #chatapp.solo{left:50%;right:auto;top:50%;bottom:auto;transform:translate(-50%,-50%);
-  width:min(400px,92vw);height:min(660px,86vh);border:1px solid #78848E;border-radius:13px}
+  width:400px;height:min(660px,86%);border:1px solid #78848E;border-radius:13px}
 .ca-top{flex:none;display:flex;align-items:center;gap:9px;color:#fff;background:#2F5468;
-  padding:10px 12px;padding-top:calc(10px + env(safe-area-inset-top,0px))}
+  padding:10px 12px}
 .ca-back{flex:none;background:none;border:0;color:#fff;font-size:21px;line-height:1;
   padding:1px 6px 3px;opacity:.85}
 .ca-back:hover{opacity:1}
@@ -97,8 +122,7 @@ button{font-family:inherit;cursor:pointer}
 
 /* 輸入列：平常是一條按不下去的假輸入框，輪到她講話時整條換成送出提示 */
 .pl-in{flex:none;display:flex;align-items:center;gap:8px;padding:9px 12px;background:#F1F4F6;
-  border-top:1px solid #C9D0D6;font-size:12.5px;color:#A2AAB2;
-  padding-bottom:calc(9px + env(safe-area-inset-bottom,0px))}
+  border-top:1px solid #C9D0D6;font-size:12.5px;color:#A2AAB2}
 .pl-in .fld{flex:1;min-width:0;padding:6px 12px;border-radius:14px;background:#fff;
   border:1px solid #D3DAE0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pl-in .snd{flex:none;color:#B0B8BF}
@@ -106,8 +130,8 @@ button{font-family:inherit;cursor:pointer}
   /* 提示靠右，那個↑才指得到右邊的草稿泡泡 */
 
 /* 把茶水間叫回來的那顆浮球（App 收起來的時候才在） */
-#chatdock{position:fixed;z-index:55;right:16px;width:54px;height:54px;border-radius:50%;
-  bottom:calc(16px + env(safe-area-inset-bottom,0px));
+#chatdock{position:absolute;z-index:55;right:16px;width:54px;height:54px;border-radius:50%;
+  bottom:16px;
   background:#2F5468;color:#fff;border:0;box-shadow:0 4px 15px rgba(0,0,0,.33);
   display:flex;align-items:center;justify-content:center;font-size:18px;
   font-family:"MingLiU","SimSun",serif}
@@ -121,8 +145,8 @@ button{font-family:inherit;cursor:pointer}
   50%{box-shadow:0 4px 15px rgba(0,0,0,.33),0 0 0 9px rgba(47,84,104,.15)}}
 
 /* 推播橫幅：人不在茶水間的時候，新訊息從畫面上緣掉下來 */
-.toast{position:fixed;z-index:70;right:16px;width:288px;cursor:pointer;display:flex;
-  align-items:center;gap:10px;top:calc(12px + env(safe-area-inset-top,0px));
+.toast{position:absolute;z-index:70;right:16px;width:288px;cursor:pointer;display:flex;
+  align-items:center;gap:10px;top:12px;
   background:rgba(34,40,46,.96);color:#EDF1F4;border-radius:14px;padding:10px 13px;
   line-height:1.55;box-shadow:0 8px 24px rgba(0,0,0,.36);animation:banner .34s ease}
 .toast[hidden]{display:none}
@@ -136,7 +160,9 @@ button{font-family:inherit;cursor:pointer}
   .toast{animation:none}}
 
 /* ===== 登入 ===== */
-#login{display:none;max-width:330px;margin:14vh auto 0;padding:0 16px}
+#login{display:none;position:absolute;inset:0;z-index:10;overflow-y:auto;
+  padding:13% 16px 40px;background:#9BA3AB}
+#login .inner{max-width:330px;margin:0 auto}
 .brand{font-family:"MingLiU","SimSun","Songti TC",serif;font-size:50px;letter-spacing:.22em;
   color:#2C3E50;text-align:center;margin:0 0 2px;text-indent:.22em}
 .brand-sub{text-align:center;color:#5C6873;font-size:11px;letter-spacing:.3em;
@@ -155,163 +181,289 @@ button{font-family:inherit;cursor:pointer}
 .loginerr{color:#8C3A3A;font-size:12px;min-height:20px;margin-top:9px;text-align:center}
 .footnote{text-align:center;color:#4A5560;font-size:11px;margin-top:20px;line-height:2}
 
-/* ===== 瀏覽器外殼 ===== */
-/* 分頁列與網址列是「瀏覽器外框」，捲的是框裡的網頁：外殼吃滿一個螢幕高，
-   tabstrip／omni 固定不動，只有 .viewport 自己捲。 */
-#browser{display:none;flex-direction:column;max-width:980px;margin:0 auto;
-  height:100vh;height:100dvh;
-  background:var(--chrome);box-shadow:0 0 0 1px #8A9299}
-.tabstrip{flex:none;display:flex;align-items:flex-end;gap:1px;padding:6px 8px 0;
-  background:#B9BEC4;overflow-x:auto}
-.tab{display:flex;align-items:center;gap:6px;padding:6px 10px 7px;min-width:104px;max-width:220px;
-  background:#C6CBD0;border:1px solid #A6ADB4;border-bottom:0;border-radius:5px 5px 0 0;
-  font-size:12px;color:#3A424A;white-space:nowrap;flex:none}
-.tab:hover{background:#CFD4D9}
-.tab.on{background:var(--chrome);border-color:#8A9299;padding-bottom:8px;margin-bottom:-1px;z-index:2}
-.tab .fav{width:11px;height:11px;flex:none;border-radius:2px}
-.tab .tt{overflow:hidden;text-overflow:ellipsis}
-.tab .cl{margin-left:auto;background:none;border:0;color:#6E7A85;font-size:12px;padding:0 2px;line-height:1}
-.omni{flex:none;display:flex;align-items:center;gap:8px;padding:7px 10px;
-  background:var(--chrome);border-bottom:1px solid #A6ADB4}
-.omni .navb button{background:none;border:0;color:#6E7A85;font-size:14px;padding:1px 5px}
-.omni .navb button:disabled{color:#B0B7BE;cursor:default}
-.omni .url{flex:1;min-width:0;background:#fff;border:1px solid #A6ADB4;border-radius:2px;
-  padding:4px 9px;font-family:"Courier New",monospace;font-size:12px;color:#3A424A;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.omni .url .sec{color:#8A9299}
+/* ===== 瀏覽器外殼：她 2026 年的 Chrome =====
+   這一層刻意維持現代。玩家是今天坐在自己的電腦前面翻一個十年前的站，
+   把瀏覽器也做成古董會變成「穿越回 2015」，那跟「挖一座墳」是兩種恐怖。
+   外殼填滿 #desk，tabstrip／omni 固定不動，只有 .viewport 自己捲。 */
+#browser{display:none;position:absolute;inset:0;flex-direction:column;
+  background:var(--cr-bar)}
+.tabstrip{flex:none;display:flex;align-items:flex-end;height:39px;padding:6px 0 0 8px;
+  background:var(--cr-strip);overflow:hidden}
+.tab{position:relative;display:flex;align-items:center;gap:9px;height:33px;padding:0 11px;
+  min-width:118px;max-width:240px;flex:none;font-size:12.5px;color:var(--cr-txt);
+  white-space:nowrap;border-radius:9px 9px 0 0}
+/* 分頁自己排在 #tabstrip 裡，右邊才留得出視窗鈕的位置 */
+#tabstrip{display:flex;align-items:flex-end;min-width:0}
+.tab:hover:not(.on){background:#E8EAED}
+.tab.on{background:var(--cr-bar);z-index:3}
+/* Chrome 分頁底部往外翻的那兩個圓角：拿遮罩在方塊上咬掉一個四分之一圓 */
+.tab.on::before,.tab.on::after{content:'';position:absolute;bottom:0;width:9px;height:9px;
+  background:var(--cr-bar)}
+.tab.on::before{left:-9px;
+  -webkit-mask-image:radial-gradient(circle at 0 0,transparent 9px,#000 9.5px);
+  mask-image:radial-gradient(circle at 0 0,transparent 9px,#000 9.5px)}
+.tab.on::after{right:-9px;
+  -webkit-mask-image:radial-gradient(circle at 100% 0,transparent 9px,#000 9.5px);
+  mask-image:radial-gradient(circle at 100% 0,transparent 9px,#000 9.5px)}
+.tab .fav{width:15px;height:15px;flex:none;border-radius:3px}
+.tab .tt{overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.tab .cl{flex:none;width:17px;height:17px;border:0;border-radius:50%;background:none;
+  color:#5F6368;font-size:12px;line-height:1;display:grid;place-items:center;padding:0}
+.tab .cl:hover{background:#D3D6DA}
+.tabstrip .sp{flex:1}
+/* Windows 的視窗鈕，關掉的那顆按下去沒有反應——這扇窗是關不掉的 */
+.wctl{display:flex;align-self:stretch;flex:none}
+.wctl span{width:44px;color:#3C4043;font-size:11px;display:grid;place-items:center;
+  font-family:"Segoe UI",sans-serif}
+.omni{flex:none;display:flex;align-items:center;gap:3px;height:44px;padding:0 9px;
+  background:var(--cr-bar);border-bottom:1px solid var(--cr-line)}
+.omni button.ib{width:29px;height:29px;border:0;border-radius:50%;background:none;
+  color:var(--cr-ico);display:grid;place-items:center;flex:none;padding:0}
+.omni button.ib:hover:not(:disabled){background:#E8EAED}
+.omni button.ib:disabled{color:#BDC1C6;cursor:default}
+.omni .ib svg{width:17px;height:17px}
+.omni .url{flex:1;min-width:0;height:29px;margin:0 6px;padding:0 9px;background:var(--cr-omni);
+  border-radius:999px;display:flex;align-items:center;gap:7px;font-size:13px;color:var(--cr-txt)}
+/* 舊站都是 http://，現在的 Chrome 會在網址前面掛一個「不安全」。
+   2026 年的瀏覽器對著 2015 年的免費空間，第一句話就是這個。 */
+.omni .url .unsafe{flex:none;display:flex;align-items:center;gap:4px;color:#5F6368;
+  font-size:11.5px;padding-right:8px;border-right:1px solid #C7CACD}
+.omni .url .unsafe svg{width:14px;height:14px;flex:none}
+.omni .url .u{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-family:"Segoe UI",Arial,sans-serif}
+.omni .url .sec{color:#80868B}
+.omni .av{width:25px;height:25px;border-radius:50%;background:#7B6BA8;color:#fff;flex:none;
+  display:grid;place-items:center;font-size:12px;margin-left:3px;
+  font-family:"MingLiU","SimSun",serif}
 .viewport{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;
-  -webkit-overflow-scrolling:touch;padding:14px 12px 40px}
+  padding:14px 12px 40px}
 
-/* ===== 五樓 ===== */
-.vp-wulou{background:var(--page);
-  background-image:repeating-linear-gradient(180deg,rgba(0,0,0,.012) 0 1px,transparent 1px 4px)}
-.pg{max-width:800px;margin:0 auto}
-.wl-hd{background:var(--board);color:#fff;padding:8px 12px;display:flex;
-  align-items:baseline;gap:12px;flex-wrap:wrap}
-.wl-hd .lg{font-family:"MingLiU","SimSun",serif;font-size:18px;letter-spacing:.18em}
-.wl-hd .nv{font-size:11px;opacity:.72;letter-spacing:.08em}
-.wl-hd .nv button{background:none;border:0;padding:0;color:inherit;font:inherit;
-  letter-spacing:inherit;cursor:pointer;opacity:1}
-.wl-hd .nv button:hover{text-decoration:underline}
-.wl-hd .me{margin-left:auto;font-size:11px;opacity:.9}
-.wl-sub{background:#D5DCE3;border:1px solid var(--line);border-top:0;padding:4px 12px;
-  font-size:11px;color:var(--ink-soft)}
-.wl-body{background:#fff;border:1px solid var(--line);border-top:0;padding:12px 14px}
-.wl-title{font-size:15px;font-weight:600;margin-bottom:2px}
-.wl-meta{font-size:11px;color:var(--ink-soft);margin-bottom:12px;
-  border-bottom:1px solid var(--line-soft);padding-bottom:8px}
-.rp{display:flex;gap:10px;padding:7px 0;border-bottom:1px dotted #E3E8EC}
-.rp:last-child{border-bottom:0}
-.rp .f{width:52px;flex:none;padding-left:5px;font-family:"Courier New",monospace;
-  font-size:11px;color:#98A3AD}
-.rp .u{width:100px;flex:none;font-size:11px;line-height:1.4;padding-top:1px}
-.rp .u .nm{display:block;font-size:12.5px;color:var(--ink)}
-.rp .u .uid{display:block;font-size:9.5px;color:#A2AAB2;font-family:"Courier New",monospace}
-.rp .c{flex:1;font-family:"MingLiU","SimSun",serif;font-size:14px;white-space:pre-wrap;line-height:1.9}
-.rp.del .c{font-style:italic;color:#A2A9AF;font-family:inherit;font-size:12px}
-.rp.mine{background:#EEF3F8;box-shadow:inset 3px 0 0 var(--board)}
-.rp.mine .u .nm{font-weight:700;color:var(--board-dark)}
-.rp.mine .u .me{font-weight:400;font-size:9px;color:var(--board-dark);margin-left:2px}
-.rp.restored{background:#FBF7EF;box-shadow:inset 3px 0 0 var(--warm)}
-.rp.restored .u::after{content:'　已還原';font-size:9px;color:var(--warm);font-weight:400}
-.wl-lock{padding:34px 10px;text-align:center;font-size:12.5px;color:var(--ink-soft);
-  line-height:2.1;white-space:pre-wrap;border:1px dashed #C8D0D7;margin:10px 0;
-  background:#F7F9FA}
-.idx-row .lk{margin-right:5px;font-size:11px;opacity:.7}
-.rp .rlog{margin-top:5px;font-size:10.5px;color:var(--warm);
-  font-family:"Courier New",monospace;letter-spacing:.02em}
-.rp .t{width:78px;flex:none;text-align:right;font-size:10px;color:#98A3AD;
-  font-family:"Courier New",monospace;padding-top:3px;white-space:nowrap}
-.silence{text-align:center;font-size:11px;color:#A2A9AF;padding:10px 0;letter-spacing:.12em;
-  font-family:"Courier New",monospace}
+/* ═══════════════════════════════════════════════════════════════
+   五樓：2005 年的免費空間論壇
+   這一段刻意「沒有設計感」。那個年代的網頁之所以一眼就舊，是四件很具體的事：
+     1. 全站新細明體（微軟正黑體是 2008 年之後才有的字，它一出現就洩底）
+     2. 表格每一格都有框線（現代排版拿掉直線，舊表格是格子）
+     3. 按鈕與輸入框是 Windows 傳統的立體邊框，不是扁平色塊
+     4. 顏色飽和、漸層平塗、間距很擠
+   往後改這一段的時候，先確定不會把上面四件事之一改掉。
+   ═══════════════════════════════════════════════════════════════ */
+.vp-wulou{background:#E8EEF3;padding:6px 7px 14px;
+  font-family:"PMingLiU","新細明體","MingLiU","SimSun",serif;font-size:15px;line-height:1.6}
+.vp-wulou button{font-family:inherit}
+.pg{padding:20px}
 
-/* 板首頁 */
-.idx-list{padding:2px 0}
-.idx-row{display:block;width:100%;text-align:left;background:none;border:0;
-  border-bottom:1px solid var(--line-soft);padding:9px 4px;font-size:13px}
-.idx-row:last-child{border-bottom:0}
-.idx-row .t{color:var(--link);text-decoration:underline}
-.idx-row .m{font-size:11px;color:#98A3AD;font-family:"Courier New",monospace;margin-top:2px;
-  white-space:pre}
-.idx-row:hover{background:#F4F8FB}
-.idx-row.new .t::after{content:'　new';color:#8C3A3A;font-size:9px;text-decoration:none}
-.idx-row.deco{cursor:default;opacity:.6}
-.idx-row.deco:hover{background:none}
-.idx-row.deco .t{color:var(--ink);text-decoration:none}
-/* filler：跟裝飾串一樣灰、一樣沒有 new 標籤，但按得下去——
-   讓玩家分得出「這是背景閒聊」而不是線索，點了也不會撲空 */
-.idx-row.filler{opacity:.75}
-.idx-row.filler .t{color:var(--ink);text-decoration:none}
-/* 置頂公告：跟 filler 一樣低調，只是標題前面多一個置頂記號 */
-.idx-row.top .t::before{content:'置頂　';color:#8C3A3A;font-size:9px;text-decoration:none}
-
-/* 分頁列：舊板就算只有一頁也會把它印出來 */
-.wl-pager{display:flex;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;
-  padding:14px 0 4px;font-size:11px;color:var(--ink-soft);font-family:"Courier New",monospace}
-.wl-pager button{background:none;border:1px solid var(--line-soft);color:var(--link);
-  padding:2px 8px;font-size:11px;font-family:inherit;cursor:pointer}
-.wl-pager button:hover:not([disabled]){background:#F4F8FB}
-.wl-pager button[disabled]{color:#BFC6CC;border-color:#EDF0F3;cursor:default}
-.wl-pager .p.on{background:#EEF3F8;color:var(--ink);font-weight:700;border-color:var(--line)}
-.wl-pager .tot{margin-left:4px}
-
-/* 站內搜尋：舊板的搜尋列就是一條擠在版面底下的小表單 */
-.wl-search{display:flex;align-items:center;gap:6px;margin-top:14px;padding:8px 9px;
-  border:1px solid var(--line-soft);background:#F7F9FA;font-size:11px;
-  color:var(--ink-soft);font-family:"Courier New",monospace}
-.wl-search .lb{flex:none;letter-spacing:.08em}
-.wl-search input{flex:1;min-width:0;border:1px solid var(--line);background:#fff;
-  padding:3px 6px;font-size:12px;font-family:inherit;color:var(--ink)}
-.wl-search button{flex:none;border:1px solid var(--line);background:#EEF3F8;
-  color:var(--link);padding:3px 10px;font-size:11px;font-family:inherit;cursor:pointer}
-.wl-search button:hover{background:#E3EBF3}
-
-/* 搜尋結果 */
-.sr-sum{margin:12px 0 4px;padding-bottom:7px;border-bottom:1px solid var(--line-soft);
-  font-size:11px;color:var(--ink-soft);font-family:"Courier New",monospace}
-.sr-row{display:block;width:100%;text-align:left;background:none;border:0;
-  border-bottom:1px solid var(--line-soft);padding:10px 4px;font-size:13px}
-.sr-row:last-child{border-bottom:0}
-.sr-row:hover{background:#F4F8FB}
-.sr-row .t{color:var(--link);text-decoration:underline}
-.sr-row .lk{margin-right:5px;font-size:11px;opacity:.7;text-decoration:none}
-.sr-row .m{font-size:10.5px;color:#98A3AD;font-family:"Courier New",monospace;margin-top:2px}
-/* 命中的那幾行：樓層、誰講的、一段上下文、時間——排得跟討論串裡同一個骨架 */
-.sr-row .q{display:flex;gap:8px;margin-top:5px;padding:3px 0 3px 9px;
-  border-left:2px solid #E3E8EC;font-size:11.5px;color:var(--ink-soft);line-height:1.75}
-.sr-row .q .f{flex:none;width:30px;font-family:"Courier New",monospace;font-size:10px;
-  color:#A2AAB2;padding-top:2px}
-.sr-row .q .u{flex:none;width:34px;font-size:10.5px;color:#A2AAB2;padding-top:2px}
-.sr-row .q .c{flex:1;min-width:0;font-family:"MingLiU","SimSun",serif;font-size:12.5px;
-  color:var(--ink);overflow:hidden;text-overflow:ellipsis}
-.sr-row .q .c b,.sr-row .q .u.by{background:#FBEFC9;padding:0 1px}
-.sr-row .q .u.by{color:var(--ink);font-weight:700}
-.sr-row .q .t{flex:none;font-size:9.5px;color:#B4BBC1;font-family:"Courier New",monospace;
-  padding-top:3px;white-space:nowrap;text-decoration:none}  /* .sr-row .t 是標題的底線，別漏到時間上 */
-.sr-row .q.more,.sr-row .q.lk{color:#A2AAB2;font-size:10.5px;font-style:italic}
-/* 0 筆：這個機制最重的一招，所以版面刻意留白，只印那一行跟一排建議詞 */
-.sr-nil{padding:26px 10px 30px;text-align:center;font-size:12.5px;color:var(--ink-soft);
-  line-height:2.1}
-.sr-nil .tip{margin-top:12px;font-size:11px;color:#98A3AD}
-.sr-nil .tip button{background:none;border:0;color:var(--link);font:inherit;
-  text-decoration:underline;cursor:pointer;padding:0 2px}
+/* 主欄 + 側欄。側欄從板首頁一路跟到討論串與搜尋結果——真的論壇就是這樣，
+   而且讀她那幾樓的時候右邊還掛著「表情圖示說明」，正是這個板該有的鈍感。 */
+.cols{display:flex;gap:7px;align-items:flex-start;width:100%}
+.main{flex:1;min-width:0}
+.side{width:274px;flex:none}
 
 /* 免費空間自動插在頁首的廣告條——2015 年的免費空間都會塞這個 */
-.wl-ad{display:flex;align-items:center;gap:8px;margin-bottom:6px;padding:5px 9px;
-  border:1px solid #D9B84A;background:linear-gradient(#FFFBE6,#FFEFB0);
-  font-size:11px;color:#7A5A00}
-.wl-ad .tag{border:1px solid #D9B84A;background:#fff;padding:0 4px;font-size:9px;flex:none}
-.wl-ad .txt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-  font-weight:700}
-.wl-ad .x{background:none;border:0;color:#A08340;font-size:12px;line-height:1;padding:0 2px;
-  flex:none;cursor:pointer}
+.wl-ad{display:flex;align-items:center;gap:8px;margin-bottom:5px;padding:4px 8px;
+  border:1px solid #D4C56A;background:#FFFBE0;font-size:13px;color:#6B5E1E}
+.wl-ad .tag{flex:none;padding:0 5px;background:#D4C56A;color:#4A4110;font-size:12px}
+.wl-ad .txt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wl-ad .x{flex:none;background:none;border:0;color:#9A8F4A;font-size:13px;line-height:1;
+  padding:0 3px;cursor:pointer}
 
-/* 站尾：訪客計數器、Powered by、免費空間宣告 */
-.wl-foot{margin-top:8px;padding:9px 4px 2px;font-size:10.5px;line-height:1.95;
-  color:#98A3AD;text-align:center;font-family:"Courier New",monospace}
-.wl-foot .led{margin-left:6px;background:#1C1F23;color:#7FD4A8;padding:1px 6px;
-  letter-spacing:.3em}
-.wl-foot .pw{color:#B4BBC1}
+/* ---------- 站頭 ---------- */
+.wl-mast{position:relative;overflow:hidden;display:flex;align-items:center;gap:14px;
+  padding:11px 16px;background:#FBFAF0;border:1px solid var(--wl-edge);border-bottom:0}
+/* 免費空間論壇的 banner 幾乎都會放一張這種城市剪影 */
+.wl-mast .sky{position:absolute;right:0;bottom:0;width:340px;height:54px;opacity:.17;
+  pointer-events:none}
+.wl-mast .logo,.wl-mast .nm{position:relative;z-index:1}
+.wl-mast .logo{flex:none;line-height:0}
+.wl-mast h1{margin:0;font-family:"標楷體",DFKai-SB,"BiauKai",serif;font-size:36px;
+  color:var(--wl-blue-d);line-height:1.1;letter-spacing:.06em}
+
+/* ---------- 導覽列 ---------- */
+.wl-hd{display:flex;align-items:center;padding:4px 12px;background:var(--wl-blue);
+  border:1px solid var(--wl-blue-d);color:#CFE0F0;font-size:14px}
+.wl-hd button{background:none;border:0;color:#fff;font:inherit;padding:0 2px;cursor:pointer}
+.wl-hd button:hover{text-decoration:underline}
+.wl-hd .sep{color:#8FB4D4}   /* 分隔符本身就是 　│　，左右不用再補 margin */
+.wl-hd .me{margin-left:auto;font-size:13px;color:#BDD5E9}
+
+/* ---------- 公告條 ---------- */
+.wl-notice{display:flex;align-items:center;gap:8px;margin-top:5px;padding:5px 10px;
+  background:#fff;border:1px solid var(--wl-cream-line);font-size:14px}
+.wl-notice svg{width:17px;height:17px;flex:none}
+.wl-notice b{color:#A31515}
+
+/* ---------- 面板 ---------- */
+.wl-panel{margin-top:5px;border:1px solid var(--wl-edge);background:#fff}
+.wl-panel>h2{margin:0;padding:4px 9px;font-size:14px;font-weight:700;color:#fff;
+  background:var(--wl-blue);border-bottom:1px solid var(--wl-blue-d);
+  display:flex;align-items:center;gap:7px}
+.wl-panel>h2 svg{width:16px;height:16px;flex:none}
+.wl-panel>h2 .x{font-weight:400;font-size:13px;color:#BDD5E9}
+
+/* ---------- 板首頁的討論串表格 ---------- */
+.wl-tbl{width:100%;border-collapse:collapse;font-size:14px}
+.wl-tbl th{background:var(--wl-hdr);color:var(--wl-hdr-ink);font-weight:700;padding:3px 8px;
+  text-align:center;border:1px solid var(--wl-grid);white-space:nowrap;font-size:13px}
+.wl-tbl th.l{text-align:left}
+.wl-tbl td{padding:4px 8px;border:1px solid var(--wl-grid);vertical-align:middle;line-height:1.5}
+.wl-tbl tbody tr:nth-child(even) td{background:var(--wl-alt)}
+.wl-tbl tbody tr:hover td{background:#E3EEF8}
+.wl-tbl .c{text-align:center;white-space:nowrap}
+.wl-fold{width:16px;height:13px;display:inline-block;vertical-align:-2px;margin-right:6px}
+.wl-tbl .t{background:none;border:0;padding:0;font:inherit;color:var(--wl-link);
+  text-align:left;font-weight:700;cursor:pointer}
+.wl-tbl .t:hover{color:var(--wl-link-h);text-decoration:underline}
+.wl-tbl .nw{color:#C02020;font-size:11px;font-weight:700;margin-left:6px;font-style:italic;
+  font-family:Arial,Helvetica,sans-serif;letter-spacing:.04em}
+/* filler：背景閒聊，點得下去但不是線索——灰、不粗體、沒有 NEW */
+.wl-tbl tr.filler .t{color:#4A5560;font-weight:400}
+.wl-tbl tr.filler .t:hover{color:var(--wl-link-h)}
+.wl-tbl tr.filler td{color:#7A858F}
+/* 裝飾串：連點都點不下去 */
+.wl-tbl tr.deco .t{color:#7A858F;font-weight:400;cursor:default}
+.wl-tbl tr.deco .t:hover{color:#7A858F;text-decoration:none}
+/* 置頂公告：每一頁都會出現，所以刻意壓得比誰都低調 */
+.wl-tbl tr.top td{background:#FDFBEC !important}
+.wl-tbl tr.top .t::before{content:'[置頂] ';color:#A31515;font-weight:700;font-size:13px}
+.wl-tbl .lk{margin-right:3px;font-size:12px}
+.wl-tbl .num{font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#42505C}
+.wl-tbl .last{font-size:13px;color:#42505C;white-space:nowrap;line-height:1.45}
+.wl-tbl .last .by{color:#6E7A85}
+
+/* ---------- Windows 傳統控制項 ---------- */
+.wbtn{padding:1px 12px;font:inherit;font-size:14px;color:#1C2228;cursor:pointer;
+  border:1px solid #7F9DB9;border-top-color:#fff;border-left-color:#fff;
+  background:linear-gradient(#FCFCFA,#DDDACB)}
+.wbtn:hover:not(:disabled){background:linear-gradient(#fff,#E8E5D8)}
+.wbtn:active:not(:disabled){border-color:#7F9DB9 #fff #fff #7F9DB9}
+.wbtn:disabled{color:#9A9689;background:#E4E1D6;border-color:#B6B2A5;cursor:not-allowed;
+  border-top-color:#F2F0E8;border-left-color:#F2F0E8}
+.wtxt{padding:2px 5px;font-family:"PMingLiU","新細明體",serif;font-size:14px;color:var(--ink);
+  border:1px solid #7F9DB9;background:#fff;box-shadow:inset 1px 1px 2px rgba(0,0,0,.13)}
+
+/* 列表下面那條：發文功能還在，只是按不下去了 */
+.wl-listbar{display:flex;align-items:center;gap:10px;padding:5px 9px;
+  background:var(--wl-cream);border:1px solid var(--wl-edge);border-top:0;
+  font-size:14px;color:#6B5E3A}
+.wl-listbar .why{color:#8A7F62}
+
+/* 分頁列：舊板就算只有一頁也會把它印出來 */
+.wl-pager{display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:wrap;
+  padding:9px 0 4px;font-size:13px;color:var(--ink-soft)}
+.wl-pager button{padding:1px 8px;font:inherit;font-size:13px;color:var(--wl-link);
+  border:1px solid #A9BCCB;background:#F3F7FA;cursor:pointer}
+.wl-pager button:hover:not([disabled]){background:#E3EEF8}
+.wl-pager button[disabled]{color:#AEB7BF;border-color:#D3DAE0;background:#EDF0F3;cursor:default}
+.wl-pager .p.on{background:var(--wl-blue);color:#fff;border-color:var(--wl-blue-d);font-weight:700}
+.wl-pager .tot{margin-left:5px;color:#6E7A85}
+
+/* 站內搜尋：舊板的搜尋列就是一條擠在版面底下的小表單 */
+.wl-search{display:flex;align-items:center;gap:7px;margin-top:5px;padding:5px 9px;
+  border:1px solid var(--wl-edge);background:#F3F7FA;font-size:14px}
+.wl-search .lb{flex:none;color:var(--wl-hdr-ink);font-weight:700}
+.wl-search input{flex:1;min-width:0}
+
+/* ---------- 側欄 ---------- */
+.side .wl-panel{margin-top:0}
+.side .wl-panel+.wl-panel{margin-top:5px}
+.side ul{margin:0;padding:6px 10px 7px;list-style:none;font-size:14px;line-height:1.85;
+  color:#2E3A44}
+.side li{position:relative;padding-left:14px}
+.side li::before{content:'';position:absolute;left:1px;top:.62em;width:6px;height:6px;
+  background:var(--wl-blue-l);border:1px solid var(--wl-blue-d)}
+/* 站內統計：上半在假裝這個板還活著（紅色粗體的數字），下半說它沒有（灰的）。
+   同一格裡的這個落差，比站尾那行「最後發表」更有效。 */
+.side .stat{padding:6px 11px;font-size:14px;line-height:1.95;color:#2E3A44}
+.side .stat b{color:#C02020;font-weight:700;font-size:15px;font-family:Arial,sans-serif}
+.side .stat .zero{color:#8A949D}
+.side .more{text-align:right;padding:0 10px 6px;font-size:13px}
+.side .more button{background:none;border:0;color:var(--wl-link);font:inherit;padding:0;
+  cursor:pointer}
+.side .more button:hover{color:var(--wl-link-h);text-decoration:underline}
+.side .faces{display:grid;grid-template-columns:1fr 1fr;gap:4px 8px;padding:7px 10px;
+  font-size:14px;color:#2E3A44}
+.side .faces span{display:flex;align-items:center;gap:6px}
+.side .faces svg{width:18px;height:18px;flex:none}
+.side .faces em{font-style:normal;font-family:Arial,sans-serif;font-size:12px;color:#7A858F;
+  width:26px;flex:none}
+/* 友站連結：死掉的不只是這個板，是它所在的那一整片網路 */
+.side .links{padding:6px 11px;font-size:14px;line-height:1.9;color:#2E3A44}
+.side .links div{display:flex;align-items:baseline;gap:6px}
+.side .links .dead{color:#9AA4AD;text-decoration:line-through}
+.side .links .x{font-size:12px;color:#9AA4AD;margin-left:auto;white-space:nowrap}
+
+/* ---------- 站尾 ---------- */
+/* 這個板從 2016 年底就沒有人再上來過，計數器那串數字本身就是「沒有人來過」的證據；
+   「最後發表」是動態算出來的——玩家看到的永遠是板上真的最新那一天。 */
+.wl-foot{margin-top:5px;padding:6px 10px;background:#DCE4EB;border:1px solid var(--wl-edge);
+  display:flex;flex-wrap:wrap;gap:3px 16px;align-items:center;font-size:13px;color:#4C5A66}
+.wl-foot .led{margin-left:6px;padding:1px 5px;background:#111;color:#6BE06B;border:1px solid #444;
+  font-family:"Courier New",monospace;letter-spacing:.2em;font-size:12px}
+.wl-foot .pw{width:100%;color:#7A858F;font-size:12px;border-top:1px solid #C3CDD5;padding-top:4px}
+
+/* ---------- 討論串 ---------- */
+.wl-sub{background:var(--wl-hdr);border:1px solid var(--wl-edge);border-top:0;
+  padding:3px 10px;font-size:13px;color:var(--wl-hdr-ink)}
+.wl-body{background:#fff;border:1px solid var(--wl-edge);border-top:0;padding:8px 10px}
+.wl-title{font-size:17px;font-weight:700;color:var(--wl-blue-d);margin-bottom:2px}
+.wl-meta{font-size:13px;color:#7A858F;margin-bottom:7px;
+  border-bottom:1px solid var(--wl-grid);padding-bottom:5px}
+/* 每一樓都是一個有框的格子，左邊一欄是身分——那年代的論壇都長這樣 */
+.rp{display:flex;border:1px solid var(--wl-grid);border-top:0;background:#fff}
+.rp:first-of-type{border-top:1px solid var(--wl-grid)}
+.rp .f{width:44px;flex:none;padding:6px 4px;text-align:center;background:#EAF1F7;
+  border-right:1px solid var(--wl-grid);font-family:Arial,sans-serif;font-size:12px;color:#6E7A85}
+.rp .u{width:96px;flex:none;padding:6px 8px;background:#EAF1F7;
+  border-right:1px solid var(--wl-grid);font-size:13px;line-height:1.5}
+.rp .u .nm{display:block;color:var(--wl-blue-d);font-weight:700}
+.rp .u .uid{display:block;font-size:11px;color:#8A949D;font-family:Arial,sans-serif}
+.rp .c{flex:1;min-width:0;padding:6px 10px;font-size:15px;line-height:1.85;
+  white-space:pre-wrap;word-break:break-word}
+.rp .t{width:74px;flex:none;padding:6px 6px;text-align:right;font-size:11.5px;color:#9AA4AD;
+  font-family:Arial,sans-serif;white-space:nowrap}
+.rp.del .c{color:#9AA4AD;font-size:13px}
+.rp.mine .u{background:#DDE9F3}
+.rp.mine .u .nm .me{font-weight:400;font-size:11px;color:var(--wl-blue)}
+.rp.restored{background:#FDFBEC}
+.rp.restored .u{background:#F5EEDA}
+.rp.restored .u::after{content:'已還原';display:block;font-size:11px;color:var(--warm)}
+.rp .rlog{margin-top:4px;font-size:12px;color:var(--warm);font-family:Arial,sans-serif}
+/* 版面上的沉默行：不佔樓層編號 */
+.silence{text-align:center;font-size:13px;color:#9AA4AD;padding:7px 0;letter-spacing:.12em;
+  border:1px solid var(--wl-grid);border-top:0;background:#F5F7F9}
+/* 板主鎖定的串：內容一直都在資料裡，沒有板務權限就是讀不到 */
+.wl-lock{padding:30px 10px;text-align:center;font-size:14px;color:var(--ink-soft);
+  line-height:2;white-space:pre-wrap;border:1px dashed var(--wl-grid);margin:8px 0;
+  background:#F5F7F9}
+
+/* ---------- 搜尋結果 ---------- */
+.sr-sum{margin:0 0 5px;padding:4px 8px;background:var(--wl-hdr);
+  border:1px solid var(--wl-grid);font-size:13px;color:var(--wl-hdr-ink)}
+.sr-row{display:block;width:100%;text-align:left;background:#fff;cursor:pointer;
+  border:1px solid var(--wl-grid);border-top:0;padding:6px 9px;font-size:14px;font-family:inherit}
+.sr-row:first-of-type{border-top:1px solid var(--wl-grid)}
+.sr-row:hover{background:#E3EEF8}
+.sr-row .t{color:var(--wl-link);font-weight:700}
+.sr-row:hover .t{color:var(--wl-link-h)}
+.sr-row .lk{margin-right:5px;font-size:12px;font-weight:400}
+.sr-row .m{font-size:12px;color:#8A949D;margin-top:1px;font-family:Arial,sans-serif}
+/* 命中的那幾行：樓層、誰講的、一段上下文、時間——跟討論串同一個骨架 */
+.sr-row .q{display:flex;gap:8px;margin-top:4px;padding:2px 0 2px 8px;
+  border-left:3px solid var(--wl-hdr);font-size:13px;color:var(--ink-soft);line-height:1.7}
+.sr-row .q .f{flex:none;width:28px;font-family:Arial,sans-serif;font-size:11px;color:#9AA4AD}
+.sr-row .q .u{flex:none;width:34px;font-size:12px;color:#9AA4AD}
+.sr-row .q .c{flex:1;min-width:0;font-size:14px;color:var(--ink);
+  overflow:hidden;text-overflow:ellipsis}
+.sr-row .q .c b,.sr-row .q .u.by{background:#FFF2A8;padding:0 1px}
+.sr-row .q .u.by{color:var(--ink);font-weight:700}
+.sr-row .q .t{flex:none;font-size:11px;color:#B4BBC1;font-family:Arial,sans-serif;
+  white-space:nowrap;font-weight:400}
+.sr-row .q.more,.sr-row .q.lk{color:#9AA4AD;font-size:12px;font-style:italic}
+/* 0 筆：這個機制最重的一招，所以版面刻意留白，只印那一行跟一排建議詞 */
+.sr-nil{padding:24px 10px 28px;text-align:center;font-size:14px;color:var(--ink-soft);
+  line-height:2;border:1px solid var(--wl-grid);background:#fff}
+.sr-nil .tip{margin-top:10px;font-size:13px;color:#8A949D}
+.sr-nil .tip button{background:none;border:0;color:var(--wl-link);font:inherit;
+  text-decoration:underline;cursor:pointer;padding:0 2px}
 
 /* ===== Yahoo 信箱 ===== */
 .vp-yahoo{background:#fff;padding:0}
@@ -321,13 +473,11 @@ button{font-family:inherit;cursor:pointer}
 .yh-top .acct{margin-left:auto;font-size:11px;opacity:.85}
 .yh-bar{background:#F1E4F7;border-bottom:1px solid #D9BEE6;padding:5px 14px;
   font-size:11px;color:#5C3A6B}
-.yh-wrap{display:flex;min-height:60vh}
+.yh-wrap{display:flex;min-height:420px}
 .yh-side{width:150px;flex:none;background:#FAF4FC;border-right:1px solid #E4D2EC;padding:10px 0}
 .yh-side .f{padding:5px 14px;font-size:12px;color:#4A2B57}
 .yh-side .f.on{background:#E9D4F2;font-weight:600}
 .yh-main{flex:1;min-width:0;padding:14px 18px}
-@media(max-width:700px){.yh-wrap{display:block}.yh-side{width:auto;display:flex;flex-wrap:wrap;
-  border-right:0;border-bottom:1px solid #E4D2EC}}
 .yh-subj{font-size:17px;color:#2B1533;margin-bottom:10px}
 .mhead{font-size:12px;line-height:1.95;border-top:1px solid #E4D2EC;border-bottom:1px solid #E4D2EC;
   padding:9px 0;margin-bottom:14px;color:#4A3A52}
@@ -471,9 +621,10 @@ button{font-family:inherit;cursor:pointer}
 .vp-yahoo .sysbox .brandline{color:#7B0099}
 .vp-yahoo .sysbox .box{border-top:3px solid #7B0099}
 
-/* ===== 頁面欄寬 ===== */
-.cols{max-width:640px;margin:0 auto}
-.main{width:100%}
+/* ===== 頁面欄寬 =====
+   .cols／.main 的版面規則現在寫在「五樓」那一段裡（主欄 + 側欄的兩欄）。
+   即時通存檔也借用同一組外框，但它沒有 .side 子元素，.main 自己就撐滿，
+   裡面的 .ar 再用自己的 max-width 收住——那是一個 .htm 檔，本來就靠左。 */
 
 /* ===== 我的最愛 ===== */
 .vp-notes{background:#EDEFF1;padding:0}
@@ -514,7 +665,7 @@ button{font-family:inherit;cursor:pointer}
 
 /* ===== 過場旁白 ===== */
 .vp-said{background:#1C1F23;padding:0}
-.said{max-width:520px;margin:0 auto;padding:20vh 24px 30vh;text-align:center;
+.said{max-width:520px;margin:0 auto;padding:22% 24px 30%;text-align:center;
   font-family:"MingLiU","SimSun",serif;font-size:16px;line-height:2.3;color:#D6DBE0}
 .said p{margin:0 0 34px;white-space:pre-wrap;opacity:0;animation:fin 1.2s ease forwards}
 .said .btn{background:none;border:1px solid #4A5560;color:#9AA4AD;padding:7px 26px;
@@ -524,7 +675,7 @@ button{font-family:inherit;cursor:pointer}
 
 /* ===== 終幕 ===== */
 .vp-end{background:#1C1F23;padding:0}
-.end{max-width:520px;margin:0 auto;padding:16vh 24px 20vh;
+.end{max-width:520px;margin:0 auto;padding:17% 24px 22%;
   font-family:"MingLiU","SimSun",serif;font-size:16px;line-height:2.4;color:#D6DBE0}
 .end p{margin:0 0 26px;opacity:0;animation:fin 1.4s ease forwards}
 .end p:nth-child(2){animation-delay:1.6s}
@@ -537,12 +688,12 @@ button{font-family:inherit;cursor:pointer}
 @media (prefers-reduced-motion:reduce){.end p{opacity:1;animation:none}}
 
 /* ===== 除錯面板：只在網址帶 #dev 時才存在，正常玩的人看不到也碰不到 ===== */
-#dev{position:fixed;left:0;bottom:0;z-index:60;font-size:12px}
+#dev{position:absolute;left:0;bottom:0;z-index:80;font-size:12px}
 #devTab{background:#1C1F23;color:#7FD4A8;border:0;border-radius:0 6px 0 0;
   padding:8px 12px;font:600 11px/1 ui-monospace,monospace;letter-spacing:.1em;opacity:.55}
 #devTab:hover,#devTab.on{opacity:1}
 #devPanel{background:#12151A;color:#D7DEE5;border-radius:0 8px 0 0;padding:12px;
-  max-width:min(94vw,380px);max-height:76vh;overflow-y:auto;
+  max-width:380px;max-height:620px;overflow-y:auto;
   box-shadow:0 -2px 18px rgba(0,0,0,.5)}
 #devPanel h4{margin:0 0 6px;font-size:11px;color:#7FD4A8;letter-spacing:.12em;font-weight:600}
 #devPanel .st{color:#8A949E;font:11px/1.7 ui-monospace,monospace;margin-bottom:10px;
@@ -554,79 +705,21 @@ button{font-family:inherit;cursor:pointer}
 #devPanel button.j.doc{font-size:11px;padding:7px 9px;min-height:32px;color:#A8B3BE}
 #devPanel label.sw{display:flex;align-items:center;gap:7px;color:#A8B3BE;margin-bottom:10px}
 
-/* ===== 手機／窄螢幕 =====
-   固定寬的樓層欄（52px）＋暱稱欄（100px）＋時間欄（78px）在手機上會把內文擠成
-   一行三、四個字。窄螢幕改成上下兩段：樓層／暱稱／時間縮成一條標頭，內文自己佔一整行。 */
-@media(max-width:600px){
-  .viewport{padding:10px 6px 34px}
-  .tabstrip{padding:5px 4px 0}
-  .tab{min-width:0;max-width:46vw;padding:6px 8px 7px;font-size:11px;gap:5px}
-  .omni{padding:6px 7px;gap:6px}
-
-  /* 手機上茶水間就是一支滿版的 App，不是角落的小視窗 */
-  #chatapp,#chatapp.solo{left:0;right:0;top:0;bottom:0;width:auto;height:auto;
-    transform:none;border:0;border-radius:0;box-shadow:none}
-  .pl-row{max-width:84%}
-  .pl-bub{font-size:14.5px;padding:9px 13px}
-  .pl-name{font-size:11.5px}
-  .pl-sys{font-size:11.5px}
-  .pl-link{font-size:13px}
-  .pl-link .tt{font-size:13.5px}
-  .pl-in{font-size:13px}
-  .toast{left:10px;right:10px;width:auto}
-
-  .wl-hd{padding:7px 10px;gap:4px 10px}
-  .wl-hd .me{margin-left:0;width:100%}
-  .wl-sub{padding:4px 10px}
-  .wl-body{padding:12px 10px}
-  /* 板首頁那一行是 white-space:pre，之後補新串時萬一更長，寧可切掉也不要把整頁撐寬 */
-  .idx-row .m{overflow:hidden;text-overflow:ellipsis}
-
-  .rp{display:grid;grid-template-columns:auto minmax(0,1fr) auto;
-    grid-template-areas:"f u t" "c c c";gap:0 8px;padding:9px 0 10px 8px}
-  .rp .f{grid-area:f;width:auto;padding-left:0;line-height:1.6}
-  .rp .u{grid-area:u;width:auto;padding-top:0;line-height:1.6;
-    display:flex;align-items:baseline;flex-wrap:wrap;gap:0 6px}
-  .rp .u .nm,.rp .u .uid{display:inline}
-  .rp .t{grid-area:t;width:auto;padding-top:0;line-height:1.6}
-  .rp .c{grid-area:c;font-size:15px;line-height:1.95;margin-top:4px}
-  .rp.del .c{font-size:13px}
-  .rp.restored .u::after{content:'已還原'}
-
-  /* 板首頁那行「最後回覆…」是等寬對齊排的，窄螢幕讓它折行而不是撐破版面 */
-  .idx-row .m{white-space:pre-wrap;word-break:break-word}
-
-  .ar{padding:14px 12px}
-  .ar .foot{word-break:break-all}
-  .yh-main{padding:12px 12px}
-  .yh-list .fr{width:74px}
-  .yh-list .dt{width:66px}
-  .mhead b{width:44px}
-  .sc{padding:16px 10px 40px}
-  .sc .ph{padding:16px 14px 20px;font-size:12px}
-  .sc .ph.hand{font-size:15.5px}
-  .pl-pick .pk-o{font-size:14px}
-  .bl{padding:20px 14px 44px}
-  .nt{padding:20px 14px 44px}
-  .said{padding:16vh 18px 22vh}
-  .end{padding:12vh 18px 16vh}
-  .ad .in{padding:14px 12px}
-}
-
-/* ===== 手機上點輸入框不要把整頁放大 =====
-   iOS Safari 只要輸入框的字級小於 16px，一點進去就自動把頁面放大，而且打完字
-   離開輸入框也不會縮回來——版面的左右邊緣就這樣被切掉。所有打得了字的欄位
-   （登入頁的帳號密碼、信箱／板務後台的表單、搜尋列）在觸控裝置上一律補到
-   16px，放大就不會被觸發；桌機維持原本的字級。 */
-@media(pointer:coarse){
-  .loginbox input,.form input,.se input,.wl-search input{font-size:16px}
-}
+/* 註：這個遊戲只給電腦玩，所以沒有手機版的分支。
+   原本的 @media(max-width:600px)／@media(pointer:coarse) 已經整組拿掉——
+   版面現在鎖在 #desk 那個 4:3 的方框裡，寬度不會再變動。
+   剩下的 @media 只有 prefers-reduced-motion，那是無障礙，不是手機。 */
 </style>
 </head>
 <body>
 
+<!-- #desk：整場戲的舞台，一個 4:3 的方框。瀏覽器、登入頁、茶水間、推播橫幅
+     全部定位在它裡面，所以茶水間看起來會像是同一張桌面上的另一支程式。 -->
+<div id="desk">
+
 <!-- 茶水間：整場遊戲從頭到尾都是同一支 App、同一份訊息列。
-     登入前佔滿畫面，登入後浮在假瀏覽器上面，收起來就變成右下角那顆浮球。 -->
+     登入前置中成一支手機，登入後停在右下角浮在假瀏覽器上面，
+     收起來就變成右下角那顆浮球。 -->
 <div id="chatapp" class="on solo">
   <div class="ca-top">
     <button class="ca-back" id="caBack" title="收起茶水間">‹</button>
@@ -639,7 +732,7 @@ button{font-family:inherit;cursor:pointer}
 <button id="chatdock" hidden aria-label="茶水間"></button>
 <div class="toast" id="toast" hidden></div>
 
-<div id="login">
+<div id="login"><div class="inner">
   <div class="brand">五樓</div>
   <div class="brand-sub">EST. 2015</div>
   <div class="loginbox">
@@ -656,22 +749,31 @@ button{font-family:inherit;cursor:pointer}
     <div class="loginerr" id="lerr"></div>
   </div>
   <div class="footnote">本板不開放註冊　│　目前 6 個帳號<br>上次登入：3618 天前</div>
-</div>
+</div></div>
 
 <div id="dev" hidden><button id="devTab">DEV</button><div id="devPanel" hidden></div></div>
 
+<!-- 她 2026 年的 Chrome。分頁列右邊那三顆 Windows 視窗鈕是死的：
+     這扇窗關不掉，遊戲也沒有「離開」這個選項。 -->
 <div id="browser">
-  <div class="tabstrip" id="tabstrip"></div>
+  <div class="tabstrip">
+    <span id="tabstrip"></span>
+    <span class="sp"></span>
+    <span class="wctl"><span>—</span><span>▢</span><span>✕</span></span>
+  </div>
   <div class="omni">
-    <span class="navb">
-      <button id="navBack">◀</button>
-      <button id="navFwd" disabled>▶</button>
-      <button id="navRel">⟳</button>
-    </span>
+    <button class="ib" id="navBack" title="上一頁"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <button class="ib" id="navFwd" disabled title="下一頁"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
+    <button class="ib" id="navRel" title="重新整理"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-.6 4"/><path d="M20 4.5V11h-6"/></svg></button>
     <span class="url" id="omniUrl"></span>
+    <button class="ib" title="擴充功能"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M10 4a2 2 0 1 1 4 0v1h3.5a.5.5 0 0 1 .5.5V9h1a2 2 0 1 1 0 4h-1v3.5a.5.5 0 0 1-.5.5H14v-1a2 2 0 1 0-4 0v1H6.5a.5.5 0 0 1-.5-.5V13H5a2 2 0 1 1 0-4h1V5.5a.5.5 0 0 1 .5-.5H10z"/></svg></button>
+    <span class="av" title="陳思妤">思</span>
+    <button class="ib" title="更多"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button>
   </div>
   <div class="viewport" id="viewport"></div>
 </div>
+
+</div><!-- /#desk -->
 
 <script>
 "use strict";
@@ -1851,33 +1953,33 @@ const AFTER={
 
 /* ================= 站台 ================= */
 const SITE={
- board_index:{tab:'五樓',             url:'http://wulou.5gbfree.com/board.php', fav:'#4A6D8C'},
+ board_index:{tab:'五樓',             url:'http://wulou.5gbfree.com/board.php', fav:'#2E5F8F'},
  /* 搜尋結果頁的分頁標題與網址跟著關鍵字走，所以這兩個欄位是 getter，
     每次畫分頁列的時候才去讀 boardQuery（它比這張表晚宣告，但只在 render 時取值）。 */
- board_search:{fav:'#4A6D8C',
+ board_search:{fav:'#2E5F8F',
    get tab(){ return boardQuery?'五樓 － 搜尋：'+boardQuery:'五樓 － 搜尋'; },
    get url(){ return 'http://wulou.5gbfree.com/search.php'+(boardQuery?'?q='+boardQuery:''); }},
  notes   :{tab:'我的最愛',            url:'about:favorites', fav:'#C9A227'},
- t_new   :{tab:'五樓 － 新來的那個',  url:'http://wulou.5gbfree.com/board.php?t=0918', fav:'#4A6D8C'},
- t_prank :{tab:'五樓 － 欣怡生日',    url:'http://wulou.5gbfree.com/board.php?t=0612', fav:'#4A6D8C'},
- t_sort  :{tab:'五樓 － 整理',        url:'http://wulou.5gbfree.com/board.php?t=0928', fav:'#4A6D8C'},
- t_stop  :{tab:'五樓 － 收手',        url:'http://wulou.5gbfree.com/board.php?t=1116', fav:'#4A6D8C'},
- t_after :{tab:'五樓 － 那天之後',    url:'http://wulou.5gbfree.com/board.php?t=1128', fav:'#4A6D8C'},
- t_rules :{tab:'五樓 － 板規',        url:'http://wulou.5gbfree.com/board.php?t=0413', fav:'#4A6D8C'},
- t_reunion:{tab:'五樓 － 又到了',     url:'http://wulou.5gbfree.com/board.php?t=1127', fav:'#4A6D8C'},
- t_ny    :{tab:'五樓 － 新年快樂',    url:'http://wulou.5gbfree.com/board.php?t=1231', fav:'#4A6D8C'},
- t_dinner:{tab:'五樓 － 有人要一起吃飯嗎',url:'http://wulou.5gbfree.com/board.php?t=0801', fav:'#4A6D8C'},
- t_ramen :{tab:'五樓 － 那間拉麵有夠雷',url:'http://wulou.5gbfree.com/board.php?t=0107', fav:'#4A6D8C'},
- t_parking:{tab:'五樓 － 附近停車怎麼那麼難停',url:'http://wulou.5gbfree.com/board.php?t=0516', fav:'#4A6D8C'},
- t_meeting:{tab:'五樓 － 這個月開會改到禮拜三',url:'http://wulou.5gbfree.com/board.php?t=0301', fav:'#4A6D8C'},
- t_tax   :{tab:'五樓 － 報稅是不是這個月',url:'http://wulou.5gbfree.com/board.php?t=0506', fav:'#4A6D8C'},
- t_copier:{tab:'五樓 － 三樓影印機又卡紙',url:'http://wulou.5gbfree.com/board.php?t=0526', fav:'#4A6D8C'},
- t_heat  :{tab:'五樓 － 熱到不想動',  url:'http://wulou.5gbfree.com/board.php?t=0713', fav:'#4A6D8C'},
- t_typhoon:{tab:'五樓 － 明天到底放不放',url:'http://wulou.5gbfree.com/board.php?t=0807', fav:'#4A6D8C'},
- t_quit  :{tab:'五樓 － 聽說業務那邊有人要走',url:'http://wulou.5gbfree.com/board.php?t=0903', fav:'#4A6D8C'},
- t_ot    :{tab:'五樓 － 每天都快十點',url:'http://wulou.5gbfree.com/board.php?t=1007', fav:'#4A6D8C'},
- t_boss  :{tab:'五樓 － 老闆今天臉超臭',url:'http://wulou.5gbfree.com/board.php?t=1029', fav:'#4A6D8C'},
- t_yearend:{tab:'五樓 － 尾牙的表演每年都要嗎',url:'http://wulou.5gbfree.com/board.php?t=1113', fav:'#4A6D8C'},
+ t_new   :{tab:'五樓 － 新來的那個',  url:'http://wulou.5gbfree.com/board.php?t=0918', fav:'#2E5F8F'},
+ t_prank :{tab:'五樓 － 欣怡生日',    url:'http://wulou.5gbfree.com/board.php?t=0612', fav:'#2E5F8F'},
+ t_sort  :{tab:'五樓 － 整理',        url:'http://wulou.5gbfree.com/board.php?t=0928', fav:'#2E5F8F'},
+ t_stop  :{tab:'五樓 － 收手',        url:'http://wulou.5gbfree.com/board.php?t=1116', fav:'#2E5F8F'},
+ t_after :{tab:'五樓 － 那天之後',    url:'http://wulou.5gbfree.com/board.php?t=1128', fav:'#2E5F8F'},
+ t_rules :{tab:'五樓 － 板規',        url:'http://wulou.5gbfree.com/board.php?t=0413', fav:'#2E5F8F'},
+ t_reunion:{tab:'五樓 － 又到了',     url:'http://wulou.5gbfree.com/board.php?t=1127', fav:'#2E5F8F'},
+ t_ny    :{tab:'五樓 － 新年快樂',    url:'http://wulou.5gbfree.com/board.php?t=1231', fav:'#2E5F8F'},
+ t_dinner:{tab:'五樓 － 有人要一起吃飯嗎',url:'http://wulou.5gbfree.com/board.php?t=0801', fav:'#2E5F8F'},
+ t_ramen :{tab:'五樓 － 那間拉麵有夠雷',url:'http://wulou.5gbfree.com/board.php?t=0107', fav:'#2E5F8F'},
+ t_parking:{tab:'五樓 － 附近停車怎麼那麼難停',url:'http://wulou.5gbfree.com/board.php?t=0516', fav:'#2E5F8F'},
+ t_meeting:{tab:'五樓 － 這個月開會改到禮拜三',url:'http://wulou.5gbfree.com/board.php?t=0301', fav:'#2E5F8F'},
+ t_tax   :{tab:'五樓 － 報稅是不是這個月',url:'http://wulou.5gbfree.com/board.php?t=0506', fav:'#2E5F8F'},
+ t_copier:{tab:'五樓 － 三樓影印機又卡紙',url:'http://wulou.5gbfree.com/board.php?t=0526', fav:'#2E5F8F'},
+ t_heat  :{tab:'五樓 － 熱到不想動',  url:'http://wulou.5gbfree.com/board.php?t=0713', fav:'#2E5F8F'},
+ t_typhoon:{tab:'五樓 － 明天到底放不放',url:'http://wulou.5gbfree.com/board.php?t=0807', fav:'#2E5F8F'},
+ t_quit  :{tab:'五樓 － 聽說業務那邊有人要走',url:'http://wulou.5gbfree.com/board.php?t=0903', fav:'#2E5F8F'},
+ t_ot    :{tab:'五樓 － 每天都快十點',url:'http://wulou.5gbfree.com/board.php?t=1007', fav:'#2E5F8F'},
+ t_boss  :{tab:'五樓 － 老闆今天臉超臭',url:'http://wulou.5gbfree.com/board.php?t=1029', fav:'#2E5F8F'},
+ t_yearend:{tab:'五樓 － 尾牙的表演每年都要嗎',url:'http://wulou.5gbfree.com/board.php?t=1113', fav:'#2E5F8F'},
  a_im    :{tab:'2015-10.htm',         url:'file:///C:/Program Files/Yahoo!/Messenger/Profiles/tsche0710/Archive/2015-10.htm', fav:'#9A9A9A'},
  m_box   :{tab:'Yahoo!奇摩電子信箱',  url:'https://tw.mail.yahoo.com/mail/', fav:'#7B0099'},
  blog    :{tab:'一個人的公休日',      url:'http://ytl-holiday.blogspot.com/', fav:'#8A8272'},
@@ -2265,9 +2367,18 @@ function renderChrome(){
     strip.appendChild(el);
   });
   const u=(SITE[active]||{}).url||'';
-  const sec=u.indexOf('https')===0?'https://':u.indexOf('file')===0?'file:///':'http://';
-  document.getElementById('omniUrl').innerHTML=
-    `<span class="sec">${esc(sec)}</span>${esc(u.replace(/^(https?:\/\/|file:\/\/\/)/,''))}`;
+  const https=u.indexOf('https')===0, file=u.indexOf('file')===0;
+  const sec=https?'https://':file?'file:///':'http://';
+  /* 現在的 Chrome 會在 http:// 前面掛一個「不安全」。這個板、這個信箱、這個
+     部落格全都是 http——2026 年的瀏覽器對著 2015 年的免費空間，第一句話就是這個。
+     那不是裝飾，是十一年這件事被瀏覽器自己說出來。 */
+    const warn=(https||file)?''
+    :`<span class="unsafe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/>
+        <path d="M12 8v5M12 16.2v.1"/></svg>不安全</span>`;
+  document.getElementById('omniUrl').innerHTML=warn
+    +`<span class="u"><span class="sec">${esc(sec)}</span>`
+    +`${esc(u.replace(/^(https?:\/\/|file:\/\/\/)/,''))}</span>`;
   document.getElementById('navBack').disabled=!hist.length;
 }
 
@@ -2295,23 +2406,136 @@ function renderPage(){
   if(d.skin==='scan')    return renderScan(vp,d);
 }
 
-/* ---------- 五樓的頁首、頁首廣告與站尾 ---------- */
-/* 板上每一頁（首頁／討論串／鎖定頁／搜尋結果）共用同一條頁首。
-   「精華區」十一年來一直是一個點不下去的字——那種免費空間的板大多沒人整理過精華區。 */
-function wlHead(){
-  return `<div class="wl-hd"><span class="lg">五樓</span>
-      <span class="nv"><button data-home>主板</button>　│　<button data-search>搜尋</button>　│　精華區　│　<button data-rules>板規</button></span>
-      <span class="me">${esc(ME.name)}（${esc(ME.uid)}）</span></div>`;
+/* ---------- 五樓的頁首、側欄與站尾 ---------- */
+/* 板上每一頁（首頁／討論串／鎖定頁／搜尋結果）共用同一組家具：
+   站頭、導覽列、公告條、右邊那條側欄。一個 2005 年的論壇就是這樣塞滿的——
+   而且讀她那幾樓的時候右邊還掛著「表情圖示說明」，那份鈍感正是這個板的樣子。 */
+
+/* 板上最後一篇的日期。站尾與側欄的統計都走這支，兩邊永遠不會互相矛盾。 */
+function wlLast(){
+  const ts=String(boardRows().reduce((m,r)=>Math.max(m,r.x.ts),0));
+  return ts.length>=8?`${ts.slice(0,4)}/${ts.slice(4,6)}/${ts.slice(6,8)}`:'—';
 }
+
+/* 資料夾小圖：舊論壇的每一列前面都有一顆。鎖住的串換成灰色的那顆。 */
+const wlFold=(dim)=>`<svg class="wl-fold" viewBox="0 0 17 14" aria-hidden="true">
+  <path d="M1 2.5h5l1.4 1.6H16v9H1z" fill="${dim?'#C9D3DA':'#F2CF72'}" stroke="${dim?'#6E7A85':'#8A6A10'}"/>
+  <path d="M1 4.6h15v8.4H1z" fill="${dim?'#E4EAEE':'#FFE9A8'}" stroke="${dim?'#6E7A85':'#8A6A10'}"/></svg>`;
+
+/* 站頭：標楷體的招牌、一顆房子、右邊一排淡淡的樓影。
+   免費空間論壇的 banner 幾乎都會放一張這種城市剪影，那是那個年代的標配。
+   房子只有兩扇窗是亮的——五樓那層早就沒人了。
+   招牌旁邊刻意沒有副標、右上角刻意沒有標語：那種板子本來就不會替自己寫文案，
+   而空著的地方比任何一句「熟悉的地方」都更像沒有人在管它。 */
+function wlMast(){
+  const bldg=[[6,24,28,30],[40,12,22,42],[68,30,30,24],[104,5,24,49],[134,27,18,27],
+              [158,17,29,37],[193,33,22,21],[221,9,26,45],[253,25,20,29],[279,16,31,38],
+              [316,31,26,23]].map(b=>`<rect x="${b[0]}" y="${b[1]}" width="${b[2]}" height="${b[3]}"/>`).join('');
+  const win=[[11,29],[20,29],[11,39],[20,39],[45,18],[53,18],[45,29],[53,29],[109,11],[118,11],
+             [109,22],[118,22],[164,23],[175,23],[226,15],[236,15],[226,26],[236,26],
+             [284,22],[295,22]].map(w=>`<rect x="${w[0]}" y="${w[1]}" width="4" height="5"/>`).join('');
+  return `<div class="wl-mast">
+    <svg class="sky" viewBox="0 0 340 54" preserveAspectRatio="none" aria-hidden="true">
+      <g fill="#2E5F8F">${bldg}</g><g fill="#FBFAF0">${win}</g></svg>
+    <div class="logo"><svg viewBox="0 0 58 50" width="54" height="47" aria-hidden="true">
+      <rect x="5" y="20" width="48" height="28" fill="#F0E8CC" stroke="#8A7A4A" stroke-width="1.4"/>
+      <path d="M1 22 29 4 57 22z" fill="#C0563F" stroke="#8A3A28" stroke-width="1.4"/>
+      <rect x="12" y="27" width="9" height="9" fill="#6FA8D8" stroke="#2E5F8F" stroke-width="1.2"/>
+      <rect x="25" y="27" width="9" height="9" fill="#6FA8D8" stroke="#2E5F8F" stroke-width="1.2"/>
+      <rect x="38" y="27" width="9" height="9" fill="#CBD6DE" stroke="#2E5F8F" stroke-width="1.2"/>
+      <rect x="12" y="40" width="9" height="8" fill="#3D4A52" stroke="#222A30" stroke-width="1.2"/>
+      <rect x="25" y="40" width="9" height="8" fill="#CBD6DE" stroke="#2E5F8F" stroke-width="1.2"/>
+    </svg></div>
+    <div class="nm"><h1>五樓</h1></div>
+  </div>`;
+}
+
+/* 導覽列＋公告條。「精華區」十一年來一直是一個點不下去的字——
+   那種免費空間的板大多沒人整理過精華區。
+   公告條那句是 2015 年就掛在那裡的舊公告，不是「本板已停止更新」那種關站宣告：
+   這個板沒有被誰關掉，是沒有人再上來了。一則還在對著空板廣播板規的公告，
+   比一句「已停止更新」冷得多——後者會替那片沉默補上一個根本不存在的決定，
+   也會把板主昱庭寫成「關掉這個板的人」。 */
+function wlHead(){
+  return wlMast()+`<div class="wl-hd">
+      <button data-home>論壇首頁</button><span class="sep">　│　</span>
+      <button data-search>搜尋文章</button><span class="sep">　│　</span>
+      <span>精華區</span><span class="sep">　│　</span>
+      <button data-rules>板規</button>
+      <span class="me">目前身分：${esc(ME.name)}（${esc(ME.uid)}）</span>
+    </div>
+    <div class="wl-notice">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 8v4h3l6 4V4L6 8H3z" fill="#E0A930" stroke="#A3761A"/><path d="M14.5 7.5a4 4 0 0 1 0 5" fill="none" stroke="#A3761A" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <span><b>公告：</b>請勿張貼公司內部文件。發文前請先閱讀板規。</span>
+    </div>`;
+}
+
 /* 板內搜尋框：只長在首頁與搜尋結果頁上。
    刻意不放進討論串——讀〈整理〉她那幾頁的時候，畫面上不該多一個輸入框在閃。 */
 function wlSearchBox(){
   return `<form class="wl-search" id="wlSearch">
-    <span class="lb">站內搜尋</span>
-    <input id="wlQ" type="text" value="${esc(boardQuery)}" maxlength="24" autocomplete="off">
-    <button type="submit">送出</button>
+    <span class="lb">站內搜尋：</span>
+    <input class="wtxt" id="wlQ" type="text" value="${esc(boardQuery)}" maxlength="24" autocomplete="off">
+    <button class="wbtn" type="submit">送出</button>
   </form>`;
 }
+
+/* 側欄。四格都是那個年代論壇的標配家具，四格都在說同一件事：
+   這裡曾經有人。站內統計那格是其中最直接的一格——上半是紅色粗體的數字，
+   在假裝這個板還活著；下半全是灰的，說它沒有。 */
+function wlSide(){
+  const face=(id,body)=>`<span><svg viewBox="0 0 20 20" aria-hidden="true">
+    <circle cx="10" cy="10" r="9" fill="${id==='生氣'?'#E8836B':'#F2C94C'}"
+      stroke="${id==='生氣'?'#8A3A28':'#A3761A'}"/>${body}</svg>`;
+  const eye='<circle cx="7" cy="8" r="1.3" fill="#5A4400"/><circle cx="13" cy="8" r="1.3" fill="#5A4400"/>';
+  const smile='<path d="M6 12.5a4.4 4.4 0 0 0 8 0" fill="none" stroke="#5A4400" stroke-width="1.4" stroke-linecap="round"/>';
+  const faces=[
+    ['開心',':)',  eye+smile],
+    ['無奈',':|',  '<path d="M5.5 8h3M11.5 8h3" stroke="#5A4400" stroke-width="1.4" stroke-linecap="round"/><path d="M6.5 13.5h7" stroke="#5A4400" stroke-width="1.4" stroke-linecap="round"/>'],
+    ['大笑',':D',  '<path d="M5.5 7.5l3 1.6M14.5 7.5l-3 1.6" stroke="#5A4400" stroke-width="1.4" stroke-linecap="round"/><path d="M5 11.5h10a5 5 0 0 1-10 0z" fill="#5A4400"/>'],
+    ['眨眼',';)',  '<path d="M5.5 8.2h3" stroke="#5A4400" stroke-width="1.5" stroke-linecap="round"/><circle cx="13" cy="8" r="1.3" fill="#5A4400"/>'+smile],
+    ['難過',':(',  eye+'<path d="M6 14.5a4.4 4.4 0 0 1 8 0" fill="none" stroke="#5A4400" stroke-width="1.4" stroke-linecap="round"/>'],
+    ['生氣','&gt;_&lt;','<path d="M5.2 6.4l3.4 2M14.8 6.4l-3.4 2" stroke="#5A2A1E" stroke-width="1.5" stroke-linecap="round"/><circle cx="7" cy="9.4" r="1.2" fill="#5A2A1E"/><circle cx="13" cy="9.4" r="1.2" fill="#5A2A1E"/><path d="M6.5 14.4a4 4 0 0 1 7 0" fill="none" stroke="#5A2A1E" stroke-width="1.4" stroke-linecap="round"/>'],
+    ['驚訝',':O',  eye+'<ellipse cx="10" cy="13.4" rx="2.1" ry="2.6" fill="#5A4400"/>'],
+    ['大哭','Q_Q', eye+'<path d="M7 10.2v3.6M13 10.2v3.6" stroke="#6BA8D8" stroke-width="1.8" stroke-linecap="round"/><path d="M6.5 14.5a4.4 4.4 0 0 1 7 0" fill="none" stroke="#5A4400" stroke-width="1.4" stroke-linecap="round"/>']
+  ].map(f=>face(f[0],f[2])+`<em>${f[1]}</em>${f[0]}</span>`).join('');
+
+  return `<div class="side">
+    <div class="wl-panel"><h2>
+      <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="1.5" width="11" height="13" fill="#FBFAF0" stroke="#8A6A10"/><path d="M5 5h6M5 8h6M5 11h4" stroke="#8A6A10" stroke-width="1.1"/></svg>板規摘要</h2>
+      <ul><li>發文前請先看過板規。</li><li>這裡講的話不要帶出去。</li>
+        <li>請勿張貼公司內部文件。</li><li>帳號問題請洽板主。</li></ul>
+      <div class="more">» <button data-rules>閱讀完整板規</button></div>
+    </div>
+
+    <div class="wl-panel"><h2>
+      <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="9" width="3" height="5" fill="#6FA8D8" stroke="#2E5F8F"/><rect x="6.5" y="5" width="3" height="9" fill="#E0A930" stroke="#A3761A"/><rect x="11" y="2" width="3" height="12" fill="#C0563F" stroke="#8A3A28"/></svg>站內統計</h2>
+      <div class="stat">
+        討論主題：<b>${boardRows().length}</b> 篇<br>
+        會員總數：<b>${Object.keys(USERS).length}</b> 人<br>
+        今日文章：<span class="zero">0 篇</span><br>
+        線上會員：<span class="zero">1 人（您）</span><br>
+        最後發表：<span class="zero">${esc(wlLast())}</span>
+      </div>
+    </div>
+
+    <div class="wl-panel"><h2>
+      <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.4" fill="#F2C94C" stroke="#A3761A"/><circle cx="6" cy="6.6" r="1" fill="#5A4400"/><circle cx="10" cy="6.6" r="1" fill="#5A4400"/><path d="M5 9.6a3.2 3.2 0 0 0 6 0" fill="none" stroke="#5A4400" stroke-width="1.2" stroke-linecap="round"/></svg>表情圖示說明</h2>
+      <div class="faces">${faces}</div>
+    </div>
+
+    <div class="wl-panel"><h2>
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.4 9.6a2.8 2.8 0 0 1 0-4l1.8-1.8a2.8 2.8 0 0 1 4 4l-.9.9" fill="none" stroke="#6FA8D8" stroke-width="1.6" stroke-linecap="round"/><path d="M9.6 6.4a2.8 2.8 0 0 1 0 4l-1.8 1.8a2.8 2.8 0 0 1-4-4l.9-.9" fill="none" stroke="#6FA8D8" stroke-width="1.6" stroke-linecap="round"/></svg>友站連結</h2>
+      <div class="links">
+        <div><span class="dead">三樓　業務部</span><span class="x">連結失效</span></div>
+        <div><span class="dead">公司內部公告網</span><span class="x">連結失效</span></div>
+        <div><span class="dead">個人網誌</span><span class="x">連結失效</span></div>
+        <div><span class="dead">5GBfree 首頁</span><span class="x">連結失效</span></div>
+      </div>
+    </div>
+  </div>`;
+}
+
 /* wulou.5gbfree.com 是免費空間，免費空間一定會在頁首插一條自己的廣告。
    關得掉，但只在這次開著的期間有效——重整就回來，這也是真的。 */
 let adOpen=true;
@@ -2320,16 +2544,14 @@ function wlAd(){
     <span class="txt">5GBfree 免費網頁空間　註冊就送 5GB　馬上擁有自己的網站 ▸</span>
     <button class="x" id="adX" title="關閉">✕</button></div>`:'';
 }
-/* 站尾：訪客計數器、文章數、最後更新、Powered by。
+/* 站尾：訪客計數器、文章數、最後發表、Powered by。
    這個板從 2016 年底就沒有人再上來過，計數器那串數字本身就是「沒有人來過」的證據；
-   「最後更新」是動態算出來的——玩家看到的永遠是板上真的最新那一天。 */
+   「最後發表」是動態算出來的——玩家看到的永遠是板上真的最新那一天。
+   它跟側欄站內統計那一行走同一支 wlLast()，同一個值不會出現兩個名字。 */
 function wlFoot(){
-  const rows=boardRows();
-  const ts=String(rows.reduce((m,r)=>Math.max(m,r.x.ts),0));
-  const last=ts.length>=8?`${ts.slice(0,4)}/${ts.slice(4,6)}/${ts.slice(6,8)}`:'—';
   return `<div class="wl-foot">
     <div>本站訪客人次<span class="led">006418</span></div>
-    <div>五樓　│　文章 ${rows.length} 篇　│　最後更新 ${esc(last)}　│　板主 ytl_lin</div>
+    <div>五樓　│　文章 ${boardRows().length} 篇　│　最後發表 ${esc(wlLast())}　│　板主 ytl_lin</div>
     <div class="pw">Powered by MiniBBS 1.2　│　本站空間由 5GBfree 免費提供，頁首廣告為系統自動插入</div>
   </div>`;
 }
@@ -2440,14 +2662,12 @@ function renderBoardSearch(vp){
   vp.innerHTML=`<div class="cols"><div class="main">
     ${wlAd()}
     ${wlHead()}
-    <div class="wl-sub">主板　›　站內搜尋</div>
-    <div class="wl-body">
-      ${wlSearchBox()}
-      <div class="sr-sum">${sum}</div>
-      ${!q?'':res.length?res.map(row).join(''):nil}
-    </div>
+    <div class="wl-sub">論壇首頁　›　站內搜尋</div>
+    ${wlSearchBox()}
+    <div class="sr-sum">${sum}</div>
+    ${!q?'':res.length?res.map(row).join(''):nil}
     ${wlFoot()}
-  </div></div>`;
+  </div>${wlSide()}</div>`;
 
   vp.querySelectorAll('[data-idx]').forEach(b=>{ b.onclick=()=>openDoc(b.dataset.idx); });
   vp.querySelectorAll('[data-q]').forEach(b=>{ b.onclick=()=>goSearch(b.dataset.q); });
@@ -2460,14 +2680,20 @@ const PER_PAGE=10;       // 每頁篇數；置頂那串不算在內，每一頁�
 let boardPage=1;
 let boardQuery='';       // 站內搜尋現在的關鍵字（空字串＝還沒搜過）
 function renderBoardIndex(vp){
-  /* 手機上這一行只差幾個字就會擠出去，所以補白抓得剛好夠對齊就好（名字都是兩個字） */
-  const line=x=>`${x.f}　│　人氣 ${String(x.hits??0).padStart(4,' ')}　│　最後回覆 ${who(x.by).padEnd(4,'　')}│　${x.when}`;
-  const row=r=>r.deco
-    ?`<div class="idx-row deco"><div class="t">${esc(r.label)}</div>
-      <div class="m">${esc(line(r.x))}</div></div>`
-    :`<button class="idx-row${r.top?' top':''}${r.lock?' locked':''}${r.filler?' filler':seen.has(r.doc)?'':' new'}" data-idx="${r.doc}">
-      <div class="t">${r.lock?'<span class="lk">🔒</span>':''}${esc(r.label)}</div>
-      <div class="m">${esc(line(r.x))}</div></button>`;
+  /* 一列＝一串。舊論壇的列表是格子表：主題、樓層、人氣、最後回覆，每一格都有框。
+     「最後回覆」刻意排成上下兩行（日期／by 誰），那是那個年代表格的固定寫法。 */
+  const row=r=>{
+    const cls=r.deco?'deco':(r.top?'top ':'')+(r.filler?'filler':'');
+    const hit=r.deco?'':`<span class="nw">NEW</span>`;
+    const title=`${r.lock?'<span class="lk">🔒</span>':''}${esc(r.label)}`;
+    return `<tr class="${cls}">
+      <td>${wlFold(!!r.lock)}<button class="t"${r.deco?' disabled':` data-idx="${r.doc}"`}>${title}</button>`
+      +`${r.deco||r.filler||seen.has(r.doc)?'':hit}</td>
+      <td class="c num">${esc(String(r.x.f).replace(/F$/,''))}</td>
+      <td class="c num">${r.x.hits??0}</td>
+      <td><div class="last">${esc(r.x.when)}<br><span class="by">by ${esc(who(r.x.by))}</span></div></td>
+    </tr>`;
+  };
 
   const all=boardRows(), tops=all.filter(r=>r.top), rest=all.filter(r=>!r.top);
   const pages=Math.max(1,Math.ceil(rest.length/PER_PAGE));
@@ -2478,19 +2704,32 @@ function renderBoardIndex(vp){
   for(let i=1;i<=pages;i++)
     nums+=`<button class="p${i===boardPage?' on':''}" data-pg="${i}">${i}</button>`;
   const pager=`<div class="wl-pager">
-    <button data-pg="${boardPage-1}"${boardPage<=1?' disabled':''}>‹ 上一頁</button>
+    <button data-pg="${boardPage-1}"${boardPage<=1?' disabled':''}>‹‹ 上一頁</button>
     ${nums}
-    <button data-pg="${boardPage+1}"${boardPage>=pages?' disabled':''}>下一頁 ›</button>
+    <button data-pg="${boardPage+1}"${boardPage>=pages?' disabled':''}>下一頁 ››</button>
     <span class="tot">共 ${pages} 頁</span>
   </div>`;
 
   vp.innerHTML=`<div class="cols"><div class="main">
     ${wlAd()}
     ${wlHead()}
-    <div class="wl-sub">主板　│　板主 ytl_lin　│　依最後回覆排序</div>
-    <div class="wl-body idx-list">${rows}${pager}${wlSearchBox()}</div>
+    <div class="wl-panel">
+      <h2>${wlFold()}文章列表<span class="x">　│　板主 ytl_lin　│　依最後回覆排序</span></h2>
+      <table class="wl-tbl">
+        <thead><tr><th class="l">主　題</th>
+          <th style="width:58px">樓層</th><th style="width:58px">人氣</th>
+          <th style="width:132px">最後回覆</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+    <div class="wl-listbar">
+      <button class="wbtn" disabled>發表新文章</button>
+      <span class="why">本板目前為唯讀，無法發表文章。</span>
+    </div>
+    ${pager}
+    ${wlSearchBox()}
     ${wlFoot()}
-  </div></div>`;
+  </div>${wlSide()}</div>`;
 
   document.querySelectorAll('[data-idx]').forEach(b=>{
     b.onclick=()=>{ openDoc(b.dataset.idx); };
@@ -2514,12 +2753,13 @@ function renderThread(vp,d){
         <div class="wl-lock">${esc(d.lock)}</div>
       </div>
       ${wlFoot()}
-    </div></div>`;
+    </div>${wlSide()}</div>`;
     return;
   }
   const body=visPosts(d).map(({p,no})=>{
     if(p.silence) return `<div class="silence">${esc(p.silence)}</div>`;
     const label=p.del?'':no+'F';     // 樓層連續編號，不因隱藏樓層而跳號
+    /* 刪除樓沒有樓號——它不佔一層，但那一格的框還在，空著本身就是痕跡 */
     return `<div class="rp${p.del?' del':''}${p.u===ME.uid?' mine':''}${p.today?' today':''}${p.rid&&!p.del?' restored':''}">
       <div class="f">${esc(label)}</div>
       <div class="u">${p.u?`<span class="nm">${esc(who(p.u))}${p.u===ME.uid?'<span class="me">（你）</span>':''}</span>
@@ -2539,7 +2779,7 @@ function renderThread(vp,d){
       ${body}
     </div>
     ${wlFoot()}
-  </div></div>`;
+  </div>${wlSide()}</div>`;
 }
 
 /* ---------- 即時通 ---------- */
