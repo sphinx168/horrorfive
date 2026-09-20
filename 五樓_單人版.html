@@ -677,13 +677,12 @@ button{font-family:inherit;cursor:pointer}
 .vp-end{background:#1C1F23;padding:0}
 .end{max-width:520px;margin:0 auto;padding:17% 24px 22%;
   font-family:"MingLiU","SimSun",serif;font-size:16px;line-height:2.4;color:#D6DBE0}
+/* 每一段什麼時候淡進來，由 renderEnd() 逐段算出來寫在 style 上——
+   不能綁 :nth-child，因為第一段會隨 picks.final 從一段變成兩段 */
 .end p{margin:0 0 26px;opacity:0;animation:fin 1.4s ease forwards}
-.end p:nth-child(2){animation-delay:1.6s}
-.end p:nth-child(3){animation-delay:3.4s}
-.end p:nth-child(4){animation-delay:5.6s}
 .end .q{color:#fff;font-size:18px}
 .end .sig{font-size:11px;color:#6E7A85;font-family:"Courier New",monospace;
-  letter-spacing:.14em;margin-top:40px;animation-delay:7.4s}
+  letter-spacing:.14em;margin-top:40px}
 @keyframes fin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.end p{opacity:1;animation:none}}
 
@@ -3081,25 +3080,35 @@ function renderNotes(vp){
    最後一句是玩家自己挑的，所以第一段跟著那個選擇走。
    那句「我也想過要這樣做」不再是最後一頁才空降的關鍵事實——
    玩家在 `d_box` 那張手寫稿上已經讀過它，也讀過他劃掉的那幾行；
-   這裡只負責讓它沉下來。 */
+   這裡只負責讓它沉下來。
+
+   `g` 是每一段距離上一段幾秒。這組數字以前寫在 CSS 的 `.end p:nth-child(n)` 上，
+   而第一段會隨 `picks.final` 從一段變成兩段——段數一多，後面每一段都往後錯一格，
+   最後那句「沒有人記得這句」剛好掉出規則外變成 delay 0，跟開頭第一句同時亮起來，
+   比它在講的那句早三秒半。（唯一看起來正常的情況是 #dev 面板直接跳終幕：
+   那時 `picks.final` 是空的，第一段只有一段，數量剛好對上，所以這個洞一直沒被看見。）
+   改成在這裡照順序累加，前面是幾段都不影響後面。2.2 那個比較長的停頓是留給
+   最後那句的——它要落在別的句子都沉下去之後。 */
 function renderEnd(vp){
   vp.className='viewport vp-end';
   const head={
-    accuse:`<p>你送出了。</p>
-      <p>十一年來，這是第一次有人把他的名字，<br>跟那年真正發生的事，放進同一句話裡。</p>`,
-    confess:`<p>你送出了。</p>
-      <p>那封信在垃圾桶裡躺了十一年。<br>這是第一次有人承認它被讀過。</p>`,
-    silent:`<p>你把打好的那句刪掉，換成了這一句，才送出。</p>
-      <p>群組很快就跳出下一則訊息。<br>沒有人追問。這一次也一樣。</p>`
-  }[picks.final]||`<p>你送出了。</p>`;
-  vp.innerHTML=`<div class="end">
-    ${head}
-    <p class="q">他那天最後說的那句，聲音很輕，快得像是說給自己聽的——<br><br>
-      「我也想過要這樣做。」</p>
-    <p>那句話他前一天晚上就寫在紙背上了，寫在劃掉的三行下面。</p>
-    <p>沒有人記得這句。因為沒有人在聽。</p>
-    <p class="sig">－ 五樓 －</p>
-  </div>`;
+    accuse:['你送出了。',
+      '十一年來，這是第一次有人把他的名字，<br>跟那年真正發生的事，放進同一句話裡。'],
+    confess:['你送出了。',
+      '那封信在垃圾桶裡躺了十一年。<br>這是第一次有人承認它被讀過。'],
+    silent:['你把打好的那句刪掉，換成了這一句，才送出。',
+      '群組很快就跳出下一則訊息。<br>沒有人追問。這一次也一樣。']
+  }[picks.final]||['你送出了。'];
+  const ps=head.map((t,i)=>({t,g:i?1.6:0})).concat([
+    {t:'他那天最後說的那句，聲音很輕，快得像是說給自己聽的——<br><br>「我也想過要這樣做。」',k:'q',g:1.8},
+    {t:'那句話他前一天晚上就寫在紙背上了，寫在劃掉的三行下面。',g:1.8},
+    {t:'沒有人記得這句。因為沒有人在聽。',g:2.2},
+    {t:'－ 五樓 －',k:'sig',g:1.8}
+  ]);
+  let d=0;
+  vp.innerHTML=`<div class="end">${ps.map(p=>{ d+=p.g;
+    return `<p${p.k?` class="${p.k}"`:''} style="animation-delay:${d.toFixed(1)}s">${p.t}</p>`;
+  }).join('')}</div>`;
 }
 
 document.getElementById('navBack').onclick=back;
