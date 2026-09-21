@@ -101,7 +101,11 @@ button{font-family:inherit;cursor:pointer}
 @keyframes pldot{0%,60%,100%{opacity:.35;transform:translateY(0)}30%{opacity:1;transform:translateY(-2px)}}
 .pl-link{display:block;width:100%;text-align:left;padding:10px 12px;border-radius:13px;
   border:1px solid var(--line);background:#FAFBFC;color:var(--link);font-size:12px;
-  border-bottom-right-radius:4px}
+  border-bottom-right-radius:4px;
+  /* 十月存檔那張卡片的網址是一整條 Windows 路徑（file:///C:/Program Files/…），
+     Courier 又不會自己斷字——不換行的話它會把整個聊天室撐出一條橫向捲軸。
+     overflow-wrap 會繼承下去，三個 span 一起管到。 */
+  overflow-wrap:anywhere}
 .pl-link:hover{background:#F0F3F6}
 .pl-link .lbl{display:block;color:var(--ink-soft);font-size:11px;margin-bottom:3px}
 .pl-link .url{font-family:"Courier New",monospace}
@@ -856,12 +860,12 @@ const CHAT=[
  {u:'kt0904',  c:'欸 今天幾號',now:1},
  {u:'yalin_w', c:'27 啊 怎麼了',now:1},
  {u:'kt0904',  c:'沒事',now:1},
- {u:'tsonghan',c:'那就不要問。',now:1},
+ {u:'tsonghan',c:'問了又不講。',now:1},
  {u:'kt0904',  c:'我昨天整理櫃子 翻到一個箱子'},
  {u:'kt0904',  c:'裡面一疊印出來的紙 有夠厚\n是那時候板上的東西'},
  {u:'tsonghan',c:'你留那個做什麼。'},
  {u:'kt0904',  c:'我又不是特地留的 就一直在櫃子裡啊'},
- {u:'yalin_w', c:'丟掉比較好'},
+ {u:'yalin_w', c:'我搬家的時候早就丟光了 公司的東西幹嘛留啊\n而且那時候的東西留著也沒有要幹嘛'},
  {u:'kt0904',  c:'那時候這些本來就文豪在管的 我問他一下'},
  {sys:'冠廷 邀請 文豪 加入了聊天'},
  {u:'haoge',   c:'丟掉。'},
@@ -873,7 +877,8 @@ const CHAT=[
  {u:'kt0904',  c:'他也太緊張了吧 我話都還沒講完'},
  {u:'tsonghan',c:'你去問他，他當然叫你丟。'},
  {me:'……那個板還在嗎'},
- {u:'kt0904',  c:'五樓喔'},
+ {u:'kt0904',  c:'思妤妳還記得那個喔'},
+ {u:'kt0904',  c:'五樓欸'},
  {u:'kt0904',  c:'幹 我好久沒聽到這兩個字'},
  {u:'tsonghan',c:'那種免費空間早就收掉了吧。'},
  {me:'網址你還留著嗎'},
@@ -983,18 +988,20 @@ const CHAT=[
  {u:'yalin_w', c:'那時候大家都有做啊'},
  {u:'siyu_1120',c:'我沒有在說誰'},
  {u:'siyu_1120',c:'我是說每一句都是我打的 我認得'},
- {u:'kt0904',  c:'那 10/14 呢'},
- {u:'kt0904',  c:'我那天存的那份特別小 我還以為存壞了'},
+ {u:'kt0904',  c:'欸 那個月我每天存的檔都差不多大'},
+ {u:'kt0904',  c:'只有一天特別小 我那時候還以為是存壞了'},
  {ask:'who1014',prompt:'那天打字的人',opts:[
-  {c:'那天打字的不是我',v:'other',then:[
+  {c:'10/14 那天打字的不是我',v:'other',then:[
+   {u:'kt0904',  c:'……就是那天'},
    {u:'kt0904',  c:'我就覺得怪怪的'},
    {u:'tsonghan',c:'妳說不是妳，那是誰。'}
   ]},
-  {c:'我在發燒 我那天沒有上線',v:'sick',then:[
+  {c:'10/14 我在發燒 我那天沒有上線',v:'sick',then:[
    {u:'kt0904',  c:'對吼 妳那樓就是那天貼的'},
    {u:'tsonghan',c:'那妳那天晚上在睡覺，跟她講話的是誰。'}
   ]},
   {c:'我不記得了',v:'dunno',then:[
+   {u:'kt0904',  c:'10/14 啦'},
    {u:'kt0904',  c:'妳再看一次那天'},
    {u:'kt0904',  c:'那個真的不像妳'},
    {u:'tsonghan',c:'那就是有人替她打完了。'}
@@ -1074,7 +1081,19 @@ const CHAT=[
  {u:'kt0904',  c:'真的假的'},
  {u:'yalin_w', c:'我一直以為是宗翰'},
  {u:'tsonghan',c:'我沒有。我那天根本不在線上。'},
- {u:'siyu_1120',c:'他為什麼要把自己那一樓刪掉'},
+ {ask:'acct',prompt:'板務紀錄上寫的是他',opts:[
+  {c:'後台密碼是共用的 不一定是他刪的',v:'doubt',then:[
+   {u:'kt0904',  c:'……對欸'},
+   {u:'kt0904',  c:'那封信是他自己寫的 說他怕請假我們要用'},
+   {u:'yalin_w', c:'那時候六個人都進得去'},
+   {u:'tsonghan',c:'那妳要說是誰。'},
+   {u:'tsonghan',c:'紀錄上就是他。妳手上有別的東西可以對嗎。'},
+   {u:'siyu_1120',c:'……沒有'}
+  ]},
+  {c:'他為什麼要把自己那一樓刪掉',v:'why',then:[
+   {u:'kt0904',  c:'對啊 那樓是他自己貼的欸'}
+  ]}
+ ]},
  {u:'siyu_1120',c:'清單上寫刪除時間是 11/28 凌晨'},
  {u:'kt0904',  c:'那是隔了一個多月欸'},
  {u:'tsonghan',c:'11/27 那天晚上他把整件事都攬下去了。凌晨刪掉一樓，很奇怪嗎。'},
@@ -1325,7 +1344,7 @@ const DOCS=[
   {f:'',   u:'',          c:'此文已由板主刪除',del:1,
    rid:'r_sort',rdel:{when:'2015/11/28 02:18',by:'板主',ts:TS(2015,11,28)}},
   {f:'20F',u:'ytl_lin',   c:'我頂。\n妳去睡。',rid:'r_sort',t:'10/14 23:51'},
-  {f:'23F',u:'kt0904',    c:'昨天那份比較大 我有存',t:'10/15 08:41'},
+  {f:'23F',u:'kt0904',    c:'昨天那份也存了 我沒漏過',t:'10/15 08:41'},
   {f:'25F',u:'tsonghan',  c:'我看過了…那份先不要動。',t:'10/19 12:07'},
   {f:'',   u:'',          c:'此文已由作者刪除',del:1,
    rid:'r_kt',rdel:{when:'2015/10/26 18:40',by:'作者',ts:TS(2015,10,26)}},
@@ -1916,6 +1935,7 @@ const GATES=[
  {id:'g_admin',ch:'第一章',label:'進板務後台，還原被刪掉的那一樓',
   site:'五樓',skin:'restore',url:'http://wulou.5gbfree.com/admin.php',
   brand:['五樓　板務後台','RESTORE'],
+  needChat:'c_dig',           // 等冠廷講出「後台密碼寫在開站那封信裡」才掛上去
   note:'以下為本板尚可還原之已刪除文章。備份僅保留文章本體，刪除者身分依板務紀錄顯示。',
   need:'思妤發燒那天，14F 底下的那一樓',
   fields:[]},
@@ -1923,6 +1943,7 @@ const GATES=[
  {id:'g_search',ch:'第二章',label:'查他現在在哪裡',
   site:'搜尋',skin:'search',url:'https://www.google.com.tw/search',
   need:'他的名字',
+  needChat:'c_who',           // 等冠廷說出「妳查查看啊」才掛上去
   fields:[{label:'',answer:['林昱庭','ytl_lin','昱庭']}],
   err:'找不到符合的結果。'}
 ];
@@ -2075,6 +2096,20 @@ function goSearch(q){ if(q!==undefined) boardQuery=q; boardPage=1;
 function closeTab(id){ tabs=tabs.filter(t=>t.id!==id); if(active===id) goHome(); else render(); }
 /* 換頁要捲回頂端的是「網頁」，也就是 .viewport 這個捲動容器，不是整個 window
    ——分頁列跟網址列現在是固定的外框，window 根本不會捲。 */
+/* 還原完成之後不能回到串首：旁白剛剛才說「14F 底下，多出了一行」，
+   整個第一章的揭露點就是那一行，讓玩家自己捲下去找等於把那一秒還給機械操作。
+   捲到那一樓，但上面留一段空間——14F 她發燒那天的求救要一起在畫面上，
+   還原出來的那句才有對照的東西。找不到就退回 toTop()。 */
+let jumpRid='';
+function toJump(){
+  const v=document.getElementById('viewport');
+  const el=v&&jumpRid&&v.querySelector(`.rp.restored[data-rid="${jumpRid}"]`);
+  jumpRid='';
+  if(!v||!el) return false;
+  const top=el.getBoundingClientRect().top-v.getBoundingClientRect().top+v.scrollTop;
+  v.scrollTop=Math.max(0,top-Math.round(v.clientHeight*0.38));
+  return true;
+}
 function toTop(){ const v=document.getElementById('viewport'); if(v) v.scrollTop=0;
   window.scrollTo(0,0); }
 function go(id){ if(active!==id) hist.push(active); active=id;
@@ -2760,7 +2795,7 @@ function renderThread(vp,d){
     if(p.silence) return `<div class="silence">${esc(p.silence)}</div>`;
     const label=p.del?'':no+'F';     // 樓層連續編號，不因隱藏樓層而跳號
     /* 刪除樓沒有樓號——它不佔一層，但那一格的框還在，空著本身就是痕跡 */
-    return `<div class="rp${p.del?' del':''}${p.u===ME.uid?' mine':''}${p.today?' today':''}${p.rid&&!p.del?' restored':''}">
+    return `<div class="rp${p.del?' del':''}${p.u===ME.uid?' mine':''}${p.today?' today':''}${p.rid&&!p.del?' restored':''}"${p.rid&&!p.del?` data-rid="${esc(p.rid)}"`:''}>
       <div class="f">${esc(label)}</div>
       <div class="u">${p.u?`<span class="nm">${esc(who(p.u))}${p.u===ME.uid?'<span class="me">（你）</span>':''}</span>
         <span class="uid">${esc(p.u)}</span>`:''}</div>
@@ -3007,6 +3042,7 @@ function renderRestore(vp,g){
     restored.add(rid);
     if(rid==='r_sort'){                  // 這一樓才是第一章要的
       restoreMsg='';
+      jumpRid=rid;                       // 旁白按完「繼續」之後要停在這一樓
       gateDone[g.id]=true;
       prog=AFTER[g.id].unlockAt;
       saidNow=AFTER[g.id].said||'';
@@ -3038,7 +3074,7 @@ function renderSaid(vp){
   vp.innerHTML=`<div class="said"><p>${esc(saidNow)}</p>
     <button class="btn" id="saidGo">繼續</button></div>`;
   const b=document.getElementById('saidGo');
-  if(b) b.onclick=()=>{ saidNow=''; render(); toTop(); };
+  if(b) b.onclick=()=>{ saidNow=''; render(); if(!toJump()) toTop(); };
 }
 
 /* ---------- 我的最愛 ---------- */
