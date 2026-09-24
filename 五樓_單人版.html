@@ -88,6 +88,8 @@ button{font-family:inherit;cursor:pointer}
 .pl-name{font-size:11px;color:var(--ink-soft);margin:0 3px 3px}
 /* 同一個人連著講的第二句以後：頭像留著位子但不畫，名字整個省掉 */
 .pl-row.cont{margin-top:-4px}
+.pl-row.fresh,.pl-sys.fresh{animation:plin .28s ease-out}
+@keyframes plin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .pl-row.cont .pl-av{visibility:hidden}
 .pl-row.cont .pl-name{display:none}
 .pl-bub{padding:8px 12px;border-radius:15px;font-size:13px;line-height:1.6;white-space:pre-wrap}
@@ -820,7 +822,9 @@ const who=u=>USERS[u]||u||'';
 
    一個步驟可以是：
      {u,c}       別人的訊息（先跑「輸入中」動畫）；u 是思妤自己時直接浮現
-     {u,c,now}   不跑任何動畫、同一個 tick 直接出現（只用在開場墊場）
+     {u,c,now}   不跑「輸入中」，停一拍後直接跳進來（只用在開場墊場）
+     任何步驟都可以再帶 wait:毫秒——出現之前先留一段沉默；
+     段落本身可以帶 pace:倍數——整段的等待都再乘上它（開場用來放慢）
      {me}        虛線草稿泡泡，停在這裡等玩家點下去才繼續
      {me,end}    最後一句：送出即進終幕
      {u,share}   貼一份 DOCS 文件的連結，點得開
@@ -855,28 +859,60 @@ const CHAT=[
    文豪那三句原本埋在登入後那段五十步的序章中段，等玩家走到已經太晚了。
    宗翰那句「那種免費空間早就收掉了吧。」是他今天第二次叫她不要去看。
    冠廷「我東西都不刪的」是 c_gap 那句自白（「我根本沒刪過 全部都在」）的第一顆種子。
-   最前面四句直接顯示，不跑「輸入中」。 */
-{id:'c_open',when:()=>true,steps:[
- {u:'kt0904',  c:'欸 今天幾號',now:1},
+   最前面四句不跑「輸入中」，但也不再一開場就整段攤在畫面上：聊天室先空著，
+   四則訊息像手機放在桌上時那樣一則一則跳進來。
+   節奏（pace:2.4 ＋幾個 wait）是這一段自己的：後面查資料的段落要快，
+   開場卻是玩家還沒有任何理由留下來的時候，要讓每一句都有時間落地——
+   日期那個問題懸著沒人接、文豪退出之後的那段空白、冠廷「找一下」真的去找了一下、
+   思妤開口之前的那一拍。 */
+{id:'c_open',when:()=>true,pace:2.4,steps:[
+ {u:'kt0904',  c:'欸 今天幾號',now:1,wait:1400},
  {u:'yalin_w', c:'27 啊 怎麼了',now:1},
  {u:'kt0904',  c:'沒事',now:1},
  {u:'tsonghan',c:'問了又不講。',now:1},
- {u:'kt0904',  c:'我昨天整理櫃子 翻到一個箱子'},
+ {u:'kt0904',  c:'我昨天整理櫃子 翻到一個箱子',wait:1600},
  {u:'kt0904',  c:'裡面一疊印出來的紙 有夠厚\n是那時候板上的東西'},
- {u:'tsonghan',c:'你留那個做什麼。'},
+ /* 玩家第一次開口：往前靠還是往後退。兩邊都接到宗翰那句，
+    差別只在冠廷是被好奇接住，還是被兩個人一起唸 */
+ {ask:'box',prompt:'那時候板上的東西',wait:500,opts:[
+  {c:'板上的什麼',v:'ask',then:[
+   {u:'kt0904',  c:'就大家那時候亂貼的啊 聚餐 抽籤 誰又遲到'}
+  ]},
+  {c:'你怎麼還留著那個',v:'away',then:[
+   {u:'kt0904',  c:'怎樣啦 妳也要唸我喔'}
+  ]}
+ ]},
+ {u:'tsonghan',c:'你留那個做什麼。',wait:700},
  {u:'kt0904',  c:'我又不是特地留的 就一直在櫃子裡啊'},
  {u:'yalin_w', c:'我搬家的時候早就丟光了 公司的東西幹嘛留啊\n而且那時候的東西留著也沒有要幹嘛'},
  {u:'kt0904',  c:'那時候這些本來就文豪在管的 我問他一下'},
- {sys:'冠廷 邀請 文豪 加入了聊天'},
- {u:'haoge',   c:'丟掉。'},
+ /* 攔不攔他：攔了冠廷照樣拉人，沒攔她就是一起等答案的人 */
+ {ask:'askhao',prompt:'要問文豪',opts:[
+  {c:'不用問他吧',v:'stop',then:[
+   {u:'kt0904',  c:'問一下又不會怎樣'}
+  ]},
+  {c:'他還會回喔',v:'let',then:[
+   {u:'kt0904',  c:'會吧 他應該還有在用'}
+  ]}
+ ]},
+ {sys:'冠廷 邀請 文豪 加入了聊天',wait:600},
+ {u:'haoge',   c:'丟掉。',wait:500},
  {u:'kt0904',  c:'我還沒問欸'},
  {u:'haoge',   c:'我說丟掉。不要拍照，不要貼上來。'},
  {u:'kt0904',  c:'我知道啦 我又不是白痴'},
  {u:'haoge',   c:'這件事沒有什麼好討論的。都過去了。'},
- {sys:'文豪 已退出聊天'},
- {u:'kt0904',  c:'他也太緊張了吧 我話都還沒講完'},
+ {sys:'文豪 已退出聊天',wait:500},
+ /* 文豪走掉之後的那一拍交給玩家：她是被嚇到，還是認得出這種口氣 */
+ {ask:'hao',prompt:'文豪退出了',wait:1400,opts:[
+  {c:'他幹嘛這樣',v:'why',then:[
+   {u:'kt0904',  c:'不知道 他也太緊張了吧 我話都還沒講完'}
+  ]},
+  {c:'他講話還是這樣',v:'same',then:[
+   {u:'kt0904',  c:'對啊 一點都沒變 我話都還沒講完欸'}
+  ]}
+ ]},
  {u:'tsonghan',c:'你去問他，他當然叫你丟。'},
- {me:'……那個板還在嗎'},
+ {me:'……那個板還在嗎',wait:1600},
  {u:'kt0904',  c:'思妤妳還記得那個喔'},
  {u:'kt0904',  c:'五樓欸'},
  {u:'kt0904',  c:'幹 我好久沒聽到這兩個字'},
@@ -884,7 +920,7 @@ const CHAT=[
  {me:'網址你還留著嗎'},
  {u:'yalin_w', c:'我沒有留'},
  {u:'kt0904',  c:'等我找一下'},
- {u:'kt0904',  c:'書籤還在 我東西都不刪的'},
+ {u:'kt0904',  c:'書籤還在 我東西都不刪的',wait:2400},
  {u:'kt0904',  url:'http://wulou.5gbfree.com/',lbl:'五樓'},
  {u:'siyu_1120',c:'謝謝'}
 ]},
@@ -899,7 +935,7 @@ const CHAT=[
    0211 要玩家自己倒。
    這段是舊事重提，話題不碰任何人的責任，所以雅琳可以講整句、還敢虧宗翰——
    她的話會變短是在 c_dig 講到那份名單的時候。 */
-{id:'c_pw',when:()=>pwFail,steps:[
+{id:'c_pw',when:()=>pwFail,pace:1.8,steps:[
  {me:'提示問題寫的是我的生日'},
  {u:'siyu_1120',c:'我打 1120 進去 它說密碼不正確'},
  {u:'kt0904',  c:'哈哈哈哈哈'},
@@ -908,7 +944,14 @@ const CHAT=[
  {u:'tsonghan',c:'我那時候就問過妳了。誰會想盜一個六個人的留言板。'},
  {u:'yalin_w', c:'你每次都這樣講話 難怪她氣了一整天'},
  {u:'kt0904',  c:'哈哈哈哈 對啦'},
- {u:'siyu_1120',c:'我真的講過這種話'},
+ {ask:'pwmemo',prompt:'倒著打',opts:[
+  {c:'我真的講過這種話',v:'really',then:[
+   {u:'kt0904',  c:'有啊 我記得超清楚'}
+  ]},
+  {c:'我那時候是有多無聊',v:'silly',then:[
+   {u:'kt0904',  c:'超無聊的啊 哈哈哈'}
+  ]}
+ ]},
  {u:'kt0904',  c:'妳去試 一定是那個'}
 ]},
 
@@ -930,6 +973,13 @@ const CHAT=[
  {u:'tsonghan',c:'那是誰印的。'},
  {u:'kt0904',  c:'不知道 反正不是我 我自己印過什麼我認得'},
  {u:'kt0904',  c:'難怪文豪剛剛那樣'},
+ /* 不是誰印的答案（那要到 d_box 才看得到），是她先往哪裡想 */
+ {ask:'printer',prompt:'最後那幾張',opts:[
+  {c:'那幾張上面印什麼',v:'what',then:[]},
+  {c:'你是說文豪印的喔',v:'hao',then:[
+   {u:'kt0904',  c:'我哪知道 我只是說他剛剛反應超大'}
+  ]}
+ ]},
  {u:'kt0904',  c:'我對過了 那幾張是這串印出來的'},
  {u:'kt0904',  share:'t_sort'},
  {u:'kt0904',  c:'妳自己看 妳發燒那天貼的那樓'},
@@ -2028,7 +2078,7 @@ let chatOpen=true;                       // 茶水間 App 現在是不是開著�
 let blogRead=false;                      // 部落格真的捲到底了才算讀完，終章那段才會排進來
 let saidNow='';                          // 過閘之後要先播的那句旁白
 let adminIn=false;                       // 板務後台已經登入（g_admin 這一頁的前半段）
-const picks={};                          // 玩家在聊天室做過的選擇：who1014／letter／final
+const picks={};                          // 玩家在聊天室做過的選擇：box／askhao／hao／pwmemo／printer／who1014／acct／letter／final
 const restored=new Set();                // 已經在板務後台還原出來的樓層
 let restoreMsg='';
 const MAX_DOC_TABS=3;                    // 文件分頁上限，超過自動關掉最舊的
@@ -2136,6 +2186,12 @@ const chatDone=new Set();  // 已經播完的段落
    插進新的對話裡（正常玩不會遇到，因為沒有人會在播到一半重建整個聊天室）。
    每次重建就 +1，過期的 timer 自己失效。 */
 let chatGen=0;
+/* 節奏：段落可以帶 pace（整段所有等待再乘上這個倍數），步驟可以帶 wait
+   （這一步出現之前先空一段沉默，1x 毫秒）。開場要慢慢放，後面查資料的段落
+   維持原本的速度——同一個 CHAT_SPEED 沒辦法同時滿足這兩件事。 */
+let chatPace=1;
+let chatWaited=null;       // 已經等過 wait 的那一步（離開 App 再回來不重等）
+let chatFresh=null;        // 剛冒出來的那一則：只有它跑淡入，重畫時其他訊息不跟著閃
 
 /* 聊天室的播放速度：下面所有等待的毫秒數寫的都是原本 1x 的節奏，
    實際等待一律除以這個數。要整體加速或放慢就只動這一個值。 */
@@ -2149,7 +2205,7 @@ const chatHere=()=>chatOpen&&!saidNow&&prog<6;
    之後，那顆等著被點的草稿泡泡就沒有任何東西提醒他了。 */
 function chatPending(){ if(chatDraft||chatPick) return 1;
   let n=0;
-  for(const st of chatQueue){ if(st._done) continue; if(st.me!==undefined) break; n++; }
+  for(const st of chatQueue){ if(st._done||st._begin) continue; if(st.me!==undefined) break; n++; }
   return n; }
 
 /* 掃一次所有段落，把條件成立的依序排進佇列（不插隊） */
@@ -2158,7 +2214,7 @@ function chatCheck(){
   CHAT.forEach(sc=>{
     if(chatFired.has(sc.id)||!sc.when()) return;
     chatFired.add(sc.id);
-    chatQueue=chatQueue.concat(sc.steps,[{_done:sc.id}]);
+    chatQueue=chatQueue.concat([{_begin:sc.id,pace:sc.pace||1}],sc.steps,[{_done:sc.id}]);
     added=true;
   });
   if(added&&!chatHere()){ showToast(); syncApp(); }   // 浮球上的未讀數也要立刻跳出來
@@ -2170,6 +2226,10 @@ function chatNext(){
   if(!chatQueue.length){ chatBusy=false; chatCheck(); return; }
   if(!chatHere()){ chatBusy=false; return; }        // 玩家走開了，剩下的等他回來
   const st=chatQueue[0];
+  if(st._begin){ chatQueue.shift(); chatPace=st.pace; return chatNext(); }
+  /* 刻意留的沉默：畫面上什麼都不動，下一句才會讓人等 */
+  if(st.wait&&chatWaited!==st){ chatWaited=st; const g=chatGen;
+    return void setTimeout(()=>{ if(g!==chatGen) return; chatNext(); },dly(st.wait*chatPace)); }
   /* 一段播完：重畫一次整個瀏覽器框，因為有些分頁（例如 g_mail）是等這一段
      播完才掛上去的，光重畫聊天室看不到那個新分頁。render() 結尾會再叫 chatCheck。 */
   if(st._done){ chatQueue.shift(); chatBusy=false; chatDone.add(st._done);
@@ -2179,25 +2239,29 @@ function chatNext(){
   if(st.opts){ chatQueue.shift(); chatBusy=false; chatPick=st; chatPaint(); return; }
   chatQueue.shift();
   const gen=chatGen;
+  const P=chatPace;
+  /* 冒出來之後留給玩家讀的時間跟著字數走：短句一眨眼就過，
+     三十個字的長句不能跟「嗯」一樣只停半秒就被下一句的「輸入中」蓋過去。 */
+  const len=(st.c||st.sys||'').length;
+  const hold=(st.sys?320:st.now?900:450)+Math.min(len,40)*25;
   const reveal=()=>{ if(gen!==chatGen) return;       // 跳過段了，這一則已經不屬於現在這場對話
-    chatShown.push(st); chatPaint();
-    if(st.now) chatNext(); else setTimeout(chatNext,dly(st.sys?320:450)); };
-  if(st.now) return reveal();                        // 開場墊場：整段直接出現
-  if(st.sys||st.u===ME.uid) return void setTimeout(reveal,dly(600));
+    chatShown.push(st); chatFresh=st; chatPaint();
+    setTimeout(chatNext,dly(hold*P)); };
+  if(st.now) return reveal();                        // 開場墊場：不跑「輸入中」，一則一則自己跳進來
+  if(st.sys||st.u===ME.uid) return void setTimeout(reveal,dly(600*P));
   chatTyping=st.u; chatPaint();                      // 別人講話才有「輸入中」
   /* 「輸入中」的長度跟著字數走：一句「嗯」跟一句三十幾個字的話打一樣久，
      是最容易讓人看出這是排好的稿子的地方。短句放快也順便把序章開頭
      那段只能看不能動的空檔壓短一點。 */
-  const len=(st.c||'').length;
   setTimeout(()=>{ if(gen!==chatGen) return; chatTyping=null; reveal(); },
-             dly(360+Math.min(len,30)*32+Math.random()*260));
+             dly((360+Math.min(len,30)*32+Math.random()*260)*P));
 }
 /* 玩家點下草稿泡泡＝思妤把那句話送出去 */
 function chatSend(){
   const st=chatDraft; if(!st) return;
-  chatDraft=null; chatShown.push({u:ME.uid,c:st.me}); chatPaint();
+  chatDraft=null; chatFresh={u:ME.uid,c:st.me}; chatShown.push(chatFresh); chatPaint();
   if(st.end) return void goEnd();
-  chatBusy=true; setTimeout(chatNext,dly(500));
+  chatBusy=true; setTimeout(chatNext,dly(500*chatPace));
 }
 /* 玩家從選擇泡泡裡挑了一句：記在 picks，該選項自己帶的後續（then）
    插到佇列最前面，同一段接下來的共同台詞照舊排在它後面。 */
@@ -2205,10 +2269,10 @@ function chatChoose(i){
   const st=chatPick; if(!st) return;
   const o=st.opts[i]; if(!o) return;
   chatPick=null; picks[st.ask]=o.v;
-  chatShown.push({u:ME.uid,c:o.c}); chatPaint();
+  chatFresh={u:ME.uid,c:o.c}; chatShown.push(chatFresh); chatPaint();
   if(o.end) return void goEnd();
   if(o.then&&o.then.length) chatQueue=o.then.concat(chatQueue);
-  chatBusy=true; setTimeout(chatNext,dly(500));
+  chatBusy=true; setTimeout(chatNext,dly(500*chatPace));
 }
 /* 送出最後一句＝進終幕 */
 function goEnd(){ prog=6; setTimeout(()=>{ closeChat(); render(); toTop(); },1100); }
@@ -2218,7 +2282,7 @@ function goEnd(){ prog=6; setTimeout(()=>{ closeChat(); render(); toTop(); },110
 function chatDrop(id){
   const sc=CHAT.find(x=>x.id===id); if(!sc||chatDone.has(id)) return;
   chatFired.add(id); chatDone.add(id);
-  chatQueue=chatQueue.filter(st=>!sc.steps.includes(st)&&st._done!==id);
+  chatQueue=chatQueue.filter(st=>!sc.steps.includes(st)&&st._done!==id&&st._begin!==id);
   if(chatDraft&&sc.steps.includes(chatDraft)) chatDraft=null;
   if(chatPick&&sc.steps.includes(chatPick)) chatPick=null;
 }
@@ -2248,8 +2312,9 @@ function chatCard(m){
 function chatRows(){
   let prev=null;
   const rows=chatShown.map(m=>{
-    if(m.sys){ prev=null; return `<div class="pl-sys">${esc(m.sys)}</div>`; }
-    const cont=prev===m.u?'cont':''; prev=m.u;
+    const fr=m===chatFresh?' fresh':'';
+    if(m.sys){ prev=null; return `<div class="pl-sys${fr}">${esc(m.sys)}</div>`; }
+    const cont=(prev===m.u?'cont':'')+fr; prev=m.u;
     if(m.url||m.share) return plRow(m.u,chatCard(m),cont);
     return plRow(m.u,`<div class="pl-bub">${esc(m.c)}</div>`,cont);
   });
@@ -2296,7 +2361,7 @@ function chatInBar(){
 }
 function chatPaint(){
   const box=document.getElementById('plMsgs'); if(!box) return;
-  box.innerHTML=chatRows(); chatBind(); syncApp();
+  box.innerHTML=chatRows(); chatFresh=null; chatBind(); syncApp();
 }
 /* App 的開關：整支聊天室只是蓋在畫面上的一層，開關就是加減一個 class。
    收起來不會丟掉任何東西——訊息列一直都在，回來就接著往下播。
@@ -3182,6 +3247,7 @@ function devApply(st){
   /* 先把聊天室清空重建，否則會疊在開場已經自己播出來的那幾則上面 */
   chatGen++;                          // 上一段還在飛的 timer 從這一刻起全部失效
   chatShown=[]; chatQueue=[]; chatDraft=null; chatTyping=null; chatBusy=false;
+  chatPace=1; chatWaited=null; chatFresh=null;
   chatFired.clear(); chatDone.clear(); chatPick=null;
   seen.clear(); mailRead.clear(); restored.clear(); gateDone={};
   Object.keys(picks).forEach(k=>delete picks[k]);
