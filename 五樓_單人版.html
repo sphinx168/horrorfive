@@ -683,13 +683,12 @@ button{font-family:inherit;cursor:pointer}
 .vp-end{background:#1C1F23;padding:0}
 .end{max-width:520px;margin:0 auto;padding:17% 24px 22%;
   font-family:"MingLiU","SimSun",serif;font-size:16px;line-height:2.4;color:#D6DBE0}
+/* 每一段什麼時候淡進來，由 renderEnd() 逐段算出來寫在 style 上——
+   不能綁 :nth-child，因為第一段會隨 picks.final 從一段變成兩段 */
 .end p{margin:0 0 26px;opacity:0;animation:fin 1.4s ease forwards}
-.end p:nth-child(2){animation-delay:1.6s}
-.end p:nth-child(3){animation-delay:3.4s}
-.end p:nth-child(4){animation-delay:5.6s}
 .end .q{color:#fff;font-size:18px}
 .end .sig{font-size:11px;color:#6E7A85;font-family:"Courier New",monospace;
-  letter-spacing:.14em;margin-top:40px;animation-delay:7.4s}
+  letter-spacing:.14em;margin-top:40px}
 @keyframes fin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.end p{opacity:1;animation:none}}
 
@@ -1200,10 +1199,17 @@ const CHAT=[
 ]},
 
 /* ---------- 第二章：她打開垃圾桶裡那封十一年沒看的信 ----------
-   那封信一直都在垃圾桶（`at:1`），不是解完關卡才長出來的。
+   那封信一直都在垃圾桶（`at:1`），不是解完關卡才長出來的——所以第一章一進信箱
+   就翻垃圾桶的玩家讀得到它，這是刻意的，不要拿 `at` 去擋。
+
+   但這一段本身是第二章的：冠廷問「有找到什麼嗎」，`tell` 那條路裡宗翰說
+   「他沒有跟我講過。」——要先還原過 14F 底下那一樓、知道「他」是誰，這些話才成立。
+   少了 `prog>=3`，早翻垃圾桶的人會在 `prog=1` 就把這段演掉，而 `chatFired` 只認一次，
+   第二章就再也不會問了。對照組 `c_yr` 是靠信件自己的 `at:3` 擋住的，這封擋不住。
+
    這裡給玩家第一個真正屬於自己的決定：說出來，還是不說。
    兩條路主線都收得回來，但群組後面的反應不一樣，終幕也不一樣。 */
-{id:'c_letter',when:()=>mailRead.has('ytl'),steps:[
+{id:'c_letter',when:()=>mailRead.has('ytl')&&prog>=3,steps:[
  {u:'kt0904',  c:'妳還在嗎'},
  {me:'在'},
  {u:'kt0904',  c:'有找到什麼嗎'},
@@ -1277,8 +1283,15 @@ const CHAT=[
 
 /* ---------- 終章之前：還有東西沒看過 ----------
    玩家把部落格讀完了，但三份關鍵證據沒有集齊——不擋路，讓冠廷把漏掉的
-   再貼一次。集齊之後 `c_end` 自己會接上來。 */
-{id:'c_push',when:()=>chatDone.has('c_found')&&blogRead&&!endReady(),steps:[
+   再貼一次。集齊之後 `c_end` 自己會接上來。
+
+   `seen.has('d_box')` 這個條件不能拿掉：`c_found` 的最後一步就是貼出那三張照片，
+   所以它播完的那一瞬間 `d_box` 必定還沒點開、`endReady()` 必定是 false。少了這個
+   條件，只要玩家是「先把部落格讀完，再開聊天室」（點完搜尋結果本來就直接落在
+   部落格上，這是最自然的順序），這一段就會無條件跳出來，冠廷對著一個每份都讀過的
+   玩家說「有些東西妳好像還沒點開」，然後把她剛看完的東西重貼一次。
+   等她點開那三張再問，才問得到真的漏掉的東西。 */
+{id:'c_push',when:()=>chatDone.has('c_found')&&blogRead&&seen.has('d_box')&&!endReady(),steps:[
  {u:'kt0904',  c:'欸 妳先不要關'},
  {u:'kt0904',  c:'有些東西妳好像還沒點開'},
  {u:'kt0904',  c:'我再貼一次'},
@@ -3182,25 +3195,35 @@ function renderNotes(vp){
    最後一句是玩家自己挑的，所以第一段跟著那個選擇走。
    那句「我也想過要這樣做」不再是最後一頁才空降的關鍵事實——
    玩家在 `d_box` 那張手寫稿上已經讀過它，也讀過他劃掉的那幾行；
-   這裡只負責讓它沉下來。 */
+   這裡只負責讓它沉下來。
+
+   `g` 是每一段距離上一段幾秒。這組數字以前寫在 CSS 的 `.end p:nth-child(n)` 上，
+   而第一段會隨 `picks.final` 從一段變成兩段——段數一多，後面每一段都往後錯一格，
+   最後那句「沒有人記得這句」剛好掉出規則外變成 delay 0，跟開頭第一句同時亮起來，
+   比它在講的那句早三秒半。（唯一看起來正常的情況是 #dev 面板直接跳終幕：
+   那時 `picks.final` 是空的，第一段只有一段，數量剛好對上，所以這個洞一直沒被看見。）
+   改成在這裡照順序累加，前面是幾段都不影響後面。2.2 那個比較長的停頓是留給
+   最後那句的——它要落在別的句子都沉下去之後。 */
 function renderEnd(vp){
   vp.className='viewport vp-end';
   const head={
-    accuse:`<p>你送出了。</p>
-      <p>十一年來，這是第一次有人把他的名字，<br>跟那年真正發生的事，放進同一句話裡。</p>`,
-    confess:`<p>你送出了。</p>
-      <p>那封信在垃圾桶裡躺了十一年。<br>這是第一次有人承認它被讀過。</p>`,
-    silent:`<p>你把打好的那句刪掉，換成了這一句，才送出。</p>
-      <p>群組很快就跳出下一則訊息。<br>沒有人追問。這一次也一樣。</p>`
-  }[picks.final]||`<p>你送出了。</p>`;
-  vp.innerHTML=`<div class="end">
-    ${head}
-    <p class="q">他那天最後說的那句，聲音很輕，快得像是說給自己聽的——<br><br>
-      「我也想過要這樣做。」</p>
-    <p>那句話他前一天晚上就寫在紙背上了，寫在劃掉的三行下面。</p>
-    <p>沒有人記得這句。因為沒有人在聽。</p>
-    <p class="sig">－ 五樓 －</p>
-  </div>`;
+    accuse:['你送出了。',
+      '十一年來，這是第一次有人把他的名字，<br>跟那年真正發生的事，放進同一句話裡。'],
+    confess:['你送出了。',
+      '那封信在垃圾桶裡躺了十一年。<br>這是第一次有人承認它被讀過。'],
+    silent:['你把打好的那句刪掉，換成了這一句，才送出。',
+      '群組很快就跳出下一則訊息。<br>沒有人追問。這一次也一樣。']
+  }[picks.final]||['你送出了。'];
+  const ps=head.map((t,i)=>({t,g:i?1.6:0})).concat([
+    {t:'他那天最後說的那句，聲音很輕，快得像是說給自己聽的——<br><br>「我也想過要這樣做。」',k:'q',g:1.8},
+    {t:'那句話他前一天晚上就寫在紙背上了，寫在劃掉的三行下面。',g:1.8},
+    {t:'沒有人記得這句。因為沒有人在聽。',g:2.2},
+    {t:'－ 五樓 －',k:'sig',g:1.8}
+  ]);
+  let d=0;
+  vp.innerHTML=`<div class="end">${ps.map(p=>{ d+=p.g;
+    return `<p${p.k?` class="${p.k}"`:''} style="animation-delay:${d.toFixed(1)}s">${p.t}</p>`;
+  }).join('')}</div>`;
 }
 
 document.getElementById('navBack').onclick=back;
