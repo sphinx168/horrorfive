@@ -918,14 +918,8 @@ const CHAT=[
  {u:'tsonghan',c:'我那時候就問過妳了。誰會想盜一個六個人的留言板。'},
  {u:'yalin_w', c:'你每次都這樣講話 難怪她氣了一整天'},
  {u:'kt0904',  c:'哈哈哈哈 對啦'},
- {ask:'pwmemo',prompt:'倒著打',opts:[
-  {c:'我真的講過這種話',v:'really',then:[
-   {u:'kt0904',  c:'有啊 我記得超清楚'}
-  ]},
-  {c:'我那時候是有多無聊',v:'silly',then:[
-   {u:'kt0904',  c:'超無聊的啊 哈哈哈'}
-  ]}
- ]},
+ {me:'我真的講過這種話'},
+ {u:'kt0904',  c:'有啊 我記得超清楚'},
  {u:'kt0904',  c:'妳去試 一定是那個'}
 ]},
 
@@ -947,13 +941,9 @@ const CHAT=[
  {u:'tsonghan',c:'那是誰印的。'},
  {u:'kt0904',  c:'不知道 反正不是我 我自己印過什麼我認得'},
  {u:'kt0904',  c:'難怪文豪剛剛那樣'},
- /* 不是誰印的答案（那要到 d_box 才看得到），是她先往哪裡想 */
- {ask:'printer',prompt:'最後那幾張',opts:[
-  {c:'那幾張上面印什麼',v:'what',then:[]},
-  {c:'你是說文豪印的喔',v:'hao',then:[
-   {u:'kt0904',  c:'我哪知道 我只是說他剛剛反應超大'}
-  ]}
- ]},
+ /* 她順著冠廷往文豪那邊想，冠廷否認——誰印的答案仍然留給 d_box */
+ {me:'你是說文豪印的喔'},
+ {u:'kt0904',  c:'我哪知道 我只是說他剛剛反應超大'},
  {u:'kt0904',  c:'我對過了 那幾張是這串印出來的'},
  {u:'kt0904',  share:'t_sort'},
  {u:'kt0904',  c:'妳自己看 妳發燒那天貼的那樓'},
@@ -2052,7 +2042,7 @@ let chatOpen=true;                       // 茶水間 App 現在是不是開著�
 let blogRead=false;                      // 部落格真的捲到底了才算讀完，終章那段才會排進來
 let saidNow='';                          // 過閘之後要先播的那句旁白
 let adminIn=false;                       // 板務後台已經登入（g_admin 這一頁的前半段）
-const picks={};                          // 玩家在聊天室做過的選擇：pwmemo／printer／who1014／acct／letter／final
+const picks={};                          // 玩家在聊天室做過的選擇：who1014／acct／letter／final
 const restored=new Set();                // 已經在板務後台還原出來的樓層
 let restoreMsg='';
 const MAX_DOC_TABS=3;                    // 文件分頁上限，超過自動關掉最舊的
