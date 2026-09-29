@@ -93,6 +93,12 @@ button{font-family:inherit;cursor:pointer}
 .pl-row.cont .pl-av{visibility:hidden}
 .pl-row.cont .pl-name{display:none}
 .pl-bub{padding:8px 12px;border-radius:15px;font-size:13px;line-height:1.6;white-space:pre-wrap}
+/* 已讀數：貼在泡泡外側底部的小灰字。只有開場那則停機通知用得到——
+   看了三個人，回話的只有一個 */
+.pl-line{display:flex;align-items:flex-end;gap:5px;min-width:0}
+.pl-read{flex:none;font-size:10px;color:#7F8A94;white-space:nowrap;margin-bottom:2px}
+.pl-read.fresh{animation:plfade .4s ease-out}
+@keyframes plfade{from{opacity:0}to{opacity:1}}
 .pl-row.other .pl-bub{background:#EEF0F2;color:var(--ink);border-bottom-left-radius:4px}
 .pl-row.me .pl-bub{background:var(--board);color:#fff;border-bottom-right-radius:4px}
 .pl-typing .pl-bub{padding:11px 14px;display:flex;gap:3px;align-items:center}
@@ -271,6 +277,10 @@ button{font-family:inherit;cursor:pointer}
 .wl-ad .txt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .wl-ad .x{flex:none;background:none;border:0;color:#9A8F4A;font-size:13px;line-height:1;
   padding:0 3px;cursor:pointer}
+/* 同一條廣告位，今天換成了停止服務的系統公告：舊網站自己在說它快死了 */
+.wl-ad.stop{border-color:#C8453A;background:#FFF0EE;color:#A0231A}
+.wl-ad.stop .tag{background:#C8453A;color:#fff}
+.wl-ad.stop .x{color:#C8453A}
 
 /* ---------- 站頭 ---------- */
 .wl-mast{position:relative;overflow:hidden;display:flex;align-items:center;gap:14px;
@@ -687,9 +697,12 @@ button{font-family:inherit;cursor:pointer}
 .end p:nth-child(2){animation-delay:1.6s}
 .end p:nth-child(3){animation-delay:3.4s}
 .end p:nth-child(4){animation-delay:5.6s}
+.end p:nth-child(5){animation-delay:7.4s}
+.end p:nth-child(6){animation-delay:9.6s}   /* 停機倒數的下場（picks.keep） */
 .end .q{color:#fff;font-size:18px}
-.end .sig{font-size:11px;color:#6E7A85;font-family:"Courier New",monospace;
-  letter-spacing:.14em;margin-top:40px;animation-delay:7.4s}
+/* p.sig：跟 nth-child 同權重、寫在後面，不管它排第幾個都最後才出來 */
+.end p.sig{font-size:11px;color:#6E7A85;font-family:"Courier New",monospace;
+  letter-spacing:.14em;margin-top:40px;animation-delay:11.4s}
 @keyframes fin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.end p{opacity:1;animation:none}}
 
@@ -812,8 +825,8 @@ const who=u=>USERS[u]||u||'';
    「今天」全部發生在這裡。那個留言板停在 2016 年底就沒有再動過，
    沒有人再在上面發言——今天的對話、進度回報、翻出來的東西，全在這個群組裡。
 
-   登入前是開場：玩家點虛線草稿泡泡＝思妤主動送出訊息，送出後對方才輪流
-   「輸入中」→回話，最後冠廷貼出網址，玩家點下去才銜接到既有的登入頁。
+   登入前是開場：冠廷丟出停機通知，已讀數一個一個跳，玩家點虛線草稿泡泡＝
+   思妤送出她唯一的一句，冠廷貼出網址，玩家點下去才銜接到既有的登入頁。
    登入後同一個聊天室搬進瀏覽器分頁（`chat`），玩法完全一樣：每過一道閘、
    每翻開一份關鍵文件，`CHAT` 裡對應的段落就會排進佇列，在分頁上跳未讀數
    並彈一則通知；玩家切回聊天室，那一段才會「現場」播出來。
@@ -829,7 +842,8 @@ const who=u=>USERS[u]||u||'';
      {me,end}    最後一句：送出即進終幕
      {u,share}   貼一份 DOCS 文件的連結，點得開
      {u,url,lbl} 貼一個純網址（開場那個五樓連結，點下去進登入頁）
-     {sys}       置中的系統訊息／沉默標記                                 */
+     {sys}       置中的系統訊息／沉默標記
+     {read:n}    不新增訊息，把最近一則別人的訊息旁的已讀數改成 n（開場用） */
 const AVATARS={
   siyu_1120:{ch:'思',bg:'#4A6D8C'}, kt0904:{ch:'冠',bg:'#8C6A3A'},
   tsonghan:{ch:'宗',bg:'#5C6873'},  yalin_w:{ch:'雅',bg:'#7A4A73'},
@@ -851,52 +865,21 @@ const endReady=()=>seen.has('a_im')&&seen.has('t_stop')&&seen.has('d_box')
 const CHAT=[
 
 /* ---------- 開場：登入之前 ----------
-   引信是日期，但真正的鉤子是箱子：有人翻出舊東西、有人急著撇清、有人急著
-   控制資訊——三件事在開場十幾秒內同時發生，玩家還沒登入就已經有問題想問。
-   不安不是靠含糊撐出來的：冠廷講得很具體（櫃子、一疊印出來的紙、板上的東西），
-   走鐘的是別人的反應——宗翰第一時間問的是「你留那個做什麼」（先把責任推回去），
-   雅琳說她早就丟光了，文豪還沒被問就先下令，下完令就退出。
-   文豪那三句原本埋在登入後那段五十步的序章中段，等玩家走到已經太晚了。
-   宗翰那句「那種免費空間早就收掉了吧。」是他今天第二次叫她不要去看。
-   冠廷「我東西都不刪的」是 c_gap 那句自白（「我根本沒刪過 全部都在」）的第一顆種子。
-   最前面四句不跑「輸入中」，一則一則跳進來，但不再慢慢鋪：
-   開場要在十幾秒內就讓人覺得不對勁，所以 pace 只有 1.2、wait 都壓短，
-   墊場的閒話（冠廷自嘲、雅琳解釋她為什麼丟光、「我又不是白痴」）拿掉，
-   文豪那三句中間冠廷只插得進一句——他下令、再下令、宣布結束、退出，壓迫感才出得來。
-   玩家開口的三個點都只給一句草稿泡泡，不給選擇：這裡是在把人拉進來，
-   不是讓人停下來挑姿態；每一句都是思妤順著往下問，而那個問題本身就推著劇情走。 */
+   只做一件事：五樓要被刪了，刪之前進去看一眼。
+   引信是停機通知——那個免費空間當年是用冠廷的信箱申請的（見開站信 `ytl_setup`），
+   所以通知只寄到他那裡。講話的只有冠廷和思妤：宗翰、雅琳、思妤三個人都讀了
+   （已讀 1→2→3），另外兩個人看完不出聲，沉默本身就是反應。
+   文豪不在開場出現（他第一次開口在第二章 `c_react`），箱子也不在這裡提，
+   冠廷登入之後才講（`c_intro`）。玩家只開口一次，冠廷跟上——「我們」一起進去。 */
 {id:'c_open',when:()=>true,pace:1.2,steps:[
- {u:'kt0904',  c:'欸 今天幾號',now:1,wait:900},
- {u:'yalin_w', c:'27 啊 怎麼了',now:1},
- {u:'kt0904',  c:'沒事',now:1},
- {u:'tsonghan',c:'問了又不講。',now:1},
- {u:'kt0904',  c:'我昨天整理櫃子 翻到一個箱子',wait:700},
- {u:'kt0904',  c:'裡面一疊印出來的紙 有夠厚\n是那時候板上的東西'},
- {me:'板上的什麼',wait:300},
- {u:'kt0904',  c:'就大家那時候亂貼的啊 聚餐 抽籤 誰又遲到'},
- {u:'tsonghan',c:'你留那個做什麼。'},
- {u:'yalin_w', c:'我搬家的時候早就丟光了'},
- {u:'kt0904',  c:'那時候這些本來就文豪在管的 我問他一下'},
- {me:'他還會回喔'},
- {sys:'冠廷 邀請 文豪 加入了聊天',wait:300},
- {u:'haoge',   c:'丟掉。',wait:200},
- {u:'kt0904',  c:'我還沒問欸'},
- {u:'haoge',   c:'我說丟掉。不要拍照，不要貼上來。'},
- {u:'haoge',   c:'這件事沒有什麼好討論的。都過去了。'},
- {sys:'文豪 已退出聊天',wait:200},
- {me:'他幹嘛這樣',wait:900},
- {u:'kt0904',  c:'不知道 他也太緊張了吧 我話都還沒講完'},
- {u:'tsonghan',c:'你去問他，他當然叫你丟。'},
- {me:'……那個板還在嗎',wait:900},
- {u:'kt0904',  c:'思妤妳還記得那個喔'},
- {u:'kt0904',  c:'五樓欸'},
- {u:'tsonghan',c:'那種免費空間早就收掉了吧。'},
- {me:'網址你還留著嗎'},
- {u:'yalin_w', c:'我沒有留'},
- {u:'kt0904',  c:'等我找一下'},
- {u:'kt0904',  c:'書籤還在 我東西都不刪的',wait:1400},
- {u:'kt0904',  url:'http://wulou.5gbfree.com/',lbl:'五樓'},
- {u:'siyu_1120',c:'謝謝'}
+ {u:'kt0904',  c:'五樓月底要被刪了',now:1,wait:900},
+ {u:'kt0904',  c:'免費空間寄通知給我\n11/30 之後全部清掉',now:1},
+ {read:1,wait:1500},
+ {read:2,wait:1200},
+ {read:3,wait:1800},
+ {me:'刪之前我想進去看一下',wait:2000},
+ {u:'kt0904',  c:'我也是'},
+ {u:'kt0904',  url:'http://wulou.5gbfree.com/',lbl:'五樓'}
 ]},
 
 /* ---------- 開場：生日打進去卻不對（玩家照提示打了 1120 才會有） ----------
@@ -928,22 +911,25 @@ const CHAT=[
    〈整理〉那串現在 at:0（板上一直都在，不是解完信箱才長出來的），冠廷直接
    把連結貼進群組，並指出「妳發燒那天 下面那一樓被刪了」——玩家點開就會
    看到自己 2015/10/14 21:33 的求救，緊接著一行「此文已由板主刪除」。
-   冠廷在這裡才發現最後那幾張不是他印的（開場他只說那是板上的東西），
-   所以「難怪文豪剛剛那樣」是他自己現場接起來的，不是誰事先安排好的伏筆。
+   箱子在這裡才出現：冠廷收到停機通知之後去翻櫃子，翻到當年印出來的一箱紙——
+   兩件事是因果，不是巧合。「我東西都不刪的」是 c_dig 那句自白
+   （「我根本沒刪過 全部都在」）的第一顆種子。
+   宗翰在開場只留了一個已讀，這裡第一次開口：「三天後就收了。」
+   冠廷發現最後那幾張不是他印的——誰印的，答案留給 d_box。
    目標從這裡就很清楚：那天是誰接手？為什麼這一樓需要被刪掉？ */
 {id:'c_intro',when:()=>loggedIn,steps:[
  {u:'kt0904',  c:'進去了嗎'},
  {u:'siyu_1120',c:'進去了 板還在'},
- {u:'kt0904',  c:'宗翰你看 還在'},
- {u:'tsonghan',c:'那種站居然沒收。'},
- {u:'kt0904',  c:'欸 我剛剛把那箱紙整個看完了'},
+ {u:'kt0904',  c:'我也在上面'},
+ {u:'tsonghan',c:'三天後就收了。'},
+ {u:'kt0904',  c:'欸 我收到通知之後 昨天去翻了櫃子'},
+ {u:'kt0904',  c:'翻到一箱那時候印出來的紙\n板上的東西 有夠厚'},
+ {me:'你還留著喔'},
+ {u:'kt0904',  c:'我東西都不刪的'},
+ {u:'kt0904',  c:'我剛剛整箱看完了'},
  {u:'kt0904',  c:'最後面那幾張不是我印的'},
  {u:'tsonghan',c:'那是誰印的。'},
  {u:'kt0904',  c:'不知道 反正不是我 我自己印過什麼我認得'},
- {u:'kt0904',  c:'難怪文豪剛剛那樣'},
- /* 她順著冠廷往文豪那邊想，冠廷否認——誰印的答案仍然留給 d_box */
- {me:'你是說文豪印的喔'},
- {u:'kt0904',  c:'我哪知道 我只是說他剛剛反應超大'},
  {u:'kt0904',  c:'我對過了 那幾張是這串印出來的'},
  {u:'kt0904',  share:'t_sort'},
  {u:'kt0904',  c:'妳自己看 妳發燒那天貼的那樓'},
@@ -1198,7 +1184,7 @@ const CHAT=[
 /* ---------- 第二章：找到部落格（prog 5） ----------
    箱子那句「最後面那幾張不是我印的」在這裡回收：頁首的列印時間是
    2015/11/26 23:41，最後一張背面是他隔天要講的話的草稿。
-   冠廷最後還是拍了——文豪開場第一句就是「不要拍照」。 */
+   冠廷把它拍下來貼上來——他東西都不刪，也不會只留給自己看。 */
 {id:'c_found',when:()=>prog>=5,steps:[
  {u:'kt0904',  c:'找到了？'},
  {me:'嗯 部落格'},
@@ -1212,19 +1198,18 @@ const CHAT=[
  {u:'kt0904',  c:'2015/11/26 23:41'},
  {u:'kt0904',  c:'那不是我印的 我那天六點就走了'},
  {u:'kt0904',  c:'而且最後一張背面有字'},
- {u:'kt0904',  c:'我知道文豪叫我不要拍'},
- {u:'kt0904',  c:'我拍了'},
+ {u:'kt0904',  c:'我拍下來了'},
  {u:'kt0904',  share:'d_box'}
 ]},
 
 /* ---------- 第二章：群組開始對這場調查有反應（看過那三張照片之後） ----------
    反應都要有來源——他們是看到玩家剛剛拿出來的東西才改口的，不是會讀心。
-   文豪這次沒有退出聊天。雅琳收回她剛剛講過的一句話。宗翰那句自陳留在原位。 */
+   文豪今天第一次開口。雅琳收回她剛剛講過的一句話。宗翰那句自陳留在原位。 */
 {id:'c_react',when:()=>seen.has('d_box'),steps:[
  {me:'那是他的字'},
  {u:'kt0904',  c:'我把文豪拉進來'},
  {sys:'冠廷 邀請 文豪 加入了聊天'},
- {u:'haoge',   c:'我說過不要拍。'},
+ {u:'haoge',   c:'誰叫你拍的。'},
  {u:'kt0904',  c:'你先看背面'},
  {sys:'—— 文豪正在輸入 ——'},
  {sys:'—— 文豪停止輸入 ——'},
@@ -1256,7 +1241,11 @@ const CHAT=[
 
 /* ---------- 終章：讀完部落格、也讀完該讀的東西之後 ----------
    最後那句話由玩家自己挑。三個選項都收得回同一個結局，
-   但送出去的是哪一句，決定了終幕第一段怎麼寫。 */
+   但送出去的是哪一句，決定了終幕第一段怎麼寫。
+   送出之後還有一件事：開場那封停機通知的倒數。板務後台現在是她登著的——
+   十一年前昱庭交出來的那把鑰匙，最後落在她手上，所以由她決定五樓要不要留下來。
+   選 silent 的人一樣會被問：嘴上說沒事，手上卻可能把東西留下來。
+   `picks.keep` 決定終幕最後一段。 */
 {id:'c_end',when:()=>chatDone.has('c_found')&&blogRead&&endReady(),steps:[
  {u:'kt0904',  c:'欸 妳還在嗎'},
  {me:'在'},
@@ -1264,9 +1253,17 @@ const CHAT=[
  {sys:'—— 你看著那個問題很久 ——'},
  {u:'tsonghan',c:'妳想說什麼。'},
  {ask:'final',prompt:'你要送出哪一句',opts:[
-  {c:'林昱庭那年攔下來的 是我們',v:'accuse',end:1},
-  {c:'他十一年前跟我求救過 我沒有回',v:'confess',end:1},
-  {c:'沒事 我只是隨便查一查',v:'silent',end:1}
+  {c:'林昱庭那年攔下來的 是我們',v:'accuse'},
+  {c:'他十一年前跟我求救過 我沒有回',v:'confess'},
+  {c:'沒事 我只是隨便查一查',v:'silent'}
+ ]},
+ {u:'kt0904',  c:'欸 那個板',wait:900},
+ {u:'kt0904',  c:'後台現在是妳登著的吧'},
+ {u:'kt0904',  c:'三天後就沒了 要不要備份 妳決定'},
+ {u:'tsonghan',c:'紀錄本來就會被清掉。'},
+ {ask:'keep',prompt:'五樓要怎麼辦',opts:[
+  {c:'我備份起來了',v:'keep',end:1},
+  {c:'讓它刪吧',v:'let',end:1}
  ]}
 ]}
 ];
@@ -1452,7 +1449,7 @@ const DOCS=[
   {id:'ytl_setup',box:'in',at:1,
    from:'ytl_lin',fromFull:'ytl@shengyue.com.tw',
    date:'2015/04/13 12:48',subj:'五樓開好了',
-   body:'弄好了，網址在下面。\n\nhttp://wulou.5gbfree.com/\n\n你們的帳號我照英文名字開好了，密碼先都設你們的生日，登進去自己改。\n\n板務後台的帳號是 ytl_lin，密碼 5f2015。\n我怕我哪天請假你們要用，先跟你們講一聲，不要外流。\n\n板名我取「五樓」，因為就是我們那層樓。宗翰說沒創意，可是我想不到更好的。\n\n以後閒聊都可以貼這裡。公司內網有在看，這裡沒有。'},
+   body:'弄好了，網址在下面。\n\nhttp://wulou.5gbfree.com/\n\n空間是用冠廷的信箱申請的，他說他信箱永遠不會換。以後 5GBfree 要是有通知，應該都會寄到他那裡，我想說先講一聲。\n\n你們的帳號我照英文名字開好了，密碼先都設你們的生日，登進去自己改。\n\n板務後台的帳號是 ytl_lin，密碼 5f2015。\n我怕我哪天請假你們要用，先跟你們講一聲，不要外流。\n\n板名我取「五樓」，因為就是我們那層樓。宗翰說沒創意，可是我想不到更好的。\n\n以後閒聊都可以貼這裡。公司內網有在看，這裡沒有。'},
   {id:'yalin_hr',box:'in',at:1,
    from:'yalin_w',fromFull:'yalin.wang@shengyue.com.tw',
    date:'2015/10/05 14:47',subj:'張副理',
@@ -2156,6 +2153,10 @@ let chatGen=0;
 let chatPace=1;
 let chatWaited=null;       // 已經等過 wait 的那一步（離開 App 再回來不重等）
 let chatFresh=null;        // 剛冒出來的那一則：只有它跑淡入，重畫時其他訊息不跟著閃
+/* 已讀數：{read:n} 這一步不新增訊息，只把「最近一則別人的訊息」旁邊的已讀數改成 n。
+   記在這張表而不是寫回 CHAT 的步驟物件上，除錯面板重建聊天室時才不會殘留。 */
+const chatRead=new Map();
+let chatReadFresh=null;    // 已讀數剛變動的那一則：只有那個小字淡入，泡泡不重播
 
 /* 聊天室的播放速度：下面所有等待的毫秒數寫的都是原本 1x 的節奏，
    實際等待一律除以這個數。要整體加速或放慢就只動這一個值。 */
@@ -2169,7 +2170,7 @@ const chatHere=()=>chatOpen&&!saidNow&&prog<6;
    之後，那顆等著被點的草稿泡泡就沒有任何東西提醒他了。 */
 function chatPending(){ if(chatDraft||chatPick) return 1;
   let n=0;
-  for(const st of chatQueue){ if(st._done||st._begin) continue; if(st.me!==undefined) break; n++; }
+  for(const st of chatQueue){ if(st._done||st._begin||st.read!==undefined) continue; if(st.me!==undefined) break; n++; }
   return n; }
 
 /* 掃一次所有段落，把條件成立的依序排進佇列（不插隊） */
@@ -2201,6 +2202,9 @@ function chatNext(){
   if(st.me!==undefined){ chatQueue.shift(); chatBusy=false; chatDraft=st; chatPaint(); return; }
   /* 選擇泡泡：跟草稿泡泡一樣把播放停下來，差別是攤開好幾句讓玩家自己挑一句送出 */
   if(st.opts){ chatQueue.shift(); chatBusy=false; chatPick=st; chatPaint(); return; }
+  /* 已讀數往上跳：不跑「輸入中」、不多一列，只改最近一則別人的訊息旁邊那個小字 */
+  if(st.read!==undefined){ chatQueue.shift(); chatMarkRead(st.read); chatPaint();
+    const g=chatGen; return void setTimeout(()=>{ if(g!==chatGen) return; chatNext(); },dly(300*chatPace)); }
   chatQueue.shift();
   const gen=chatGen;
   const P=chatPace;
@@ -2209,7 +2213,7 @@ function chatNext(){
   const len=(st.c||st.sys||'').length;
   const hold=(st.sys?320:st.now?900:450)+Math.min(len,40)*25;
   const reveal=()=>{ if(gen!==chatGen) return;       // 跳過段了，這一則已經不屬於現在這場對話
-    chatShown.push(st); chatFresh=st; chatPaint();
+    chatShown.push(st); chatFresh=st; chatReadFresh=null; chatPaint();
     setTimeout(chatNext,dly(hold*P)); };
   if(st.now) return reveal();                        // 開場墊場：不跑「輸入中」，一則一則自己跳進來
   if(st.sys||st.u===ME.uid) return void setTimeout(reveal,dly(600*P));
@@ -2223,7 +2227,7 @@ function chatNext(){
 /* 玩家點下草稿泡泡＝思妤把那句話送出去 */
 function chatSend(){
   const st=chatDraft; if(!st) return;
-  chatDraft=null; chatFresh={u:ME.uid,c:st.me}; chatShown.push(chatFresh); chatPaint();
+  chatDraft=null; chatFresh={u:ME.uid,c:st.me}; chatReadFresh=null; chatShown.push(chatFresh); chatPaint();
   if(st.end) return void goEnd();
   chatBusy=true; setTimeout(chatNext,dly(500*chatPace));
 }
@@ -2237,6 +2241,13 @@ function chatChoose(i){
   if(o.end) return void goEnd();
   if(o.then&&o.then.length) chatQueue=o.then.concat(chatQueue);
   chatBusy=true; setTimeout(chatNext,dly(500*chatPace));
+}
+/* 已讀數記在最近一則別人講的話上（系統訊息跟她自己的不算）。
+   泡泡本身不重播淡入，只有那個小字淡入。 */
+function chatMarkRead(n){
+  for(let i=chatShown.length-1;i>=0;i--){ const m=chatShown[i];
+    if(m.sys||m.u===ME.uid) continue;
+    chatRead.set(m,n); chatReadFresh=m; if(chatFresh===m) chatFresh=null; return; }
 }
 /* 送出最後一句＝進終幕 */
 function goEnd(){ prog=6; setTimeout(()=>{ closeChat(); render(); toTop(); },1100); }
@@ -2280,7 +2291,9 @@ function chatRows(){
     if(m.sys){ prev=null; return `<div class="pl-sys${fr}">${esc(m.sys)}</div>`; }
     const cont=(prev===m.u?'cont':'')+fr; prev=m.u;
     if(m.url||m.share) return plRow(m.u,chatCard(m),cont);
-    return plRow(m.u,`<div class="pl-bub">${esc(m.c)}</div>`,cont);
+    const bub=`<div class="pl-bub">${esc(m.c)}</div>`;
+    if(!chatRead.has(m)) return plRow(m.u,bub,cont);
+    return plRow(m.u,`<div class="pl-line">${bub}<span class="pl-read${m===chatReadFresh?' fresh':''}">已讀 ${chatRead.get(m)}</span></div>`,cont);
   });
   if(chatTyping) rows.push(plRow(chatTyping,
     `<div class="pl-bub"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>`,
@@ -2396,7 +2409,7 @@ document.getElementById('go').onclick=()=>{
   document.getElementById('browser').style.display='flex';
   loggedIn=true;                       // 從這裡開始，手上同時有兩支 App：瀏覽器跟茶水間
   /* 她剛剛人就在茶水間裡，登入完不該被丟在一個十年沒動的板首頁上：
-     聊天室浮回最上層，開場最後那句「謝謝」和整段序章就地接著演完。
+     聊天室浮回最上層，整段序章就地接著演完。
      瀏覽器停在板首頁等她——她自己把茶水間收起來，才會看到那個板。 */
   active='board_index'; boardTab='board_index';
   syncTabs(); render(); openChat(); toTop();
@@ -2594,18 +2607,19 @@ function wlSide(){
         <div><span class="dead">三樓　業務部</span><span class="x">連結失效</span></div>
         <div><span class="dead">公司內部公告網</span><span class="x">連結失效</span></div>
         <div><span class="dead">個人網誌</span><span class="x">連結失效</span></div>
-        <div><span class="dead">5GBfree 首頁</span><span class="x">連結失效</span></div>
+        <div><span class="dead">奇摩家族　同期會</span><span class="x">連結失效</span></div>
       </div>
     </div>
   </div>`;
 }
 
-/* wulou.5gbfree.com 是免費空間，免費空間一定會在頁首插一條自己的廣告。
-   關得掉，但只在這次開著的期間有效——重整就回來，這也是真的。 */
+/* wulou.5gbfree.com 是免費空間，免費空間一定會在頁首插一條自己的東西。
+   十一年來那裡一直是廣告；今天換成了停止服務的公告——就是冠廷收到的那封通知
+   （`c_open`）。關得掉，但只在這次開著的期間有效——重整就回來，這也是真的。 */
 let adOpen=true;
 function wlAd(){
-  return adOpen?`<div class="wl-ad"><span class="tag">廣告</span>
-    <span class="txt">5GBfree 免費網頁空間　註冊就送 5GB　馬上擁有自己的網站 ▸</span>
+  return adOpen?`<div class="wl-ad stop"><span class="tag">公告</span>
+    <span class="txt">5GBfree 將於 2026/11/30 結束服務，屆時所有網站資料將一併刪除，請站長儘速自行備份。</span>
     <button class="x" id="adX" title="關閉">✕</button></div>`:'';
 }
 /* 站尾：訪客計數器、文章數、最後發表、Powered by。
@@ -2616,7 +2630,7 @@ function wlFoot(){
   return `<div class="wl-foot">
     <div>本站訪客人次<span class="led">006418</span></div>
     <div>五樓　│　文章 ${boardRows().length} 篇　│　最後發表 ${esc(wlLast())}　│　板主 ytl_lin</div>
-    <div class="pw">Powered by MiniBBS 1.2　│　本站空間由 5GBfree 免費提供，頁首廣告為系統自動插入</div>
+    <div class="pw">Powered by MiniBBS 1.2　│　本站空間由 5GBfree 免費提供，頁首公告為系統自動插入</div>
   </div>`;
 }
 
@@ -3157,12 +3171,20 @@ function renderEnd(vp){
     silent:`<p>你把打好的那句刪掉，換成了這一句，才送出。</p>
       <p>群組很快就跳出下一則訊息。<br>沒有人追問。這一次也一樣。</p>`
   }[picks.final]||`<p>你送出了。</p>`;
+  /* 停機倒數的下場：開場那封通知在這裡兌現 */
+  const tail={
+    keep:`<p>十一月三十日，wulou.5gbfree.com 打不開了。<br>
+      你的電腦裡多了一個資料夾。十四樓底下那一行，在裡面。</p>`,
+    let:`<p>十一月三十日，wulou.5gbfree.com 打不開了。<br>
+      十四樓底下那一行，又被刪了一次。<br>這一次，是你決定的。</p>`
+  }[picks.keep]||'';
   vp.innerHTML=`<div class="end">
     ${head}
     <p class="q">他那天最後說的那句，聲音很輕，快得像是說給自己聽的——<br><br>
       「我也想過要這樣做。」</p>
     <p>那句話他前一天晚上就寫在紙背上了，寫在劃掉的三行下面。</p>
     <p>沒有人記得這句。因為沒有人在聽。</p>
+    ${tail}
     <p class="sig">－ 五樓 －</p>
   </div>`;
 }
@@ -3211,7 +3233,7 @@ function devApply(st){
   /* 先把聊天室清空重建，否則會疊在開場已經自己播出來的那幾則上面 */
   chatGen++;                          // 上一段還在飛的 timer 從這一刻起全部失效
   chatShown=[]; chatQueue=[]; chatDraft=null; chatTyping=null; chatBusy=false;
-  chatPace=1; chatWaited=null; chatFresh=null;
+  chatPace=1; chatWaited=null; chatFresh=null; chatRead.clear(); chatReadFresh=null;
   chatFired.clear(); chatDone.clear(); chatPick=null;
   seen.clear(); mailRead.clear(); restored.clear(); gateDone={};
   Object.keys(picks).forEach(k=>delete picks[k]);
@@ -3239,6 +3261,7 @@ function devApply(st){
     chatFired.add(sc.id); chatDone.add(sc.id);
     sc.steps.forEach(t=>{
       if(t._done||t.url) return;          // 開場那張網址卡片會把登入頁叫回來，補歷史時略過
+      if(t.read!==undefined){ chatMarkRead(t.read); return; }   // 已讀數不是一則訊息
       if(t.opts){                         // 選擇泡泡：補歷史時一律當成她挑了第一句
         picks[t.ask]=t.opts[0].v;
         chatShown.push({u:ME.uid,c:t.opts[0].c});
